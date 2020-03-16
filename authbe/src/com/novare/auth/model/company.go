@@ -29,4 +29,9 @@ Company -
 Every account starts with a company. Sites can have one or more accounts.
 */
 type Company struct {
+	ID       bson.ObjectId `bson:"_id" json:"id"`
+	Name     string        `json:"name"`
+	Address1 string        `json:"address1"`
+	Address2 string        `json:"address2"`
+	City     string        `json:"city"`
 }
