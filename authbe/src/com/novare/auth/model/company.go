@@ -29,4 +29,24 @@ Company -
 Every account starts with a company. Sites can have one or more accounts.
 */
 type Company struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Address1   string `json:"address1"`
+	Address2   string `json:"address2"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	Zip        string `json:"zip"`
+	PrivateKey string `json:"privateKey"`
+	PublicKey  string `json:"publicKey"`
+	//AuthRelay - If the company is using a distributed authorization
+	//environment.
+	AuthRelay string `json:"authRelay"`
+}
+
+/*
+NewCompany - Constructor for Company.
+*/
+func NewCompany() *Company {
+	company := new(Company)
+	return company
 }
