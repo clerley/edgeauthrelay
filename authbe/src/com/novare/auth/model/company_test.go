@@ -23,8 +23,57 @@ SOFTWARE.
 */
 package model
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestCompanyFunctions(t *testing.T) {
 
+	company := NewCompany()
+	company.Name = "My Corporation"
+	company.Address1 = "Address 1"
+	company.Address2 = "Address 2"
+	company.City = "City"
+	company.State = "State"
+	company.Zip = "ZIP"
+	company.AuthRelay = ""
+
+	err := SaveCompany(company)
+	if err == nil {
+		t.Errorf("The System saved a company but it should not have")
+	} else {
+		t.Logf("The system correctly failed with save with the following response: %s", err)
+	}
+
+	err = InsertCompany(company)
+	if err != nil {
+		t.Errorf("The system should have saved the company.")
+	}
+
+	company2, err := FindCompanyByID(company.ID.Hex())
+	if err != nil {
+		t.Errorf("The system should have found the company with ID: %s", company.ID.Hex())
+	}
+
+	if company2.ID != company.ID {
+		t.Errorf("The Company ID for the record retrieved and the company ID inserted do not match: %s != %s", company2.ID.Hex(), company.ID.Hex())
+	}
+
+	if company2.Name != company.Name {
+		t.Errorf("The company names do not match: %s != %s", company2.Name, company.Name)
+	}
+
+	companies, err := ListCompanies()
+	if err != nil {
+		t.Errorf("The following error occurred %s", err)
+	}
+
+	if len(companies) == 0 {
+		t.Error("The Companies list length is invalid!")
+	}
+
+	err = RemoveCompanyByID(company.ID.Hex())
+	if err != nil {
+		t.Errorf("Removing the company with ID: %s", company.ID.Hex())
+	}
 }
