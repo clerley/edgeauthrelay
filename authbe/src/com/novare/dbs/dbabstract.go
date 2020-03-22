@@ -114,7 +114,7 @@ func (mongo *MongoDB) getMongoSession() (*mgo.Session, error) {
 }
 
 //Insert an object into the database, expecting a pointer
-func (mongo *MongoDB) Insert(obj interface{}, collection string, condition interface{}) error {
+func (mongo *MongoDB) Insert(obj interface{}, condition interface{}) error {
 
 	mongoCon, err := mongo.getMongoSession()
 	if err != nil {
@@ -126,9 +126,9 @@ func (mongo *MongoDB) Insert(obj interface{}, collection string, condition inter
 	// Optional. Switch the session to a monotonic behavior.
 	mongoCon.SetMode(mgo.Monotonic, true)
 
-	c := mongoCon.DB(mongo.DBName).C(collection)
+	c := mongoCon.DB(mongo.DBName).C(mongo.CollName)
 
-	cnt, err := mongoCon.DB(mongo.DBName).C(collection).Find(condition).Count()
+	cnt, err := mongoCon.DB(mongo.DBName).C(mongo.CollName).Find(condition).Count()
 	if err != nil && cnt > 0 {
 		return errors.New("ConditionFailed")
 	}
@@ -145,16 +145,16 @@ func (mongo *MongoDB) Insert(obj interface{}, collection string, condition inter
 }
 
 //Find - Find a customer or return with an error
-func Find(resObj interface{}, collection string, condition interface{}) error {
+func (mongo *MongoDB) Find(resObj interface{}, condition interface{}) error {
 
-	sess, err := GetMongoSession()
+	sess, err := mongo.getMongoSession()
 	if err != nil {
 		log.Printf("Connection is not valid ")
 		return errors.New("Invalid database connection")
 	}
 	defer sess.Close()
 
-	mgoCursor := sess.DB(databaseName()).C(collection)
+	mgoCursor := sess.DB(mongo.DBName).C(mongo.CollName)
 	err = mgoCursor.Find(condition).One(resObj)
 	if err != nil {
 		log.Printf("Error retrieving data from datasase [%s]", err)
@@ -165,8 +165,8 @@ func Find(resObj interface{}, collection string, condition interface{}) error {
 }
 
 //Update -
-func Update(obj interface{}, collection string, condition interface{}) error {
-	sess, err := GetMongoSession()
+func (mongo *MongoDB) Update(obj interface{}, condition interface{}) error {
+	sess, err := mongo.getMongoSession()
 	if err != nil {
 		log.Printf("Generic Database failure [%s]", err)
 		return errors.New("GenericDatabaseFailure")
@@ -176,7 +176,7 @@ func Update(obj interface{}, collection string, condition interface{}) error {
 	// Optional. Switch the session to a monotonic behavior.
 	sess.SetMode(mgo.Monotonic, true)
 
-	c := sess.DB(databaseName()).C(collection)
+	c := sess.DB(mongo.DBName).C(mongo.CollName)
 
 	// Update the customer into the database
 	err = c.Update(condition, obj)
@@ -190,9 +190,9 @@ func Update(obj interface{}, collection string, condition interface{}) error {
 }
 
 //List - List all for customer
-func List(objs interface{}, collection string, condition interface{}) error {
+func (mongo *MongoDB) List(objs interface{}, condition interface{}) error {
 
-	sess, err := GetMongoSession()
+	sess, err := mongo.getMongoSession()
 	if err != nil {
 		log.Printf("The DB has not been found [%s]", err)
 		return errors.New("GenericDatabaseFailure")
@@ -202,7 +202,7 @@ func List(objs interface{}, collection string, condition interface{}) error {
 	// Optional. Switch the session to a monotonic behavior.
 	sess.SetMode(mgo.Monotonic, true)
 
-	c := sess.DB(databaseName()).C(collection)
+	c := sess.DB(mongo.DBName).C(mongo.CollName)
 
 	err = c.Find(condition).All(objs)
 	if err != nil {
@@ -214,16 +214,16 @@ func List(objs interface{}, collection string, condition interface{}) error {
 }
 
 //Remove - Find a customer or return with an error
-func Remove(collection string, condition interface{}) error {
+func (mongo *MongoDB) Remove(condition interface{}) error {
 
-	sess, err := GetMongoSession()
+	sess, err := mongo.getMongoSession()
 	if err != nil {
 		log.Printf("Connection is not valid ")
 		return errors.New("Invalid database connection")
 	}
 	defer sess.Close()
 
-	mgoCursor := sess.DB(databaseName()).C(collection)
+	mgoCursor := sess.DB(mongo.DBName).C(mongo.CollName)
 	err = mgoCursor.Remove(condition)
 	if err != nil {
 		log.Printf("Error removing data from database [%s]", err)

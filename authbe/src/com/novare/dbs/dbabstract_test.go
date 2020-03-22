@@ -22,3 +22,85 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 package dbs
+
+import (
+	"testing"
+	"unicode/utf8"
+
+	"gopkg.in/mgo.v2/bson"
+)
+
+const database = "TESTDB"
+
+func TestDBAbstraction(t *testing.T) {
+
+	db := NewMongoDB(database, "MyCollection")
+
+	type testStruct struct {
+		ID     bson.ObjectId `json:"id" bson:"_id"`
+		Value1 string
+		Value2 string
+		Value3 string
+		Value4 string
+	}
+
+	var test testStruct
+	test.ID = bson.NewObjectId()
+	test.Value1 = "Value 1"
+	test.Value2 = "Value 2"
+	test.Value3 = "Value 3"
+	test.Value4 = "Value 4"
+
+	err := db.Initialize()
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+		return
+	}
+
+	err = db.Insert(&test, bson.M{"_id": test.ID})
+	if err != nil {
+		t.Errorf("The insert operation failed with error: [%s]", err)
+		return
+	}
+
+	var test2 testStruct
+	err = db.Find(&test2, bson.M{"_id": test.ID})
+	if err != nil {
+		t.Errorf("The record with ID:[%s] was not found", test.ID.Hex())
+		return
+	}
+
+	if test2.ID != test.ID {
+		t.Errorf("The expected ID and the ID retrieved do not match!")
+		return
+	}
+
+	var lst []testStruct
+	err = db.List(&lst, nil)
+	if err != nil {
+		t.Errorf("There was an error retrieving all the records from the database: [%s]", err)
+		return
+	}
+
+	if len(lst) == 0 {
+		t.Errorf("The list returned is empty! That should not have happend!")
+		return
+	}
+
+	for i := range lst {
+		t1 := lst[i]
+		if utf8.RuneCountInString(t1.Value1) == 0 {
+			t.Errorf("An error occurred, the value of Value1 should not be zero length")
+		} else {
+			t.Logf("ID for the testStruct %s Index: %d", t1.ID.Hex(), i)
+		}
+	}
+
+	for i := range lst {
+		t1 := lst[i]
+		err = db.Remove(bson.M{"_id": t1.ID})
+		if err != nil {
+			t.Errorf("The following error occurred: %s", err)
+		}
+	}
+}
