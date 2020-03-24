@@ -31,7 +31,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-var mDB = dbs.NewMongoDB(AuthRelayDatabaseName, "Companies")
+var mDBCompany = dbs.NewMongoDB(AuthRelayDatabaseName, "Companies")
 
 /*
 Company -
@@ -69,7 +69,7 @@ func SaveCompany(company *Company) error {
 		return errors.New("InvalidCompany")
 	}
 
-	return mDB.Update(company, bson.M{"_id": company.ID})
+	return mDBCompany.Update(company, bson.M{"_id": company.ID})
 }
 
 //InsertCompany - Add a company to the database
@@ -79,7 +79,7 @@ func InsertCompany(company *Company) error {
 		return errors.New("InvalidCompany")
 	}
 
-	return mDB.Insert(company, bson.M{"_id": company.ID})
+	return mDBCompany.Insert(company, bson.M{"_id": company.ID})
 }
 
 //FindCompanyByID - Return a company if it can find it
@@ -91,7 +91,7 @@ func FindCompanyByID(ID string) (*Company, error) {
 		return nil, errors.New("InvalidID")
 	}
 
-	err := mDB.Find(company, bson.M{"_id": bson.ObjectIdHex(ID)})
+	err := mDBCompany.Find(company, bson.M{"_id": bson.ObjectIdHex(ID)})
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func RemoveCompanyByID(ID string) error {
 		return err
 	}
 
-	return mDB.Remove(bson.M{"_id": company.ID})
+	return mDBCompany.Remove(bson.M{"_id": company.ID})
 }
 
 //ListCompanies - List all companies.
@@ -115,6 +115,6 @@ func RemoveCompanyByID(ID string) error {
 //another function to limit the number of records returned.
 func ListCompanies() ([]Company, error) {
 	var companies []Company
-	err := mDB.List(&companies, bson.M{})
+	err := mDBCompany.List(&companies, bson.M{})
 	return companies, err
 }
