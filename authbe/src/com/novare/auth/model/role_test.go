@@ -24,8 +24,80 @@ SOFTWARE.
 
 package model
 
-import "testing"
+import (
+	"testing"
+
+	"gopkg.in/mgo.v2/bson"
+)
 
 func TestRoleFunctions(t *testing.T) {
 
+	ID := bson.NewObjectId().Hex()
+
+	perm := NewPermission()
+	perm.CompanyID = ID
+	perm.Description = "Permission1"
+	perm.Permission = "MY_PERMISSION"
+
+	role := NewRole()
+	role.AddPermission(*perm)
+
+	perm1 := NewPermission()
+	perm1.CompanyID = ID
+	perm1.Description = "Permission2"
+	perm1.Permission = "MY_PERM_2"
+	role.AddPermission(*perm1)
+
+	role.CompanyID = ID
+	err := SaveRole(role)
+	if err == nil {
+		t.Errorf("Invalid ROLE! Error: [%s]", err)
+		return
+	}
+
+	err = InsertRole(role)
+	if err != nil {
+		t.Errorf("The role could not be inserted: [%s]", err)
+		return
+	}
+
+	if !role.IsGranted(perm.Permission) {
+		t.Errorf("The permission: [%s] was not granted", perm.Permission)
+		return
+	}
+
+	if !role.IsGranted(perm1.Permission) {
+		t.Errorf("The permission: [%s] was not granted", perm1.Permission)
+		return
+	}
+
+	role.RemovePermission(perm.Permission)
+	if len(role.Permissions) != 1 {
+		t.Errorf("The role should not have one permission")
+	}
+
+	role.RemovePermission(perm1.Permission)
+	if len(role.Permissions) != 0 {
+		t.Errorf("The role should not have any permission by now: [%s]", err)
+		return
+	}
+
+	role, err = FindRoleByID(role.ID.Hex())
+	if err != nil {
+		t.Errorf("The role ID was not found! Error: [%s]", err)
+		return
+	}
+
+	roles, err := ListRolesByCompanyID(ID)
+	if err != nil {
+		t.Errorf("Invalid roles: [%s]", err)
+	}
+
+	for i := range roles {
+		err = RemoveRoleByID(roles[i].ID.Hex())
+		if err != nil {
+			t.Errorf("The Role could not be removed! Error:[%s]", err)
+		}
+
+	}
 }

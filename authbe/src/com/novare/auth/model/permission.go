@@ -50,7 +50,7 @@ func NewPermission() *Permission {
 	return perm
 }
 
-func isValid(perm *Permission) bool {
+func isPermissionValid(perm *Permission) bool {
 
 	//If the permission is invalid
 	if perm == nil {
@@ -69,7 +69,7 @@ func isValid(perm *Permission) bool {
 //SavePermission - Save the permission to the proper collection
 func SavePermission(perm *Permission) error {
 
-	if !isValid(perm) {
+	if !isPermissionValid(perm) {
 		return errors.New("InvalidPermission")
 	}
 
@@ -79,7 +79,7 @@ func SavePermission(perm *Permission) error {
 //InsertPermission - Insert the permission into the database
 func InsertPermission(perm *Permission) error {
 
-	if !isValid(perm) {
+	if !isPermissionValid(perm) {
 		return errors.New("InvalidPermission")
 	}
 
