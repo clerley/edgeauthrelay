@@ -47,6 +47,7 @@ type User struct {
 	Permissions    []Permission  `json:"permissions"`   //All the permissions assigned to the user. Note that permissions can go cross companies
 	CompanyID      string        `json:"companyID"`     //The companyID that created this user
 	Roles          []string      `json:"roles"`         //The Roles this user belongs to. Don't necessarily need a role
+	IsThing        bool          `json:"isThing"`       //This is for the devices/things that need approval
 }
 
 //SetPassword -  Will set the user's password
