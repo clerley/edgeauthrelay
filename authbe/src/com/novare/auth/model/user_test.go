@@ -1,3 +1,11 @@
+package model
+
+import (
+	"testing"
+
+	"gopkg.in/mgo.v2/bson"
+)
+
 /*
 MIT License
 
@@ -22,15 +30,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package model
-
-import (
-	"testing"
-
-	"gopkg.in/mgo.v2/bson"
-)
-
-func TestRoleFunctions(t *testing.T) {
+func TestUserFunctions(t *testing.T) {
 
 	ID := bson.NewObjectId().Hex()
 
@@ -39,69 +39,88 @@ func TestRoleFunctions(t *testing.T) {
 	perm.Description = "Permission1"
 	perm.Permission = "MY_PERMISSION"
 
-	role := NewRole()
-	role.AddPermission(*perm)
+	user := NewUser()
+	user.AddPermission(*perm)
 
 	perm1 := NewPermission()
 	perm1.CompanyID = ID
 	perm1.Description = "Permission2"
 	perm1.Permission = "MY_PERM_2"
-	role.AddPermission(*perm1)
+	user.AddPermission(*perm1)
 
-	role.CompanyID = ID
-	err := SaveRole(role)
+	user.CompanyID = ID
+	err := SaveUser(user)
 	if err == nil {
-		t.Errorf("Invalid ROLE! Error: [%s]", err)
+		t.Errorf("Invalid user! Error: [%s]", err)
 		return
 	}
 
-	err = InsertRole(role)
+	err = InsertUser(user)
 	if err != nil {
-		t.Errorf("The role could not be inserted: [%s]", err)
+		t.Errorf("The user could not be inserted: [%s]", err)
 		return
 	}
 
-	if !role.IsGranted(perm.Permission) {
+	if !user.IsGranted(perm.Permission) {
 		t.Errorf("The permission: [%s] was not granted", perm.Permission)
 		return
 	}
 
-	if !role.IsGranted(perm1.Permission) {
+	if !user.IsGranted(perm1.Permission) {
 		t.Errorf("The permission: [%s] was not granted", perm1.Permission)
 		return
 	}
 
-	if len(role.Permissions) != 2 {
+	if len(user.Permissions) != 2 {
 		t.Errorf("The number of permissions expected was 2, the number of permission added: %d", len(perm.Permission))
 		return
 	}
 
-	role.RemovePermission(perm.Permission)
-	if len(role.Permissions) != 1 {
-		t.Errorf("The role should not have one permission")
+	user.RemovePermission(perm.Permission)
+	if len(user.Permissions) != 1 {
+		t.Errorf("The user should not have one permission")
 	}
 
-	role.RemovePermission(perm1.Permission)
-	if len(role.Permissions) != 0 {
-		t.Errorf("The role should not have any permission by now: [%s]", err)
+	user.RemovePermission(perm1.Permission)
+	if len(user.Permissions) != 0 {
+		t.Errorf("The user should not have any permission by now: [%s]", err)
 		return
 	}
 
-	role, err = FindRoleByID(role.ID.Hex())
+	user, err = FindUserByID(user.ID.Hex())
 	if err != nil {
-		t.Errorf("The role ID was not found! Error: [%s]", err)
+		t.Errorf("The user ID was not found! Error: [%s]", err)
 		return
 	}
 
-	roles, err := ListRolesByCompanyID(ID)
+	users, err := ListUsersByCompanyID(ID)
 	if err != nil {
-		t.Errorf("Invalid roles: [%s]", err)
+		t.Errorf("Invalid users: [%s]", err)
 	}
 
-	for i := range roles {
-		err = RemoveRoleByID(roles[i].ID.Hex())
+	role := NewRole()
+	role.AddPermission(*perm1)
+	user.AddRole(role.ID.Hex())
+	if !user.IsGranted("MY_PERM_2") {
+		t.Errorf("The permission 2 should have been approved but, it was not")
+		return
+	}
+
+	if len(user.Roles) != 1 {
+		t.Error("The roles should have at least one entry but it does not!")
+		return
+	}
+
+	user.RemoveRole(role.ID.Hex())
+	if len(user.Roles) != 0 {
+		t.Error("The user should have zero length but, it contains one of more")
+		return
+	}
+
+	for i := range users {
+		err = RemoveUserByID(users[i].ID.Hex())
 		if err != nil {
-			t.Errorf("The Role could not be removed! Error:[%s]", err)
+			t.Errorf("The user could not be removed! Error:[%s]", err)
 		}
 
 	}
