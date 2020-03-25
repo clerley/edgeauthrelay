@@ -1,6 +1,10 @@
 package utils
 
-import "testing"
+import (
+	"encoding/base64"
+	"strings"
+	"testing"
+)
 
 /*
 MIT License
@@ -55,4 +59,16 @@ func TestCryptoUtils(t *testing.T) {
 		return
 	}
 
+}
+
+func TestB64Padding(t *testing.T) {
+
+	encoded := base64.URLEncoding.EncodeToString([]byte("your-256-bit-secret23"))
+	strippedEqual := strings.TrimRight(encoded, "=")
+
+	t.Logf("The stripped string: [%s]", strippedEqual)
+
+	if PerformB64Padding(strippedEqual) != encoded {
+		t.Errorf("The strings don't match: [%s] != [%s]", encoded, PerformB64Padding(strippedEqual))
+	}
 }

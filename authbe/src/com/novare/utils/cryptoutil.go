@@ -25,7 +25,9 @@ SOFTWARE.
 */
 
 import (
+	"crypto/hmac"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
 	"io"
 	"log"
@@ -115,4 +117,39 @@ func IsSecurePassword(pass string) bool {
 	}
 
 	return found
+}
+
+//EncodeHMACHash ... Create an HMAC
+func EncodeHMACHash(payload string, secret string) string {
+	secKey := []byte(secret)
+	h := hmac.New(sha256.New, secKey)
+	h.Write([]byte(payload))
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
+}
+
+//IsValidHMAC - This function checks if the HMAC is valid
+func IsValidHMAC(payload string, secret string, hashmac string) bool {
+
+	hmac := EncodeHMACHash(payload, secret)
+	if hmac != hashmac {
+		return false
+	}
+
+	return true
+}
+
+//PerformB64Padding - This is for use with JWT. The padding must be removed
+func PerformB64Padding(b64Str string) string {
+	rply := b64Str
+
+	l := utf8.RuneCountInString(b64Str)
+	r := (l % 4)
+	switch r {
+	case 2:
+		rply = b64Str + "=="
+	case 3:
+		rply = b64Str + "="
+	}
+
+	return rply
 }
