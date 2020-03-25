@@ -48,8 +48,7 @@ type Company struct {
 	IsLocation bool          `json:"isLocation"` //Specifies if a company is also a location. Used with the
 	//AuthRelay - If the company is using a distributed authorization
 	//environment.
-	AuthRelay  string `json:"authRelay"`
-	LocationID string `json:"locationID"` //The ID to the location. This is an external code
+	AuthRelay string `json:"authRelay"`
 }
 
 /*

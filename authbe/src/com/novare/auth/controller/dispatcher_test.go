@@ -1,4 +1,4 @@
-/**
+/*
 MIT License
 
 Copyright (c) 2020 Clerley Silveira
@@ -21,22 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package main
 
-import (
-	"com/novare/auth/controller"
-	"log"
-	"net/http"
+package controller
 
-	"github.com/gorilla/mux"
-)
+import "testing"
 
-func main() {
-	log.Printf("Initiating the Authorization Service")
+func TestCreateCompany(t *testing.T) {
 
-	mux := mux.NewRouter()
-
-	mux.HandleFunc("/jwt/createcompany", controller.CreateCompany)
-
-	http.ListenAndServe(":9119", mux)
 }
