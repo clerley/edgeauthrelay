@@ -190,6 +190,7 @@ func isValidUser(user *User) bool {
 	}
 
 	if utf8.RuneCountInString(user.CompanyID) == 0 {
+		log.Printf("The length of the CompanyID is 0")
 		return false
 	}
 
