@@ -57,9 +57,17 @@ func createCompanyBL(req createCompanyReq) *createCompanyResp {
 		company.RemotelyManaged = false
 	}
 	company.AuthRelay = req.AuthRelay
+	company.UniqueID = req.UniqueID
 
 	var r createCompanyResp
 	r.Status = StatusFailure
+
+	//First we need to check if the unique ID is found
+	c, err := model.FindCompanyByUniqueID(req.UniqueID)
+	if err == nil {
+		log.Printf("The company with UniqueID:[%s] already exists:[%s]", c.UniqueID, c.ID.Hex())
+		return &r
+	}
 
 	err = model.InsertCompany(company)
 	if err != nil {

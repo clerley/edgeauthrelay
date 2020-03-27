@@ -24,8 +24,108 @@ SOFTWARE.
 
 package controller
 
-import "testing"
+import (
+	"bytes"
+	"com/novare/utils"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
 
-func TestCreateCompany(t *testing.T) {
+func TestCreateCompanyWithoutUniqueID(t *testing.T) {
+
+	var r createCompanyReq
+	r.Address1 = "My Address"
+	r.Address2 = "My Address line 2"
+	r.AuthRelay = ""
+	r.City = "Palm Harbor"
+	r.IsInLocation = "true"
+	r.Name = "TEST"
+	r.Password = "@1234567890"
+	r.RemotelyManaged = "false"
+	r.State = "FL"
+	r.Zip = "33445"
+
+	buf, err := json.Marshal(r)
+	if err != nil {
+		t.Errorf("Marshalling the object should be possible. Error:[%s]", err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", "/jwt/createcompany", bytes.NewBuffer(buf))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(CreateCompany)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	var rsp createCompanyResp
+	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	if err != nil {
+		t.Errorf("Error unmarshalling the response body: [%s]", err)
+		return
+	}
+
+	if rsp.Status == StatusSuccess {
+		t.Errorf("The following response was received: [%s]", rsp.Status)
+	}
+
+}
+
+func TestCreateCompanyWithUniqueID(t *testing.T) {
+
+	var r createCompanyReq
+	r.Address1 = "My Address"
+	r.Address2 = "My Address line 2"
+	r.AuthRelay = ""
+	r.City = "Palm Harbor"
+	r.IsInLocation = "true"
+	r.Name = "TEST123"
+	r.Password = "@1234567890"
+	r.RemotelyManaged = "false"
+	r.State = "FL"
+	r.Zip = "33445"
+	r.UniqueID = utils.GenerateUniqueID()
+
+	buf, err := json.Marshal(r)
+	if err != nil {
+		t.Errorf("Marshalling the object should be possible. Error:[%s]", err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", "/jwt/createcompany", bytes.NewBuffer(buf))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(CreateCompany)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	var rsp createCompanyResp
+	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	if err != nil {
+		t.Errorf("Error unmarshalling the response body: [%s]", err)
+		return
+	}
+
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The following response was received: [%s]", rsp.Status)
+	}
 
 }

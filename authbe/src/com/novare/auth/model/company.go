@@ -27,6 +27,8 @@ package model
 import (
 	"com/novare/dbs"
 	"errors"
+	"log"
+	"unicode/utf8"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -48,6 +50,7 @@ type Company struct {
 	IsInLocation    bool          `json:"isInLocation"`    //Specifies if a company is also a location. Used with the
 	RemotelyManaged bool          `json:"remotelyManaged"` //Is this Auth system managed remotely
 	AuthRelay       string        `json:"authRelay"`       //If it is remotely managed, we need the path to it.
+	UniqueID        string        `json:"uniqueID"`        //This must be provided in the request
 }
 
 /*
@@ -59,12 +62,26 @@ func NewCompany() *Company {
 	return company
 }
 
+func isValidCompany(company *Company) bool {
+
+	if company == nil {
+		return false
+	}
+
+	if utf8.RuneCountInString(company.UniqueID) == 0 {
+		log.Printf("A company without an UniqueID is not valid")
+		return false
+	}
+
+	return true
+}
+
 //SaveCompany - Given a company, it will save it
 //to the database. Note that the ID must be an existing
 //ID in the database
 func SaveCompany(company *Company) error {
 
-	if company == nil {
+	if !isValidCompany(company) {
 		return errors.New("InvalidCompany")
 	}
 
@@ -74,28 +91,43 @@ func SaveCompany(company *Company) error {
 //InsertCompany - Add a company to the database
 func InsertCompany(company *Company) error {
 
-	if company == nil {
+	if !isValidCompany(company) {
 		return errors.New("InvalidCompany")
 	}
 
 	return mDBCompany.Insert(company, bson.M{"_id": company.ID})
 }
 
-//FindCompanyByID - Return a company if it can find it
-//or return an error
-func FindCompanyByID(ID string) (*Company, error) {
+func findCompanyWithCondition(condition interface{}) (*Company, error) {
 	company := NewCompany()
 
-	if !bson.IsObjectIdHex(ID) {
-		return nil, errors.New("InvalidID")
-	}
-
-	err := mDBCompany.Find(company, bson.M{"_id": bson.ObjectIdHex(ID)})
+	err := mDBCompany.Find(company, condition)
 	if err != nil {
 		return nil, err
 	}
 
 	return company, nil
+}
+
+//FindCompanyByID - Return a company if it can find it
+//or return an error
+func FindCompanyByID(ID string) (*Company, error) {
+
+	if !bson.IsObjectIdHex(ID) {
+		return nil, errors.New("InvalidID")
+	}
+
+	return findCompanyWithCondition(bson.M{"_id": bson.ObjectIdHex(ID)})
+}
+
+//FindCompanyByUniqueID ...
+func FindCompanyByUniqueID(uniqueID string) (*Company, error) {
+
+	if utf8.RuneCountInString(uniqueID) == 0 {
+		return nil, errors.New("UniqueIDTooShort")
+	}
+
+	return findCompanyWithCondition(bson.M{"uniqueid": uniqueID})
 }
 
 //RemoveCompanyByID - Remove a company if it can find it

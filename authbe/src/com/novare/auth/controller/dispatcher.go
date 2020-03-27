@@ -25,6 +25,7 @@ SOFTWARE.
 package controller
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 )
@@ -41,6 +42,7 @@ type createCompanyReq struct {
 	RemotelyManaged string `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
 	AuthRelay       string `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
 	Password        string `json:"password"`                  //No empty allowed. This is required. The user is superuser
+	UniqueID        string `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
 }
 
 //And to create the response
@@ -52,5 +54,27 @@ type createCompanyResp struct {
 //CreateCompany - Used to create a company
 func CreateCompany(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Initiating account creation!")
+
+	var req createCompanyReq
+
+	//Check if we can decode it.
+	jsonDecoder := json.NewDecoder(r.Body)
+	err := jsonDecoder.Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := createCompanyBL(req)
+	jbuf, err := json.Marshal(rsp)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	//Write the response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jbuf)
 
 }

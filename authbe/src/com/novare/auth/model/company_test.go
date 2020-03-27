@@ -37,6 +37,7 @@ func TestCompanyFunctions(t *testing.T) {
 	company.State = "State"
 	company.Zip = "ZIP"
 	company.AuthRelay = ""
+	company.UniqueID = "THISISMYUNIQUEIDENTIFIER"
 
 	err := SaveCompany(company)
 	if err == nil {
@@ -61,6 +62,16 @@ func TestCompanyFunctions(t *testing.T) {
 
 	if company2.Name != company.Name {
 		t.Errorf("The company names do not match: %s != %s", company2.Name, company.Name)
+	}
+
+	company3, err := FindCompanyByUniqueID("THISISMYUNIQUEIDENTIFIER")
+	if err != nil {
+		t.Errorf("The following error occured: [%s]", err)
+		return
+	}
+	if company3.ID != company.ID {
+		t.Error("The company returned is not the same as the unique ID")
+		return
 	}
 
 	companies, err := ListCompanies()
