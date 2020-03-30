@@ -28,6 +28,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 //Just to make it a little easier to parse the request
@@ -51,6 +53,20 @@ type createCompanyResp struct {
 	CompanyID string `json:"companyID"`
 }
 
+func writeResponse(rsp interface{}, w http.ResponseWriter) {
+	jbuf, err := json.Marshal(rsp)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	//Write the response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jbuf)
+
+}
+
 //CreateCompany - Used to create a company
 func CreateCompany(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Initiating account creation!")
@@ -66,15 +82,36 @@ func CreateCompany(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rsp := createCompanyBL(req)
-	jbuf, err := json.Marshal(rsp)
-	if err != nil {
+
+	//Write the response
+	writeResponse(rsp, w)
+
+}
+
+type getCompanyResponse struct {
+	Status   string `json:"status"`
+	UniqueID string `json:"uniqueID"`
+	Name     string `json:"name"`
+	Address1 string `json:"address1"`
+	Address2 string `json:"address2"`
+	City     string `json:"city"`
+	State    string `json:"state"`
+	Zip      string `json:"zip"`
+}
+
+//GetCompanyByUniqueID - The company uniquer ID is specified in the request
+//We will not expose the database ID
+func GetCompanyByUniqueID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uniqueID, ok := vars["uniqueid"]
+
+	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	//Write the response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(jbuf)
+	rsp := getCompanyByUniqueIDBL(uniqueID)
 
+	//Write the response
+	writeResponse(rsp, w)
 }

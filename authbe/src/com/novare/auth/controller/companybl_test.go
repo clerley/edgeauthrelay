@@ -42,6 +42,7 @@ func TestCreateCompanyBL(t *testing.T) {
 	req.RemotelyManaged = "false"
 	req.State = "FL"
 	req.Zip = "33445"
+	req.UniqueID = "THISISUNIQUEID"
 
 	rsp := createCompanyBL(req)
 	if rsp.Status != StatusFailure {
@@ -73,6 +74,55 @@ func TestCreateCompanyBL(t *testing.T) {
 	if err != nil {
 		t.Errorf("Removing the company failed with error: [%s]", err)
 		return
+	}
+
+}
+
+func TestGetCompanyBL(t *testing.T) {
+
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.Password = "@1234567890000"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISTHEUNIQUEID"
+
+	rsp := createCompanyBL(req)
+	if rsp.Status == StatusFailure {
+		t.Errorf("The password is not secure enough, the company should not have been saved")
+		return
+	}
+
+	findCmp := getCompanyByUniqueIDBL(req.UniqueID)
+	if findCmp.UniqueID != req.UniqueID {
+		t.Errorf("No company found for unique ID specified")
+		return
+	}
+
+	users, err := model.ListUsersByCompanyID(rsp.CompanyID)
+
+	if err != nil {
+		t.Errorf("There was an issue retrieving all the users for company with ID: [%s]", rsp.CompanyID)
+		return
+	}
+
+	for i := range users {
+		err = model.RemoveUserByID(users[i].ID.Hex())
+		if err != nil {
+			t.Errorf("The following error:[%s] occurred when removing the users for company ID:[%s]", err, rsp.CompanyID)
+			continue
+		}
+	}
+
+	err = model.RemoveCompanyByID(rsp.CompanyID)
+	if err != nil {
+		t.Errorf("The company with ID:[%s] should have been removed but it was not:[%s]", err, rsp.CompanyID)
 	}
 
 }

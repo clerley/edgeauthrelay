@@ -98,3 +98,27 @@ func createCompanyBL(req createCompanyReq) *createCompanyResp {
 	r.Status = StatusSuccess
 	return &r
 }
+
+func getCompanyByUniqueIDBL(uniqueID string) *getCompanyResponse {
+	var rsp getCompanyResponse
+	rsp.Status = StatusFailure
+
+	company, err := model.FindCompanyByUniqueID(uniqueID)
+	if err != nil {
+		log.Printf("Error retrieving the company with unique ID: [%s]", uniqueID)
+		return &rsp
+	}
+
+	rsp.Address1 = company.Address1
+	rsp.Address2 = company.Address2
+	rsp.City = company.City
+	rsp.Name = company.Name
+	rsp.State = company.State
+	rsp.UniqueID = company.UniqueID
+	rsp.Zip = company.Zip
+	
+	//Set the status
+	rsp.Status = StatusSuccess
+	
+	return &rsp
+}

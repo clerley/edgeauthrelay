@@ -34,9 +34,13 @@ import (
 func main() {
 	log.Printf("Initiating the Authorization Service")
 
-	mux := mux.NewRouter()
+	mux := mux.NewRouter().StrictSlash(true)
 
-	mux.HandleFunc("/jwt/createcompany", controller.CreateCompany)
+	//Create Company
+	mux.HandleFunc("/jwt/createcompany", controller.CreateCompany).Methods("POST")
+
+	//Get Company
+	mux.HandleFunc("/jwt/getcompany/{uniqueid}", controller.GetCompanyByUniqueID).Methods("GET")
 
 	http.ListenAndServe(":9119", mux)
 }
