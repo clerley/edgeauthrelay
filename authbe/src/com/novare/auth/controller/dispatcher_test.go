@@ -26,6 +26,7 @@ package controller
 
 import (
 	"bytes"
+	"com/novare/auth/model"
 	"com/novare/utils"
 	"encoding/json"
 	"fmt"
@@ -279,6 +280,12 @@ func TestLogin(t *testing.T) {
 	lg.UniqueID = r.UniqueID
 	lg.Password = r.Password
 
+	buf, err = json.Marshal(lg)
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+		return
+	}
+
 	req1, err := http.NewRequest("POST", "/jwt/company/login", bytes.NewBuffer(buf))
 	if err != nil {
 		t.Fatal(err)
@@ -292,6 +299,30 @@ func TestLogin(t *testing.T) {
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %d want %d", status, http.StatusOK)
 		return
+	}
+
+	var lgRsp loginResp
+	err = json.Unmarshal(rr.Body.Bytes(), &lgRsp)
+	if lgRsp.Status != StatusSuccess {
+		t.Errorf("The response was not successful:[%s]", lgRsp.Status)
+		return
+	}
+
+	t.Logf("The value of the  token is: [%s]", lgRsp.SessionToken)
+
+	err = model.RemoveCompanyByID(rsp.CompanyID)
+	if err != nil {
+		t.Errorf("The company with ID: [%s] was not removed. The following error occurred:[%s]", rsp.CompanyID, err)
+	}
+
+	user, err := model.FindUserByUsernameCompanyID("superuser", rsp.CompanyID)
+	if err != nil {
+		t.Errorf("No user was found for company ID: [%s] ", rsp.CompanyID)
+		return
+	}
+	err = model.RemoveUserByID(user.ID.Hex())
+	if err != nil {
+		t.Errorf("The user could not be removed from the database. Error:[%s]", err)
 	}
 
 }
