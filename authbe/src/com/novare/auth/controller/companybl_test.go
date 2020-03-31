@@ -43,6 +43,7 @@ func TestCreateCompanyBL(t *testing.T) {
 	req.State = "FL"
 	req.Zip = "33445"
 	req.UniqueID = "THISISUNIQUEID"
+	req.ConfirmPassword = req.Password
 
 	rsp := createCompanyBL(req)
 	if rsp.Status != StatusFailure {
@@ -51,6 +52,7 @@ func TestCreateCompanyBL(t *testing.T) {
 	}
 
 	req.Password = "@123ABC789"
+	req.ConfirmPassword = req.Password
 	rsp = createCompanyBL(req)
 	if rsp.Status != StatusSuccess {
 		t.Errorf("The company should have been created but it did not!")
@@ -92,6 +94,7 @@ func TestGetCompanyBL(t *testing.T) {
 	req.State = "FL"
 	req.Zip = "33445"
 	req.UniqueID = "THISISTHEUNIQUEID"
+	req.ConfirmPassword = req.Password
 
 	rsp := createCompanyBL(req)
 	if rsp.Status == StatusFailure {

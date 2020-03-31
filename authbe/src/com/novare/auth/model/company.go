@@ -35,22 +35,28 @@ import (
 
 var mDBCompany = dbs.NewMongoDB(AuthRelayDatabaseName, "Companies")
 
+//CompanySettings ... All the settings related to a company
+type CompanySettings struct {
+	JWTDuration int `json:"jwtDuration"` //The number of minutes a JWT token should be granted
+}
+
 /*
 Company -
 Every account starts with a company. Sites can have one or more accounts.
 */
 type Company struct {
-	ID              bson.ObjectId `bson:"_id" json:"id"`
-	Name            string        `json:"name"`
-	Address1        string        `json:"address1"`
-	Address2        string        `json:"address2"`
-	City            string        `json:"city"`
-	State           string        `json:"state"`
-	Zip             string        `json:"zip"`
-	IsInLocation    bool          `json:"isInLocation"`    //Specifies if a company is also a location. Used with the
-	RemotelyManaged bool          `json:"remotelyManaged"` //Is this Auth system managed remotely
-	AuthRelay       string        `json:"authRelay"`       //If it is remotely managed, we need the path to it.
-	UniqueID        string        `json:"uniqueID"`        //This must be provided in the request
+	ID              bson.ObjectId   `bson:"_id" json:"id"`
+	Name            string          `json:"name"`
+	Address1        string          `json:"address1"`
+	Address2        string          `json:"address2"`
+	City            string          `json:"city"`
+	State           string          `json:"state"`
+	Zip             string          `json:"zip"`
+	IsInLocation    bool            `json:"isInLocation"`    //Specifies if a company is also a location. Used with the
+	RemotelyManaged bool            `json:"remotelyManaged"` //Is this Auth system managed remotely
+	AuthRelay       string          `json:"authRelay"`       //If it is remotely managed, we need the path to it.
+	UniqueID        string          `json:"uniqueID"`        //This must be provided in the request
+	Settings        CompanySettings `json:"settings"`        //Settings
 }
 
 /*

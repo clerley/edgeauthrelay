@@ -44,6 +44,7 @@ type createCompanyReq struct {
 	RemotelyManaged string `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
 	AuthRelay       string `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
 	Password        string `json:"password"`                  //No empty allowed. This is required. The user is superuser
+	ConfirmPassword string `json:"confirmPassword"`           //Confirm the password when creating the account
 	UniqueID        string `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
 }
 
@@ -114,4 +115,32 @@ func GetCompanyByUniqueID(w http.ResponseWriter, r *http.Request) {
 
 	//Write the response
 	writeResponse(rsp, w)
+}
+
+type loginReq struct {
+	UniqueID string `json:"uniqueID"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type loginResp struct {
+	Status       string `json:"status"`
+	SessionToken string `json:"sessionToken"`
+}
+
+//Login ...
+func Login(w http.ResponseWriter, r *http.Request) {
+
+	var lr loginReq
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&lr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := loginBL(lr)
+
+	writeResponse(rsp, w)
+
 }

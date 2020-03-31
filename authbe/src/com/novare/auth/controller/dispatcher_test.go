@@ -46,6 +46,7 @@ func TestCreateCompanyWithoutUniqueID(t *testing.T) {
 	r.IsInLocation = "true"
 	r.Name = "TEST"
 	r.Password = "@1234567890"
+	r.ConfirmPassword = r.Password
 	r.RemotelyManaged = "false"
 	r.State = "FL"
 	r.Zip = "33445"
@@ -56,7 +57,7 @@ func TestCreateCompanyWithoutUniqueID(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", "/jwt/createcompany", bytes.NewBuffer(buf))
+	req, err := http.NewRequest("POST", "/jwt/company", bytes.NewBuffer(buf))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,6 +95,7 @@ func TestCreateCompanyWithUniqueID(t *testing.T) {
 	r.IsInLocation = "true"
 	r.Name = "TEST123"
 	r.Password = "@1234567890"
+	r.ConfirmPassword = r.Password
 	r.RemotelyManaged = "false"
 	r.State = "FL"
 	r.Zip = "33445"
@@ -105,7 +107,7 @@ func TestCreateCompanyWithUniqueID(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", "/jwt/createcompany", bytes.NewBuffer(buf))
+	req, err := http.NewRequest("POST", "/jwt/company", bytes.NewBuffer(buf))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,6 +145,7 @@ func TestGetCompany(t *testing.T) {
 	r.IsInLocation = "true"
 	r.Name = "TEST123"
 	r.Password = "@1234567890"
+	r.ConfirmPassword = r.Password
 	r.RemotelyManaged = "false"
 	r.State = "FL"
 	r.Zip = "33445"
@@ -154,7 +157,7 @@ func TestGetCompany(t *testing.T) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", "/jwt/createcompany", bytes.NewBuffer(buf))
+	req, err := http.NewRequest("POST", "/jwt/company", bytes.NewBuffer(buf))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -180,7 +183,7 @@ func TestGetCompany(t *testing.T) {
 		t.Errorf("The following response was received: [%s]", rsp.Status)
 	}
 
-	urlPath := fmt.Sprintf("/jwt/getcompany/%s", r.UniqueID)
+	urlPath := fmt.Sprintf("/jwt/company/%s", r.UniqueID)
 	req, err = http.NewRequest("GET", urlPath, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -220,6 +223,75 @@ func TestGetCompany(t *testing.T) {
 		t.Errorf("The following error occurred: [%s]", err)
 	} else {
 		t.Logf("The following message was received:[%s]", string(buf))
+	}
+
+}
+
+func TestLogin(t *testing.T) {
+	var r createCompanyReq
+	r.Address1 = "My Address"
+	r.Address2 = "My Address line 2"
+	r.AuthRelay = ""
+	r.City = "Palm Harbor"
+	r.IsInLocation = "true"
+	r.Name = "TEST123"
+	r.Password = "@1234567890"
+	r.ConfirmPassword = r.Password
+	r.RemotelyManaged = "false"
+	r.State = "FL"
+	r.Zip = "33445"
+	r.UniqueID = utils.GenerateUniqueID()
+
+	buf, err := json.Marshal(r)
+	if err != nil {
+		t.Errorf("Marshalling the object should be possible. Error:[%s]", err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", "/jwt/company", bytes.NewBuffer(buf))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(CreateCompany)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	var rsp createCompanyResp
+	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	if err != nil {
+		t.Errorf("Error unmarshalling the response body: [%s]", err)
+		return
+	}
+
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The following response was received: [%s]", rsp.Status)
+	}
+
+	var lg loginReq
+	lg.Username = "superuser"
+	lg.UniqueID = r.UniqueID
+	lg.Password = r.Password
+
+	req1, err := http.NewRequest("POST", "/jwt/company/login", bytes.NewBuffer(buf))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr = httptest.NewRecorder()
+	handler = http.HandlerFunc(Login)
+
+	handler.ServeHTTP(rr, req1)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %d want %d", status, http.StatusOK)
+		return
 	}
 
 }

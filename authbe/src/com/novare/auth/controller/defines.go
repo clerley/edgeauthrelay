@@ -33,4 +33,7 @@ const (
 
 	//StatusTokenTimedout - The token has timed out
 	StatusTokenTimedout = "Timedout"
+
+	//StatusPasswordMismatch - The confirmation password does not match
+	StatusPasswordMismatch = "PasswordMismatch"
 )

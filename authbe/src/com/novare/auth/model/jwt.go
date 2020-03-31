@@ -168,6 +168,7 @@ func (jwt *JWTToken) ParseJWT(encodedJWT string) error {
 		return err
 	}
 
+	jwt.Signature = fields[2]
 	return nil
 }
 
@@ -215,6 +216,7 @@ func SaveJWTToken(jwt *JWTToken) error {
 func InsertJWTToken(jwt *JWTToken) error {
 
 	if !isJWTTokenValid(jwt) {
+		log.Printf("The token passwed in is not valid!")
 		return errors.New("InvalidJWTToken")
 	}
 

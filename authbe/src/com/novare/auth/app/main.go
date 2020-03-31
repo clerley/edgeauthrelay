@@ -37,10 +37,13 @@ func main() {
 	mux := mux.NewRouter().StrictSlash(true)
 
 	//Create Company
-	mux.HandleFunc("/jwt/createcompany", controller.CreateCompany).Methods("POST")
+	mux.HandleFunc("/jwt/company", controller.CreateCompany).Methods("POST")
 
 	//Get Company
-	mux.HandleFunc("/jwt/getcompany/{uniqueid}", controller.GetCompanyByUniqueID).Methods("GET")
+	mux.HandleFunc("/jwt/company/{uniqueid}", controller.GetCompanyByUniqueID).Methods("GET")
+
+	//Login
+	mux.HandleFunc("/jwt/company/login", controller.Login).Methods("POST")
 
 	http.ListenAndServe(":9119", mux)
 }

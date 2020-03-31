@@ -62,6 +62,11 @@ func createCompanyBL(req createCompanyReq) *createCompanyResp {
 	var r createCompanyResp
 	r.Status = StatusFailure
 
+	if req.Password != req.ConfirmPassword {
+		r.Status = StatusPasswordMismatch
+		return &r
+	}
+
 	//First we need to check if the unique ID is found
 	c, err := model.FindCompanyByUniqueID(req.UniqueID)
 	if err == nil {
@@ -116,9 +121,9 @@ func getCompanyByUniqueIDBL(uniqueID string) *getCompanyResponse {
 	rsp.State = company.State
 	rsp.UniqueID = company.UniqueID
 	rsp.Zip = company.Zip
-	
+
 	//Set the status
 	rsp.Status = StatusSuccess
-	
+
 	return &rsp
 }
