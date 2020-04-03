@@ -144,3 +144,25 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	writeResponse(rsp, w)
 
 }
+
+//Logout ...
+func Logout(w http.ResponseWriter, r *http.Request) {
+
+	//Get the Authorization request
+	auth := r.Header.Get("Authorization")
+
+	//
+	rsp := logOutBL(auth)
+
+	switch rsp {
+
+	case LogoutFailedNoToken:
+		w.WriteHeader(http.StatusForbidden)
+	case LogoutTokenInvalid:
+		w.WriteHeader(http.StatusBadGateway)
+	case LogoutSuccess:
+		w.WriteHeader(http.StatusOK)
+
+	}
+
+}

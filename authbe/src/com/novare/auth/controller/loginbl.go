@@ -54,6 +54,12 @@ func loginBL(lreq loginReq) *loginResp {
 		return &lrsp
 	}
 
+	jwtTmp, err := model.FindJWTTokenByUserIDCompanyID(user.ID.Hex(), company.ID.Hex())
+	if err == nil {
+		log.Printf("A JWT already exist for this user and company. Removing it now")
+		model.RemoveJWTTokenByID(jwtTmp.ID.Hex())
+	}
+
 	//Now we need to create JWT token
 	jwtToken := model.NewJWTToken(user.ID.Hex(), company.ID.Hex())
 	encodedToken, ok := jwtToken.EncodeJWT()

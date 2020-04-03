@@ -31,6 +31,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+/**
+This may become a microservice
+*/
 func main() {
 	log.Printf("Initiating the Authorization Service")
 
@@ -44,6 +47,11 @@ func main() {
 
 	//Login
 	mux.HandleFunc("/jwt/company/login", controller.Login).Methods("POST")
+
+	//Logout
+	mux.HandleFunc("/jwt/company/logout", controller.Logout).Methods("POST")
+
+	//These calls below require grants
 
 	http.ListenAndServe(":9119", mux)
 }

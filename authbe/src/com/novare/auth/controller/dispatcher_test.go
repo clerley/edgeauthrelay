@@ -326,3 +326,117 @@ func TestLogin(t *testing.T) {
 	}
 
 }
+
+func TestLogout(t *testing.T) {
+
+	var r createCompanyReq
+	r.Address1 = "My Address"
+	r.Address2 = "My Address line 2"
+	r.AuthRelay = ""
+	r.City = "Palm Harbor"
+	r.IsInLocation = "true"
+	r.Name = "TEST123"
+	r.Password = "@1234567890"
+	r.ConfirmPassword = r.Password
+	r.RemotelyManaged = "false"
+	r.State = "FL"
+	r.Zip = "33445"
+	r.UniqueID = utils.GenerateUniqueID()
+
+	buf, err := json.Marshal(r)
+	if err != nil {
+		t.Errorf("Marshalling the object should be possible. Error:[%s]", err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", "/jwt/company", bytes.NewBuffer(buf))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(CreateCompany)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	var rsp createCompanyResp
+	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	if err != nil {
+		t.Errorf("Error unmarshalling the response body: [%s]", err)
+		return
+	}
+
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The following response was received: [%s]", rsp.Status)
+	}
+
+	var lg loginReq
+	lg.Username = "superuser"
+	lg.UniqueID = r.UniqueID
+	lg.Password = r.Password
+
+	buf, err = json.Marshal(lg)
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+		return
+	}
+
+	req1, err := http.NewRequest("POST", "/jwt/company/login", bytes.NewBuffer(buf))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr = httptest.NewRecorder()
+	handler = http.HandlerFunc(Login)
+
+	handler.ServeHTTP(rr, req1)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %d want %d", status, http.StatusOK)
+		return
+	}
+
+	var lgRsp loginResp
+	err = json.Unmarshal(rr.Body.Bytes(), &lgRsp)
+	if lgRsp.Status != StatusSuccess {
+		t.Errorf("The response was not successful:[%s]", lgRsp.Status)
+		return
+	}
+
+	t.Logf("The value of the  token is: [%s]", lgRsp.SessionToken)
+
+	loutReq, err := http.NewRequest("POST", "/jwt/company/logout", nil)
+	if err != nil {
+		t.Errorf("Invalid logout request, error:[%s]", err)
+	}
+	loutReq.Header.Add("Authorization", "Bearer "+lgRsp.SessionToken)
+
+	rec := httptest.NewRecorder()
+	handler = http.HandlerFunc(Logout)
+
+	handler.ServeHTTP(rec, loutReq)
+	if status := rec.Code; status != http.StatusOK {
+		t.Errorf("The status is not OK! The status was: [%d]", status)
+	}
+
+	err = model.RemoveCompanyByID(rsp.CompanyID)
+	if err != nil {
+		t.Errorf("The company with ID: [%s] was not removed. The following error occurred:[%s]", rsp.CompanyID, err)
+	}
+
+	user, err := model.FindUserByUsernameCompanyID("superuser", rsp.CompanyID)
+	if err != nil {
+		t.Errorf("No user was found for company ID: [%s] ", rsp.CompanyID)
+		return
+	}
+	err = model.RemoveUserByID(user.ID.Hex())
+	if err != nil {
+		t.Errorf("The user could not be removed from the database. Error:[%s]", err)
+	}
+
+}
