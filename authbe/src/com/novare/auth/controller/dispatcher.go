@@ -25,6 +25,7 @@ SOFTWARE.
 package controller
 
 import (
+	"com/novare/auth/model"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -163,6 +164,32 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	case LogoutSuccess:
 		w.WriteHeader(http.StatusOK)
 
+	}
+
+}
+
+type accessTokenResp struct {
+	accessToken string `json:"accessToken"`
+}
+
+//GrantRequest - Let's check if a request can be granted
+func GrantRequest(w http.ResponseWriter, r *http.Request) {
+
+	var vars = mux.Vars(r)
+	ucid := vars["ucid"]
+
+	jwt := r.Context().Value(CtxJWT).(*model.JWTToken)
+	if jwt == nil {
+		log.Printf("Invalid JWT Token, aborting the request")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	usr := r.Context().Value(CtxUser).(*model.User)
+	company, err := model.FindCompanyByID(jwt.CompanyID)
+	if err != nil {
+		log.Printf("An error occurred while retrieving the company based on the JWT ID")
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 }

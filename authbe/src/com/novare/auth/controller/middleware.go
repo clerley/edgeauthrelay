@@ -1,6 +1,6 @@
 package controller
 
-/*
+/**
 MIT License
 
 Copyright (c) 2020 Clerley Silveira
@@ -26,10 +26,26 @@ SOFTWARE.
 
 import (
 	"com/novare/auth/model"
+	"context"
 	"log"
 	"net/http"
 	"strings"
 	"unicode/utf8"
+)
+
+//ContextField - Will be used to add information to the context.
+//That will avoid unecessary database lookups.
+type ContextField string
+
+const (
+	//CtxJWT - The key to JWT
+	CtxJWT ContextField = "CTX_JWT"
+
+	//CtxUser - The key to User
+	CtxUser ContextField = "CTX_USER"
+
+	//CtxCompany - The company
+	CtxCompany ContextField = "CTX_COMPANY"
 )
 
 //CheckAuthorizedMW - This is for JSON calls. If the Authorization does
@@ -80,6 +96,7 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 
 			if storedJWT.Payload.IsExpired() {
 				log.Printf("Invalid JWT Token, it is expired: Signature: [%s]", storedJWT.Signature)
+				model.RemoveJWTTokenByID(storedJWT.ID.Hex())
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
@@ -101,9 +118,13 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 				return
 			}
 
+			ctx := r.Context()
+			ctx = context.WithValue(ctx, CtxUser, user)
+			ctx = context.WithValue(ctx, CtxJWT, jwt)
+
 			//----------------------------------------------------------
-			//If it passes it all, then execute the controller
+			//If it passes all checks, then execute the controller
 			//----------------------------------------------------------
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 }

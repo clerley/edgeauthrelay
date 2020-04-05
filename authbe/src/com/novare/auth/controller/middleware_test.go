@@ -33,6 +33,14 @@ import (
 )
 
 func doesNothing(w http.ResponseWriter, r *http.Request) {
+	log.Printf("If it executed that means the user had enough permission")
+
+	usr := r.Context().Value(CtxUser).(*model.User)
+	jwt := r.Context().Value(CtxJWT).(*model.JWTToken)
+
+	log.Printf("User: %s", usr.ID.Hex())
+	log.Printf("JWT: %s", jwt.ID.Hex())
+
 	return
 }
 
@@ -63,6 +71,11 @@ func TestMiddlewareAuthorization(t *testing.T) {
 	perm.CompanyID = rsp.CompanyID
 	perm.Description = "TEST PERMISSION"
 	perm.Permission = "PERMISSION_TO_TEST"
+	err := model.InsertPermission(perm)
+	if err != nil {
+		t.Errorf("Error inserting the permission: [%s]", err)
+		return
+	}
 
 	user, err := model.FindUserByUsernameCompanyID("superuser", perm.CompanyID)
 	if err != nil {
@@ -70,6 +83,14 @@ func TestMiddlewareAuthorization(t *testing.T) {
 		return
 	}
 	user.AddPermission(*perm)
+	err = model.SaveUser(user)
+	if err != nil {
+		t.Errorf("The following error occurred while saving the user and the permission: [%s]", err)
+		model.RemoveCompanyByID(rsp.CompanyID)
+		model.RemovePermissionByID(perm.ID.Hex())
+		model.RemoveUserByID(user.ID.Hex())
+		return
+	}
 
 	var lrq loginReq
 	lrq.Password = "@123ABC789"
@@ -80,6 +101,17 @@ func TestMiddlewareAuthorization(t *testing.T) {
 	if lrs.Status != StatusSuccess {
 		model.RemoveUserByID(user.ID.Hex())
 		model.RemoveCompanyByID(rsp.CompanyID)
+		model.RemovePermissionByID(perm.ID.Hex())
+		jwt := model.NewJWTToken(user.ID.Hex(), rsp.CompanyID)
+		err = jwt.ParseJWT(lrs.SessionToken)
+		if err == nil {
+			jwt, err = model.FindJWTTokenBySignature(jwt.Signature)
+			if err == nil {
+				t.Logf("Removing token with ID: [%s]", jwt.ID.Hex())
+				model.RemoveJWTTokenByID(jwt.ID.Hex())
+			}
+		}
+		return
 	}
 
 	r := httptest.NewRequest("POST", "/test/middleware", nil)
@@ -94,9 +126,11 @@ func TestMiddlewareAuthorization(t *testing.T) {
 		t.Errorf("The test failed with error: [%d]", rr.Code)
 		model.RemoveUserByID(user.ID.Hex())
 		model.RemoveCompanyByID(rsp.CompanyID)
-	} else {
-		t.Logf("The permission was allowed as it should")
+		model.RemovePermissionByID(perm.ID.Hex())
+		return
 	}
+
+	t.Logf("The permission was allowed as it should")
 
 	rr = httptest.NewRecorder()
 	handler = http.Handler(CheckAuthorizedMW(http.HandlerFunc(doesNothing), "UNKNOWNPERM"))
@@ -106,10 +140,13 @@ func TestMiddlewareAuthorization(t *testing.T) {
 		t.Logf("The Status response is invalid! :[%d]", rr.Code)
 		model.RemoveUserByID(user.ID.Hex())
 		model.RemoveCompanyByID(rsp.CompanyID)
+		model.RemovePermissionByID(perm.ID.Hex())
+		return
 	}
 
 	model.RemoveUserByID(user.ID.Hex())
 	model.RemoveCompanyByID(rsp.CompanyID)
+	model.RemovePermissionByID(perm.ID.Hex())
 
 	jwt, err := model.FindJWTTokenByUserIDCompanyID(user.ID.Hex(), rsp.CompanyID)
 	if err != nil {

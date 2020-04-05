@@ -35,9 +35,26 @@ import (
 
 var mDBCompany = dbs.NewMongoDB(AuthRelayDatabaseName, "Companies")
 
+//This constant define the valid password duration unit
+const (
+	//PassUnitDay - This comment is to avoid warnings from the IDE.
+	PassUnitDay string = "Day"
+
+	//PassUnitWeek - This comment is to avoid warnings from the IDE.
+	PassUnitWeek string = "Week"
+
+	//PassUnitMonth - This comment is to avoid warnings from the IDE.
+	PassUnitMonth string = "Month"
+
+	//PassUnitYear - This comment is to avoid warnings from the IDE.
+	PassUnitYear string = "Year"
+)
+
 //CompanySettings ... All the settings related to a company
 type CompanySettings struct {
-	JWTDuration int `json:"jwtDuration"` //The number of minutes a JWT token should be granted
+	JWTDuration    int    `json:"jwtDuration"`    //The number of minutes a JWT token should be granted 0 = Never expires
+	PassExpiration int    `json:"passExpiration"` //Password expiration... 0 means no expiration
+	PassUnit       string `json:"passUnit"`       //Year, Month, Week, Days
 }
 
 /*
