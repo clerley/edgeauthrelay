@@ -27,47 +27,38 @@ SOFTWARE.
 import (
 	"com/novare/auth/model"
 	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
+	"time"
 )
 
-//GrantRequest - Let's check if a request can be granted
-func GrantRequest(uniqueID string, jwtBearer *model.JWTToken, user *model.User) {
+//GrantRequestBL - Let's check if a request can be granted
+func grantRequestBL(ucid string, jwtBearer *model.JWTToken, user *model.User) *accessTokenResp {
 
-	var vars = mux.Vars(r)
-	ucid := vars["ucid"]
+	var atr accessTokenResp
+	atr.Status = StatusFailure
 
-	jwt := r.Context().Value(CtxJWT).(*model.JWTToken)
-	if jwt == nil {
-		log.Printf("Invalid JWT Token, aborting the request")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	usr := r.Context().Value(CtxUser).(*model.User)
-	if jwt == nil {
-		log.Printf("Invalid JWT Token, aborting the request")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	company, err := model.FindCompanyByID(jwt.CompanyID)
+	company, err := model.FindCompanyByID(jwtBearer.CompanyID)
 	if err != nil {
 		log.Printf("An error occurred while retrieving the company based on the JWT ID")
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return &atr
 	}
 
 	//If the company unique id and the user defined company id do not match, remove the token... It is compromised
 	if company.UniqueID != ucid {
-		log.Printf("The company defined UNIQUEID and the user passed unique ID do not match. Invalidating the token with ID:[%s]", jwt.ID.Hex())
-		model.RemoveJWTTokenByID(jwt.ID.Hex())
-		w.WriteHeader(http.StatusForbidden)
-		return
+		log.Printf("The company defined UNIQUEID and the user passed unique ID do not match. Invalidating the token with ID:[%s]", jwtBearer.ID.Hex())
+		model.RemoveJWTTokenByID(jwtBearer.ID.Hex())
+		return &atr
 	}
 
-	accessToken := model.NewJWTToken()
-	accessToken.CompanyID = company.ID.Hex()
+	accessToken := model.NewJWTToken(user.ID.Hex(), company.ID.Hex())
+	accessToken.Payload.Issuer = company.Name
+	accessToken.Payload.SetExpiration(time.Duration(company.Settings.JWTDuration) * time.Minute)
+	encodedToken, ok := accessToken.EncodeJWT()
+	if !ok {
+		log.Printf("There was an error creating the JWT access token")
+		return &atr
+	}
 
+	atr.Status = StatusSuccess
+	atr.AccessToken = encodedToken
+	return &atr
 }

@@ -169,7 +169,8 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 type accessTokenResp struct {
-	accessToken string `json:"accessToken"`
+	Status      string `json:"status"`
+	AccessToken string `json:"accessToken"`
 }
 
 //GrantRequest - Let's check if a request can be granted
@@ -178,18 +179,28 @@ func GrantRequest(w http.ResponseWriter, r *http.Request) {
 	var vars = mux.Vars(r)
 	ucid := vars["ucid"]
 
+	//The middleware should have taken care of the token and user
 	jwt := r.Context().Value(CtxJWT).(*model.JWTToken)
 	if jwt == nil {
 		log.Printf("Invalid JWT Token, aborting the request")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	usr := r.Context().Value(CtxUser).(*model.User)
-	company, err := model.FindCompanyByID(jwt.CompanyID)
-	if err != nil {
+	if usr == nil {
 		log.Printf("An error occurred while retrieving the company based on the JWT ID")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	//Call the business logic
+	rsp := grantRequestBL(ucid, jwt, usr)
+	if rsp == nil {
+		log.Printf("The response from the grantRequestBL request did not contain a valid response")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rsp, w)
 }
