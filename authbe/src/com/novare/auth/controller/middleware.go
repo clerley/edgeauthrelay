@@ -128,3 +128,21 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 }
+
+//AuthorizationRequest - The authorization request relies on
+//having a
+func AuthorizationRequest(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		permReq := r.Header.Get("grant-request")
+		if utf8.RuneCountInString(permReq) == 0 {
+			log.Printf("There is no grant-request present in the header. This request will be dropped with a bad request response")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		CheckAuthorizedMW(next, permReq).ServeHTTP(w, r)
+	})
+
+}

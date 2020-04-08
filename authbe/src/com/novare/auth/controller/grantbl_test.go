@@ -28,7 +28,7 @@ import (
 	"testing"
 )
 
-func TestGrantAccess(t *testing.T) {
+func TestGrantRequestBLAccess(t *testing.T) {
 
 	var req createCompanyReq
 	req.Address1 = "My Address"
@@ -43,6 +43,9 @@ func TestGrantAccess(t *testing.T) {
 	req.UniqueID = "THISISUNIQUEID"
 	req.Password = "@123ABC789"
 	req.ConfirmPassword = req.Password
+	req.Settings.JWTDuration = 15
+	req.Settings.PassExpiration = 10
+	req.Settings.PassUnit = model.PassUnitDay
 
 	rsp := createCompanyBL(req)
 	if rsp.Status != StatusSuccess {
@@ -97,7 +100,6 @@ func TestGrantAccess(t *testing.T) {
 	}
 
 	model.RemoveCompanyByID(company.ID.Hex())
-
 	err = model.RemoveJWTTokenByID(jwtTmp.ID.Hex())
 	if err != nil {
 		t.Errorf("The following error occurred: [%s]", err)
