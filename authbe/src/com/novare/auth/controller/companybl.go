@@ -127,3 +127,14 @@ func getCompanyByUniqueIDBL(uniqueID string) *getCompanyResponse {
 
 	return &rsp
 }
+
+func isCompanyUniqueIDTaken(uniqueID string) bool {
+
+	_, err := model.FindCompanyByUniqueID(uniqueID)
+	if err == nil {
+		log.Printf("The company with ID:[%s] already exists", uniqueID)
+		return true
+	}
+
+	return false
+}
