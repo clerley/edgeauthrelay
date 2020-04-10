@@ -34,7 +34,7 @@ import (
 )
 
 //ContextField - Will be used to add information to the context.
-//That will avoid unecessary database lookups.
+//That will avoid unnecessary database lookups.
 type ContextField string
 
 const (
@@ -79,7 +79,14 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 			//----------------------------------------------------------
 			//Retrive the base 64 encoded string and parse it.
 			//----------------------------------------------------------
-			jwtB64 := bearer[7:]
+			runes := []rune(bearer)
+			runes = runes[7:]
+			jwtB64 := string(runes)
+			if strings.Index(jwtB64, "bearer ") >= 0 {
+				log.Printf("The JWT64 token still contains the word bearer:[%s]", jwtB64)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
 			jwt := model.NewJWTToken("", "")
 			err := jwt.ParseJWT(jwtB64)
 			if err != nil {

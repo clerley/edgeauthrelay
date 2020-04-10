@@ -102,7 +102,7 @@ func TestGetCompanyBL(t *testing.T) {
 		return
 	}
 
-	findCmp := getCompanyByUniqueIDBL(req.UniqueID)
+	findCmp := getCompanyByUniqueIDOL(req.UniqueID)
 	if findCmp.UniqueID != req.UniqueID {
 		t.Errorf("No company found for unique ID specified")
 		return
@@ -176,7 +176,35 @@ func TestCompanyAlreadyExists(t *testing.T) {
 
 	if !isCompanyUniqueIDTaken("THISISTHEUNIQUEID") {
 		t.Error("The logic did not detect the company ID was already taken")
+	}
+
+	performCompanyCleanup(rsp.CompanyID, t)
+}
+
+func TestSuggestUniqueID(t *testing.T) {
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.Password = "@1234567890000"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISTHEUNIQUEID"
+	req.ConfirmPassword = req.Password
+
+	rsp := createCompanyBL(req)
+	if rsp.Status == StatusFailure {
+		t.Errorf("The password is not secure enough, the company should not have been saved")
 		return
+	}
+
+	suggestedID := suggestCompanyUniqueIDBL(req.UniqueID)
+	if suggestedID.UniqueID == req.UniqueID {
+		t.Error("The suggestedID is the same as the id already inserted.")
 	}
 
 	performCompanyCleanup(rsp.CompanyID, t)

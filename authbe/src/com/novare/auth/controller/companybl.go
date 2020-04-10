@@ -26,8 +26,11 @@ package controller
 
 import (
 	"com/novare/auth/model"
+	"com/novare/utils"
+	"fmt"
 	"log"
 	"strconv"
+	"unicode/utf8"
 )
 
 func createCompanyBL(req createCompanyReq) *createCompanyResp {
@@ -104,7 +107,7 @@ func createCompanyBL(req createCompanyReq) *createCompanyResp {
 	return &r
 }
 
-func getCompanyByUniqueIDBL(uniqueID string) *getCompanyResponse {
+func getCompanyByUniqueIDOL(uniqueID string) *getCompanyResponse {
 	var rsp getCompanyResponse
 	rsp.Status = StatusFailure
 
@@ -137,4 +140,27 @@ func isCompanyUniqueIDTaken(uniqueID string) bool {
 	}
 
 	return false
+}
+
+func suggestCompanyUniqueIDBL(uniqueID string) *checkSuggestIDResp {
+
+	if utf8.RuneCountInString(uniqueID) == 0 {
+		log.Printf("Creating a unique identifier")
+		uniqueID = utils.GenerateUniqueID()
+	}
+
+	tmpID := uniqueID
+	count := 1
+	for isCompanyUniqueIDTaken(tmpID) {
+		log.Printf("The uniqueID: %s has already been taken", tmpID)
+		tmpID = fmt.Sprintf("%s%d", uniqueID, count)
+		count++
+	}
+
+	var rsp checkSuggestIDResp
+	rsp.Status = StatusSuccess
+	rsp.UniqueID = tmpID
+
+	return &rsp
+
 }

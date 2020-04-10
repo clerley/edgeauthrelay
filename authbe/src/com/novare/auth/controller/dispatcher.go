@@ -113,7 +113,7 @@ func GetCompanyByUniqueID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rsp := getCompanyByUniqueIDBL(uniqueID)
+	rsp := getCompanyByUniqueIDOL(uniqueID)
 
 	//Write the response
 	writeResponse(rsp, w)
@@ -202,6 +202,26 @@ func GrantRequest(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	writeResponse(rsp, w)
+}
+
+type checkSuggestIDResp struct {
+	Status   string `json:"status"`
+	UniqueID string `json:"uniqueID"`
+}
+
+//CheckAndSuggestUniqueID - This method will take an UniqueID,
+//It will verify if it is unique and If it already exists.
+func CheckAndSuggestUniqueID(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	uniqueID, ok := vars["uniqueid"]
+	if !ok {
+		uniqueID = ""
+	}
+
+	rsp := suggestCompanyUniqueIDBL(uniqueID)
 
 	writeResponse(rsp, w)
 }

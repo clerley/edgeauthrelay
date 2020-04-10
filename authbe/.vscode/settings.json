@@ -1,3 +1,12 @@
 {
-    "svn.ignoreMissingSvnWarning": true
+    "svn.ignoreMissingSvnWarning": true,
+    "cSpell.words": [
+        "IDBL",
+        "SOMEUNIQUEID",
+        "THISISTHEUNIQUEID",
+        "lrsp",
+        "ucid",
+        "uniqueid",
+        "unmarshalling"
+    ]
 }
