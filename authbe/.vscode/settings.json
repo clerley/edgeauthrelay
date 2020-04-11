@@ -1,9 +1,17 @@
 {
     "svn.ignoreMissingSvnWarning": true,
     "cSpell.words": [
+        "Algo",
+        "Bjwt",
         "IDBL",
+        "JWTs",
         "SOMEUNIQUEID",
         "THISISTHEUNIQUEID",
+        "XVCJ",
+        "bson",
+        "enconding",
+        "jwtp",
+        "lreq",
         "lrsp",
         "ucid",
         "uniqueid",

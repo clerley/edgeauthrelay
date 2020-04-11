@@ -101,6 +101,13 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 				return
 			}
 
+			jwt.Secret = storedJWT.Secret
+			if !jwt.IsValid() {
+				log.Printf("The JWT token is compromised, removing it from the database :[%s]", storedJWT.ID.Hex())
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
 			if storedJWT.Payload.IsExpired() {
 				log.Printf("Invalid JWT Token, it is expired: Signature: [%s]", storedJWT.Signature)
 				model.RemoveJWTTokenByID(storedJWT.ID.Hex())

@@ -53,7 +53,7 @@ func main() {
 
 	//These calls below require grants
 	grantHandler := http.HandlerFunc(controller.GrantRequest)
-	mux.Handle("/jwt/company/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")
+	mux.Handle("/jwt/grant/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")
 
 	http.ListenAndServe(":9119", mux)
 }

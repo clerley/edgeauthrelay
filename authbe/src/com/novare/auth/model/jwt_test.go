@@ -150,3 +150,74 @@ func TestJWTDatabaseFunctions(t *testing.T) {
 	}
 
 }
+
+func TestTampered(t *testing.T) {
+
+	user := NewUser()
+	company := NewCompany()
+	jwt := NewJWTToken(user.ID.Hex(), company.ID.Hex())
+	jwt.EncodeJWT()
+
+	err := SaveJWTToken(jwt)
+	if err == nil {
+		t.Errorf("The JWTToken was saved but it should not have been!")
+		return
+	}
+
+	err = InsertJWTToken(jwt)
+	if err != nil {
+		t.Errorf("The following error occurred while inserting the JWT:[%s]", err)
+		return
+	}
+
+	jwt2, err := FindJWTTokenByID(jwt.ID.Hex())
+	if err != nil {
+		t.Errorf("The following error occurred retrieving the token")
+		return
+	}
+
+	if jwt2.Signature != jwt.Signature {
+		t.Errorf("The was an issue retrieving the jwt2")
+		return
+	}
+
+	jwt3, err := FindJWTTokenBySignature(jwt.Signature)
+	if err != nil {
+		t.Errorf("The following error occurred: ")
+		return
+	}
+
+	if jwt3.ID != jwt2.ID || jwt2.ID != jwt.ID {
+		t.Errorf("The IDs should match but, they do not :[%s] != [%s] != [%s]", jwt3.ID.Hex(), jwt2.ID.Hex(), jwt.ID.Hex())
+		return
+	}
+
+	jwt3.Payload.ExpirationTime = time.Now().Unix()
+	if !jwt3.IsTampered() {
+		t.Error("The token should have been tampered but it is not!")
+	}
+
+	jwt3.Payload.ExpirationTime = jwt2.Payload.ExpirationTime
+	jwt3.Header = jwt2.Header
+	jwt3.Payload = jwt2.Payload
+	jwt3.Secret = jwt2.Secret
+	jwt3.Signature = jwt2.Signature
+	if jwt3.IsTampered() {
+		t.Error("When the JWT Token value for expiration was restored, the JWT3 token is still tampere")
+	}
+
+	jwts, err := ListJWTTokensByCompanyID(company.ID.Hex())
+	if err != nil {
+		t.Errorf("The following error occurred while listing all tokens for company: [%s]", err)
+		return
+	}
+
+	for i := range jwts {
+		err = RemoveJWTTokenByID(jwts[i].ID.Hex())
+		if err != nil {
+			t.Errorf("The following error occurred while removing the token from the database :[%s]", err)
+			return
+		}
+	}
+
+}
