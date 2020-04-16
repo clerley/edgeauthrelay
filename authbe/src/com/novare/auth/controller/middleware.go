@@ -1,6 +1,6 @@
 package controller
 
-/*
+/**
 MIT License
 
 Copyright (c) 2020 Clerley Silveira
@@ -26,10 +26,26 @@ SOFTWARE.
 
 import (
 	"com/novare/auth/model"
+	"context"
 	"log"
 	"net/http"
 	"strings"
 	"unicode/utf8"
+)
+
+//ContextField - Will be used to add information to the context.
+//That will avoid unnecessary database lookups.
+type ContextField string
+
+const (
+	//CtxJWT - The key to JWT
+	CtxJWT ContextField = "CTX_JWT"
+
+	//CtxUser - The key to User
+	CtxUser ContextField = "CTX_USER"
+
+	//CtxCompany - The company
+	CtxCompany ContextField = "CTX_COMPANY"
 )
 
 //CheckAuthorizedMW - This is for JSON calls. If the Authorization does
@@ -63,7 +79,14 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 			//----------------------------------------------------------
 			//Retrive the base 64 encoded string and parse it.
 			//----------------------------------------------------------
-			jwtB64 := bearer[7:]
+			runes := []rune(bearer)
+			runes = runes[7:]
+			jwtB64 := string(runes)
+			if strings.Index(jwtB64, "bearer ") >= 0 {
+				log.Printf("The JWT64 token still contains the word bearer:[%s]", jwtB64)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
 			jwt := model.NewJWTToken("", "")
 			err := jwt.ParseJWT(jwtB64)
 			if err != nil {
@@ -78,8 +101,16 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 				return
 			}
 
+			jwt.Secret = storedJWT.Secret
+			if !jwt.IsValid() {
+				log.Printf("The JWT token is compromised, removing it from the database :[%s]", storedJWT.ID.Hex())
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
 			if storedJWT.Payload.IsExpired() {
 				log.Printf("Invalid JWT Token, it is expired: Signature: [%s]", storedJWT.Signature)
+				model.RemoveJWTTokenByID(storedJWT.ID.Hex())
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
@@ -101,9 +132,31 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 				return
 			}
 
+			ctx := r.Context()
+			ctx = context.WithValue(ctx, CtxUser, user)
+			ctx = context.WithValue(ctx, CtxJWT, jwt)
+
 			//----------------------------------------------------------
-			//If it passes it all, then execute the controller
+			//If it passes all checks, then execute the controller
 			//----------------------------------------------------------
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
+}
+
+//AuthorizationRequest - The authorization request relies on
+//having a
+func AuthorizationRequest(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		permReq := r.Header.Get("grant-request")
+		if utf8.RuneCountInString(permReq) == 0 {
+			log.Printf("There is no grant-request present in the header. This request will be dropped with a bad request response")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		CheckAuthorizedMW(next, permReq).ServeHTTP(w, r)
+	})
+
 }

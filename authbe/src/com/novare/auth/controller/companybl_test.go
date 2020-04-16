@@ -102,7 +102,7 @@ func TestGetCompanyBL(t *testing.T) {
 		return
 	}
 
-	findCmp := getCompanyByUniqueIDBL(req.UniqueID)
+	findCmp := getCompanyByUniqueIDOL(req.UniqueID)
 	if findCmp.UniqueID != req.UniqueID {
 		t.Errorf("No company found for unique ID specified")
 		return
@@ -128,4 +128,84 @@ func TestGetCompanyBL(t *testing.T) {
 		t.Errorf("The company with ID:[%s] should have been removed but it was not:[%s]", err, rsp.CompanyID)
 	}
 
+}
+
+func performCompanyCleanup(companyID string, t *testing.T) {
+	users, err := model.ListUsersByCompanyID(companyID)
+
+	if err != nil {
+		t.Errorf("There was an issue retrieving all the users for company with ID: [%s]", companyID)
+		return
+	}
+
+	for i := range users {
+		err = model.RemoveUserByID(users[i].ID.Hex())
+		if err != nil {
+			t.Errorf("The following error:[%s] occurred when removing the users for company ID:[%s]", err, companyID)
+			continue
+		}
+	}
+
+	err = model.RemoveCompanyByID(companyID)
+	if err != nil {
+		t.Errorf("The company with ID:[%s] should have been removed but it was not:[%s]", err, companyID)
+	}
+}
+
+func TestCompanyAlreadyExists(t *testing.T) {
+
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.Password = "@1234567890000"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISTHEUNIQUEID"
+	req.ConfirmPassword = req.Password
+
+	rsp := createCompanyBL(req)
+	if rsp.Status == StatusFailure {
+		t.Errorf("The password is not secure enough, the company should not have been saved")
+		return
+	}
+
+	if !isCompanyUniqueIDTaken("THISISTHEUNIQUEID") {
+		t.Error("The logic did not detect the company ID was already taken")
+	}
+
+	performCompanyCleanup(rsp.CompanyID, t)
+}
+
+func TestSuggestUniqueID(t *testing.T) {
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.Password = "@1234567890000"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISTHEUNIQUEID"
+	req.ConfirmPassword = req.Password
+
+	rsp := createCompanyBL(req)
+	if rsp.Status == StatusFailure {
+		t.Errorf("The password is not secure enough, the company should not have been saved")
+		return
+	}
+
+	suggestedID := suggestCompanyUniqueIDBL(req.UniqueID)
+	if suggestedID.UniqueID == req.UniqueID {
+		t.Error("The suggestedID is the same as the id already inserted.")
+	}
+
+	performCompanyCleanup(rsp.CompanyID, t)
 }

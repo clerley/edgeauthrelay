@@ -52,6 +52,8 @@ func main() {
 	mux.HandleFunc("/jwt/company/logout", controller.Logout).Methods("POST")
 
 	//These calls below require grants
+	grantHandler := http.HandlerFunc(controller.GrantRequest)
+	mux.Handle("/jwt/grant/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")
 
 	http.ListenAndServe(":9119", mux)
 }

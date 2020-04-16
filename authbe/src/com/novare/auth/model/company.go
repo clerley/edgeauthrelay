@@ -28,6 +28,7 @@ import (
 	"com/novare/dbs"
 	"errors"
 	"log"
+	"time"
 	"unicode/utf8"
 
 	"gopkg.in/mgo.v2/bson"
@@ -35,9 +36,45 @@ import (
 
 var mDBCompany = dbs.NewMongoDB(AuthRelayDatabaseName, "Companies")
 
+//This constant define the valid password duration unit
+const (
+	//PassUnitDay - This comment is to avoid warnings from the IDE.
+	PassUnitDay string = "Day"
+
+	//PassUnitWeek - This comment is to avoid warnings from the IDE.
+	PassUnitWeek string = "Week"
+
+	//PassUnitMonth - This comment is to avoid warnings from the IDE.
+	PassUnitMonth string = "Month"
+
+	//PassUnitYear - This comment is to avoid warnings from the IDE.
+	PassUnitYear string = "Year"
+)
+
 //CompanySettings ... All the settings related to a company
 type CompanySettings struct {
-	JWTDuration int `json:"jwtDuration"` //The number of minutes a JWT token should be granted
+	JWTDuration    int64  `json:"jwtDuration"`    //The number of minutes a JWT token should be granted 0 = Never expires
+	PassExpiration int64  `json:"passExpiration"` //Password expiration... 0 means no expiration
+	PassUnit       string `json:"passUnit"`       //Year, Month, Week, Days
+}
+
+//SetPasswordPolicy - It sets a policy on when the password should expire
+func (settings *CompanySettings) SetPasswordPolicy(value int, unit string) {
+
+	switch unit {
+
+	case PassUnitDay:
+		settings.PassExpiration = time.Now().AddDate(0, 0, value).Unix()
+	case PassUnitMonth:
+		settings.PassExpiration = time.Now().AddDate(0, value, 0).Unix()
+	case PassUnitWeek:
+		settings.PassExpiration = time.Now().AddDate(0, 0, value*7).Unix()
+	default:
+		log.Printf("Adding [%d] years to the password expiration", value)
+		settings.PassExpiration = time.Now().AddDate(value, 0, 0).Unix()
+
+	}
+
 }
 
 /*

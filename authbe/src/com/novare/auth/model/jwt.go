@@ -135,6 +135,21 @@ func (jwt *JWTToken) EncodeJWT() (string, bool) {
 	return encodeJWT, true
 }
 
+//IsTampered if the
+func (jwt *JWTToken) IsTampered() bool {
+	rsp := false
+
+	signature := jwt.Signature
+	jwt.EncodeJWT()
+
+	if jwt.Signature != signature {
+		log.Printf("The signature provided and the signature calculated do not match")
+		rsp = true
+	}
+
+	return rsp
+}
+
 //ParseJWT - Parse a JWT Token
 func (jwt *JWTToken) ParseJWT(encodedJWT string) error {
 
@@ -180,6 +195,8 @@ func NewJWTToken(userID string, companyID string) *JWTToken {
 	jwtToken.Secret = utils.GenerateUniqueID()
 	//Assume 30
 	jwtToken.Payload.ExpirationTime = time.Now().Add(30 * time.Minute).Unix()
+	jwtToken.Payload.Issuer = "AUTHBEE"
+	jwtToken.Payload.IssuedAt = time.Now().Unix()
 	jwtToken.UserID = userID
 	jwtToken.CompanyID = companyID
 	return jwtToken

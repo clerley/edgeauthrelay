@@ -25,6 +25,7 @@ SOFTWARE.
 package controller
 
 import (
+	"com/novare/auth/model"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -34,18 +35,19 @@ import (
 
 //Just to make it a little easier to parse the request
 type createCompanyReq struct {
-	Name            string `json:"name,omitempty"`
-	Address1        string `json:"address1,omitempty"`
-	Address2        string `json:"address2,omitempty"`
-	City            string `json:"city,omitempty"`
-	State           string `json:"state,omitempty"`
-	Zip             string `json:"zip,omitempty"`
-	IsInLocation    string `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
-	RemotelyManaged string `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
-	AuthRelay       string `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
-	Password        string `json:"password"`                  //No empty allowed. This is required. The user is superuser
-	ConfirmPassword string `json:"confirmPassword"`           //Confirm the password when creating the account
-	UniqueID        string `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
+	Name            string                `json:"name,omitempty"`
+	Address1        string                `json:"address1,omitempty"`
+	Address2        string                `json:"address2,omitempty"`
+	City            string                `json:"city,omitempty"`
+	State           string                `json:"state,omitempty"`
+	Zip             string                `json:"zip,omitempty"`
+	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
+	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
+	Password        string                `json:"password"`                  //No empty allowed. This is required. The user is superuser
+	ConfirmPassword string                `json:"confirmPassword"`           //Confirm the password when creating the account
+	UniqueID        string                `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
+	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
 }
 
 //And to create the response
@@ -111,7 +113,7 @@ func GetCompanyByUniqueID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rsp := getCompanyByUniqueIDBL(uniqueID)
+	rsp := getCompanyByUniqueIDOL(uniqueID)
 
 	//Write the response
 	writeResponse(rsp, w)
@@ -165,4 +167,61 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+}
+
+type accessTokenResp struct {
+	Status      string `json:"status"`
+	AccessToken string `json:"accessToken"`
+}
+
+//GrantRequest - Let's check if a request can be granted
+func GrantRequest(w http.ResponseWriter, r *http.Request) {
+
+	var vars = mux.Vars(r)
+	ucid := vars["ucid"]
+
+	//The middleware should have taken care of the token and user
+	jwt := r.Context().Value(CtxJWT).(*model.JWTToken)
+	if jwt == nil {
+		log.Printf("Invalid JWT Token, aborting the request")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	usr := r.Context().Value(CtxUser).(*model.User)
+	if usr == nil {
+		log.Printf("An error occurred while retrieving the company based on the JWT ID")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	//Call the business logic
+	rsp := grantRequestBL(ucid, jwt, usr)
+	if rsp == nil {
+		log.Printf("The response from the grantRequestBL request did not contain a valid response")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rsp, w)
+}
+
+type checkSuggestIDResp struct {
+	Status   string `json:"status"`
+	UniqueID string `json:"uniqueID"`
+}
+
+//CheckAndSuggestUniqueID - This method will take an UniqueID,
+//It will verify if it is unique and If it already exists.
+func CheckAndSuggestUniqueID(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	uniqueID, ok := vars["uniqueid"]
+	if !ok {
+		uniqueID = ""
+	}
+
+	rsp := suggestCompanyUniqueIDBL(uniqueID)
+
+	writeResponse(rsp, w)
 }

@@ -126,7 +126,7 @@ func TestCreateCompanyWithUniqueID(t *testing.T) {
 	var rsp createCompanyResp
 	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
 	if err != nil {
-		t.Errorf("Error unmarshalling the response body: [%s]", err)
+		t.Errorf("Error Unmarshal the response body: [%s]", err)
 		return
 	}
 
@@ -342,6 +342,9 @@ func TestLogout(t *testing.T) {
 	r.State = "FL"
 	r.Zip = "33445"
 	r.UniqueID = utils.GenerateUniqueID()
+	r.Settings.JWTDuration = 15
+	r.Settings.PassExpiration = 90
+	r.Settings.PassUnit = model.PassUnitDay
 
 	buf, err := json.Marshal(r)
 	if err != nil {
@@ -438,5 +441,161 @@ func TestLogout(t *testing.T) {
 	if err != nil {
 		t.Errorf("The user could not be removed from the database. Error:[%s]", err)
 	}
+
+}
+
+func TestHTTPGrantRequestAccess(t *testing.T) {
+
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISUNIQUEID"
+	req.Password = "@123ABC789"
+	req.ConfirmPassword = req.Password
+	req.Settings.JWTDuration = 15
+	req.Settings.PassExpiration = 10
+	req.Settings.PassUnit = model.PassUnitDay
+
+	rsp := createCompanyBL(req)
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The company should have been created but it did not!")
+		return
+	}
+
+	company, err := model.FindCompanyByID(rsp.CompanyID)
+	if err != nil {
+		t.Errorf("The following error occurred when finding the company:[%s]", rsp.CompanyID)
+		return
+	}
+
+	var lr loginReq
+	lr.UniqueID = "THISISUNIQUEID"
+	lr.Username = "superuser"
+	lr.Password = "@123ABC789"
+
+	lrsp := loginBL(lr)
+	if lrsp.Status != StatusSuccess {
+		t.Error("An error occurred when the login was performed")
+		return
+	}
+
+	users, err := model.ListUsersByCompanyID(company.ID.Hex())
+	if err != nil {
+		t.Errorf("There was an issue listing all the users for companyID: [%s] Error:[%s]", company.ID.Hex(), err)
+		return
+	}
+
+	jwt := model.NewJWTToken(users[0].ID.Hex(), company.ID.Hex())
+	err = jwt.ParseJWT(lrsp.SessionToken)
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+		return
+	}
+
+	jwtTmp, err := model.FindJWTTokenBySignature(jwt.Signature)
+	if err != nil {
+		t.Errorf("The JWT with signature:[%s] was not found", jwt.Signature)
+		return
+	}
+
+	httpReq := httptest.NewRequest("GET", "/testing/jwt/grant", nil)
+
+	vars := map[string]string{
+		"ucid": "THISISUNIQUEID",
+	}
+
+	httpReq = mux.SetURLVars(httpReq, vars)
+	encodedJWT, ok := jwtTmp.EncodeJWT()
+	if !ok {
+		t.Error("The following error occurred")
+		performCompanyCleanup(company.ID.Hex(), t)
+		err = model.RemoveJWTTokenByID(jwtTmp.ID.Hex())
+		if err != nil {
+			t.Errorf("The following error occurred: [%s]", err)
+		}
+	}
+	encodedJWT = fmt.Sprintf("bearer %s", encodedJWT)
+	httpReq.Header.Add("Authorization", encodedJWT)
+	httpReq.Header.Add("grant-request", "ANYTHING")
+	httpRec := httptest.NewRecorder()
+
+	handler := AuthorizationRequest(http.HandlerFunc(GrantRequest))
+	handler.ServeHTTP(httpRec, httpReq)
+
+	if status := httpRec.Code; status == http.StatusOK {
+		t.Error("The grant was issued, it should not have been issued")
+	}
+
+	for i := range users {
+		model.RemoveUserByID(users[i].ID.Hex())
+	}
+
+	model.RemoveCompanyByID(company.ID.Hex())
+	err = model.RemoveJWTTokenByID(jwtTmp.ID.Hex())
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+	}
+
+}
+
+func TestSuggestNewUniqueID(t *testing.T) {
+
+	company := model.NewCompany()
+	company.Address1 = "ADDR1"
+	company.Address2 = "ADDR2"
+	company.AuthRelay = ""
+	company.City = "PALM HARBOR"
+	company.IsInLocation = true
+	company.Name = "COMPANY NAME"
+	company.RemotelyManaged = false
+	company.State = "FL"
+	company.UniqueID = "SOMEUNIQUEID"
+	company.Zip = "34683"
+
+	err := model.InsertCompany(company)
+	if err != nil {
+		t.Errorf("The following error occurred :[%s]", err)
+		return
+	}
+
+	req := httptest.NewRequest("GET", "/suggestion/SOMEUNIQUEID", nil)
+
+	//Hack to try to fake gorilla/mux vars
+	vars := map[string]string{
+		"uniqueid": "SOMEUNIQUEID",
+	}
+
+	req = mux.SetURLVars(req, vars)
+
+	handler := http.HandlerFunc(CheckAndSuggestUniqueID)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if status := rec.Code; status != http.StatusOK {
+		t.Errorf("An error occurred while suggesting a name Response Code: [%d]", status)
+		performCompanyCleanup(company.ID.Hex(), t)
+		return
+	}
+
+	var cr checkSuggestIDResp
+	err = json.Unmarshal(rec.Body.Bytes(), &cr)
+
+	if cr.Status != StatusSuccess {
+		t.Errorf("The status of the response was: [%s]", cr.Status)
+	}
+
+	if cr.UniqueID != "SOMEUNIQUEID1" {
+		t.Errorf("The UniqueID was not expected: [%s]", cr.UniqueID)
+	}
+
+	performCompanyCleanup(company.ID.Hex(), t)
 
 }
