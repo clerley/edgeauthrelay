@@ -26,16 +26,40 @@ class _LoginState extends State<LoginWidget> {
     return 
       Center(
         child: Container(
-          color: Colors.blue,
-          width: 350.0,
-          height: 350.0,
+          padding:EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.green,
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+            ),
+          width: 400.0,
+          height: 400.0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text(this._userNameText),
-              TextField(),
-              Text(this._passwordText),
-              TextField(),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                child: Text(this._userNameText,
+                  style: TextStyle(fontSize: 22, color:Colors.white)),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
+                child: TextField(
+                  decoration: InputDecoration( 
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                child: Text(this._passwordText,
+                  style: TextStyle(fontSize: 22, color: Colors.white)),
+              ),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ],
 
           ),
