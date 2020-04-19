@@ -15,8 +15,11 @@ class CompanyWidget extends StatefulWidget {
 class _CompanyState extends State<CompanyWidget> {
 
   String _language;
+  String _company;
 
-  _CompanyState(this._language);
+  _CompanyState(this._language) {
+
+  }
 
   @override
   Widget build(BuildContext context) {

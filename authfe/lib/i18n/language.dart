@@ -13,6 +13,12 @@ Map<String, Map<String, String>> languages = {
                    "uniqueID"  : "Company ID",
                    "create"    : "Create",
                    "newcompany": "New Company",
+                   "company"   : "Company",
+                   "address"   : "Address",
+                   "zip"       : "Zip",
+                   "city"      : "City",
+                   "state"     : "State",
+                   "email"     : "Email",
                    }
   ,
     LANG_SPANISH: {"hello"     : "Hola!",
@@ -22,7 +28,14 @@ Map<String, Map<String, String>> languages = {
                    "login"     : "Login",
                    "uniqueID"  : "ID Compania",
                    "create"    : "Criar",
-                   "newcompany": "Compania Nueva"} 
+                   "newcompany": "Compania Nueva",
+                   "company"   : "Compania",
+                   "address"   : "Address",
+                   "zip"       : "Zip",
+                   "city"      : "City",
+                   "state"     : "State",
+                   "email"     : "Email",
+                   } 
 };
 
 
