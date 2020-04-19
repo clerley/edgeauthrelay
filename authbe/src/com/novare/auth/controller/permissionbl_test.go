@@ -1,3 +1,5 @@
+package controller
+
 /**
 MIT License
 
@@ -21,45 +23,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package main
-
-import (
-	"com/novare/auth/controller"
-	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
-)
-
-/**
-This may become a microservice
-*/
-func main() {
-	log.Printf("Initiating the Authorization Service")
-
-	mux := mux.NewRouter().StrictSlash(true)
-
-	//Create Company
-	mux.HandleFunc("/jwt/company", controller.CreateCompany).Methods("POST")
-
-	//Get Company
-	mux.HandleFunc("/jwt/company/{uniqueid}", controller.GetCompanyByUniqueID).Methods("GET")
-
-	//Login
-	mux.HandleFunc("/jwt/company/login", controller.Login).Methods("POST")
-
-	//Logout
-	mux.HandleFunc("/jwt/company/logout", controller.Logout).Methods("POST")
-
-	//These calls below require grants
-
-	//Permissions
-
-	//Add
-	mux.Handle("/jwt/permission", controller.CheckAuthorizedMW(http.HandlerFunc(controller.AddPermission), "ADD_PERMISSION")).Methods("PUT")
-
-	grantHandler := http.HandlerFunc(controller.GrantRequest)
-	mux.Handle("/jwt/grant/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")
-
-	http.ListenAndServe(":9119", mux)
-}
