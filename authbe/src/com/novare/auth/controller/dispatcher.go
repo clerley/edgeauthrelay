@@ -225,3 +225,101 @@ func CheckAndSuggestUniqueID(w http.ResponseWriter, r *http.Request) {
 
 	writeResponse(rsp, w)
 }
+
+type permReq struct {
+	ID          string `json:"id,omitempty"`
+	Description string `json:"description,omitempty"`
+	Permission  string `json:"permission,omitempty"`
+}
+
+type permResp struct {
+	Status string `json:"status,omitempty"`
+	ID     string `json:"id,omitempty"`
+}
+
+//InsertPermission ...
+func InsertPermission(w http.ResponseWriter, r *http.Request) {
+
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	var rq permReq
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&rq)
+	if err != nil {
+		log.Printf("The following error occurred when decoding the permission request: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rp := insertPermissionBL(usr.CompanyID, &rq)
+	if rp == nil || rp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rp, w)
+
+}
+
+//UpdatePermission ...
+func UpdatePermission(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	permID, ok := vars["permid"]
+	if !ok {
+		log.Printf("The permission ID was not defined!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var rq permReq
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&rq)
+	if err != nil {
+		log.Printf("The following error occurred when decoding the permission request: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rp := updatePermissionBL(permID, usr.CompanyID, &rq)
+	if rp == nil || rp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rp, w)
+
+}
+
+//RemovePermission ...
+func RemovePermission(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	permID, ok := vars["permid"]
+	if !ok {
+		log.Printf("The permission ID was not defined!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := removePermissionBL(permID, usr.CompanyID)
+
+	if rsp == nil || rsp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rsp, w)
+}
+
+type listPermResp struct {
+	Status string `json:"status"`
+	Perms []
+}
+
+//ListPermissions ...
+func ListPermissions(w http.ResponseWriter, r *http.Request) {
+
+}

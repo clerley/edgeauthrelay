@@ -102,7 +102,7 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 			}
 
 			jwt.Secret = storedJWT.Secret
-			if !jwt.IsValid() {
+			if jwt.IsTampered() {
 				log.Printf("The JWT token is compromised, removing it from the database :[%s]", storedJWT.ID.Hex())
 				w.WriteHeader(http.StatusBadRequest)
 				return
