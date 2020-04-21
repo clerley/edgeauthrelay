@@ -1,3 +1,28 @@
+/*
+MIT License
+
+Copyright (c) 2020 Clerley Silveira
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+import 'package:authfe/views/company.dart';
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 
@@ -106,7 +131,9 @@ class _LoginState extends State<LoginWidget> {
                         child: OutlineButton(
                           textColor: Colors.white,
                           child: Text(this._loginText, style: TextStyle(color: Colors.white, fontSize: 16.0),),
-                          onPressed: () { print ("Testing It"); },
+                          onPressed: () { 
+                            print ("Testing It"); 
+                          },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),)
                         ),
@@ -115,7 +142,9 @@ class _LoginState extends State<LoginWidget> {
                       padding: EdgeInsets.all(5.0),
                       child: OutlineButton(
                         textColor: Colors.white,
-                        onPressed: () { print("Testing it again"); },
+                        onPressed: () {
+                          Navigator.push(context,MaterialPageRoute(builder: (context) => CompanyWidget(this._language)),);
+                        },
                         child: Text(this._newCompany, style: TextStyle(color: Colors.white, fontSize: 16.00),),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
