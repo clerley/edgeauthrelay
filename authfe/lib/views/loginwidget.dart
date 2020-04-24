@@ -61,7 +61,7 @@ class _LoginState extends State<LoginWidget> {
         child: Container(
           padding:EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Colors.green,
+            color: Theme.of(context).backgroundColor,
             borderRadius: BorderRadius.all(Radius.circular(10.0))
             ),
           width: 400.0,
@@ -77,8 +77,7 @@ class _LoginState extends State<LoginWidget> {
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                child: Text(this._uniqueCompanyID,
-                  style: TextStyle(fontSize: 22, color:Colors.white)),
+                child: Text(this._uniqueCompanyID, style: Theme.of(context).primaryTextTheme.bodyText1),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
@@ -93,22 +92,18 @@ class _LoginState extends State<LoginWidget> {
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                 child: Text(this._userNameText,
-                  style: TextStyle(fontSize: 22, color:Colors.white)),
+                  style: Theme.of(context).primaryTextTheme.bodyText1),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
                 child: TextField(
-                  decoration: InputDecoration( 
-                    border: OutlineInputBorder(),
-                    fillColor: Colors.white,
-                    filled: true,
-                  ),
+                 
                 ),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
                 child: Text(this._passwordText,
-                  style: TextStyle(fontSize: 22, color: Colors.white)),
+                  style: Theme.of(context).primaryTextTheme.bodyText1),
               ),
               TextField(
                 obscureText: true,
@@ -130,7 +125,7 @@ class _LoginState extends State<LoginWidget> {
                         padding: EdgeInsets.all(5.0),
                         child: OutlineButton(
                           textColor: Colors.white,
-                          child: Text(this._loginText, style: TextStyle(color: Colors.white, fontSize: 16.0),),
+                          child: Text(this._loginText, style: Theme.of(context).primaryTextTheme.button,),
                           onPressed: () { 
                             print ("Testing It"); 
                           },
@@ -145,7 +140,7 @@ class _LoginState extends State<LoginWidget> {
                         onPressed: () {
                           Navigator.push(context,MaterialPageRoute(builder: (context) => CompanyWidget(this._language)),);
                         },
-                        child: Text(this._newCompany, style: TextStyle(color: Colors.white, fontSize: 16.00),),
+                        child: Text(this._newCompany, style: Theme.of(context).primaryTextTheme.button,),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),

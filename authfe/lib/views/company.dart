@@ -74,7 +74,10 @@ class _CompanyState extends State<CompanyBody> {
   String _stateText;
   String _zipText;
   String _nameText;
+  String _isLocationText;
+  String _remotelyManagedText;
   bool _remoteAuth;
+  bool _isLocation;
   
 
   _CompanyState(this._language) {
@@ -84,7 +87,10 @@ class _CompanyState extends State<CompanyBody> {
     this._zipText = getText("zip", _language);
     this._nameText = getText("name", _language);
     this._addressText = getText("address", _language);
+    this._isLocationText = getText("isLocation", _language);
+    this._remotelyManagedText = getText("remotelyManaged", _language);
     this._remoteAuth = false;
+    this._isLocation = false;
   }
 
   @override
@@ -94,9 +100,9 @@ class _CompanyState extends State<CompanyBody> {
       child: Container(
         margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
         padding:EdgeInsets.all(10.0),
-        width: 800.0,
+        width: 900.0,
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: Theme.of(context).backgroundColor,
           borderRadius: BorderRadius.all(Radius.circular(10.0))
         ),
         child: Column(
@@ -232,13 +238,102 @@ class _CompanyState extends State<CompanyBody> {
                   Checkbox(
                     onChanged: (val) {
                       setState(() {
+                        this._isLocation = val;
+                      });
+                    },
+                    value: this._isLocation,
+                  ),
+                  Text(this._isLocationText,
+                          style: TextStyle(fontSize: 22.0, color: Colors.white)),
+                  Checkbox(
+                    onChanged: (val) {
+                      setState(() {
                         this._remoteAuth = val;
                       });
                     },
                     value: this._remoteAuth,
                   ),
+                  Text(this._remotelyManagedText,
+                          style: TextStyle(fontSize: 22.0, color: Colors.white)),
+
                 ],
               ),
+            ),
+
+            Container(
+              margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              padding:EdgeInsets.all(10.0),
+              width: 900.0,
+              decoration: BoxDecoration(
+                            color: Colors.blueAccent,
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Text(getText("settings", this._language),
+                          style: TextStyle(color: Colors.white, fontSize: 22.0))
+                    ],
+                  ),
+                  Row(children: <Widget>[
+                      Expanded(
+                        flex: 24,
+                        child: Text(getText("jwtDuration", this._language), 
+                                style: TextStyle(color: Colors.white, fontSize: 22.0)),
+                      ),
+                      Spacer(),
+                      Expanded(
+                        flex: 24,
+                        child: Text(getText("passwordExp", this._language),
+                                style: TextStyle(color: Colors.white, fontSize: 22.0)),
+                      ),
+                      Spacer(),
+                      Expanded(
+                        flex: 24,
+                        child: Text(getText("passwordUnit", this._language),
+                                style: TextStyle(color: Colors.white, fontSize: 22.0)),
+                      )
+                  ],), 
+                  Row(children: <Widget>[
+                      Expanded(
+                        flex: 24,
+                        child: TextField(
+                                decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              fillColor: Colors.white,
+                                              filled: true,
+                                          ),
+                                )
+                      ),
+                      Spacer(),
+                      Expanded(
+                        flex: 24,
+                        child: TextField(
+                                decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              fillColor: Colors.white,
+                                              filled: true,
+                                              
+                                          ),
+                                )
+                      ),
+                      Spacer(),
+                      Expanded(
+                        flex: 24,
+                        child: TextField(
+                                decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              fillColor: Colors.white,
+                                              filled: true,
+                                          ),
+                                )
+                      )
+
+                  ],)
+                ],
+              )
+
             ),
           ],
         ),

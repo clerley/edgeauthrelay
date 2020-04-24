@@ -20,10 +20,13 @@ Map<String, Map<String, String>> languages = {
                    "state"           : "State",
                    "email"           : "Email",
                    "name"            : "Name",
-                   "isLocation"      : "isLocation",
+                   "isLocation"      : "Is Location",
                    "remotelyManaged" : "Remotely Managed",
                    "authrelay"       : "Authorization Relay",
                    "settings"        : "Settings",
+                   "jwtDuration"     : "JWT Duration",
+                   "passwordExp"     : "Password Expiration",
+                   "passwordUnit"    : "Password Unit",
                   }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -45,6 +48,9 @@ Map<String, Map<String, String>> languages = {
                    "remotelyManaged" : "Remotely Managed",
                    "authrelay"       : "Authorization Relay",
                    "settings"        : "Configuraciones",
+                   "jwtDuration"     : "JWT Duration",
+                   "passwordExp"     : "Password Expiration",
+                   "passwordUnit"    : "Password Unit",
                    } 
 };
 

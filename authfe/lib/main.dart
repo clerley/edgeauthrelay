@@ -36,10 +36,27 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: titleText,
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            brightness: Brightness.dark,
             appBarTheme: AppBarTheme(
               brightness: Brightness.dark,
+              color: Color(0xff07203e),
             ),
+            
+            primaryColor: Color(0xff7b92ae),
+            accentColor: Color(0xff506d90),
+            backgroundColor: Color(0xff18365a),
+            
+            fontFamily: 'Arial',
+            primaryTextTheme: TextTheme(
+                bodyText1: TextStyle(fontSize: 22.0, color:Colors.white),
+                button: TextStyle(fontSize: 16.0, color:Colors.white),
+                bodyText2: TextStyle(fontSize: 16.0, color: Colors.black),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              fillColor: Color(0xff7b92ae),
+              filled: true,
+            )
+
           ),
           home: MyHomePage(title: titleText),
     );
