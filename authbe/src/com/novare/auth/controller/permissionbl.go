@@ -110,7 +110,7 @@ func removePermissionBL(permID string, companyID string) *permResp {
 //I have to come back here and maybe switch to passing the limits to the database.
 //That said, I am not expecting a lot of permissions, so this might be fast enough
 //for now.
-func listPermissionBL(startAt int, endAt int, companyID string) listPermResp {
+func listPermissionBL(startAt int64, endAt int64, companyID string) listPermResp {
 	var perms listPermResp
 	perms.Status = StatusFailure
 
@@ -136,8 +136,8 @@ func listPermissionBL(startAt int, endAt int, companyID string) listPermResp {
 		return perms
 	}
 
-	if endAt > len(permModel) {
-		endAt = len(permModel)
+	if endAt > int64(len(permModel)) {
+		endAt = int64(len(permModel))
 	}
 
 	permModel = permModel[startAt:endAt]

@@ -53,10 +53,15 @@ func main() {
 
 	//These calls below require grants
 
+	//-------------------------------------------------------------------------
 	//Permissions
+	//-------------------------------------------------------------------------
 
 	//Add
-	mux.Handle("/jwt/permission", controller.CheckAuthorizedMW(http.HandlerFunc(controller.AddPermission), "ADD_PERMISSION")).Methods("PUT")
+	mux.Handle("/jwt/permission", controller.CheckAuthorizedMW(http.HandlerFunc(controller.InsertPermission), "ADD_PERMISSION")).Methods("PUT")
+	mux.Handle("/jwt/permission", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdatePermission), "UPDATE_PERMISSION")).Methods("POST")
+	mux.Handle("/jwt/permission", controller.CheckAuthorizedMW(http.HandlerFunc(controller.RemovePermission), "REMOVE_PERMISSION")).Methods("DELETE")
+	mux.Handle("/jwt/permission/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListPermissions), "GET_PERMISSION")).Methods("GET")
 
 	grantHandler := http.HandlerFunc(controller.GrantRequest)
 	mux.Handle("/jwt/grant/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")

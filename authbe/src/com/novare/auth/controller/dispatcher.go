@@ -29,6 +29,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -321,5 +322,38 @@ type listPermResp struct {
 
 //ListPermissions ...
 func ListPermissions(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	s, ok := vars["startat"]
+	if !ok {
+		log.Printf("There was an error retrieving the the start from the request")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
+	e, ok := vars["endat"]
+	if !ok {
+		log.Printf("There is no end to the requested list of permissions")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	startAt, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		log.Printf("The following error occurred while retrieving the startAt variable: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	endAt, err := strconv.ParseInt(e, 10, 64)
+	if err != nil {
+		log.Printf("The following error occurred while retrieving the endAt variable: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	rsp := listPermissionBL(startAt, endAt, usr.CompanyID)
+
+	writeResponse(rsp, w)
 }
