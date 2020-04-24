@@ -29,7 +29,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-func insertPermissionBL(companyID string, req *permReq) *permResp {
+func insertPermissionBL(companyID string, req *permObj) *permResp {
 	var rsp permResp
 	rsp.Status = StatusFailure
 
@@ -50,7 +50,7 @@ func insertPermissionBL(companyID string, req *permReq) *permResp {
 	return &rsp
 }
 
-func updatePermissionBL(permID string, companyID string, req *permReq) *permResp {
+func updatePermissionBL(permID string, companyID string, req *permObj) *permResp {
 	var rsp permResp
 	rsp.Status = StatusFailure
 
@@ -107,12 +107,15 @@ func removePermissionBL(permID string, companyID string) *permResp {
 	return &rsp
 }
 
-//I have to come back here and maybe switch to
-func listPermissionBL(startAt int64, endAt int64, companyID string) []model.Permission {
-	var perms []model.Permission
+//I have to come back here and maybe switch to passing the limits to the database.
+//That said, I am not expecting a lot of permissions, so this might be fast enough
+//for now.
+func listPermissionBL(startAt int, endAt int, companyID string) listPermResp {
+	var perms listPermResp
+	perms.Status = StatusFailure
 
 	//Perform the index checks
-	if startAt < 0 || startAt > len(perms)-1 {
+	if startAt < 0 {
 		log.Printf("The starting index is not valid, replying with empty array %d", startAt)
 		return perms
 	}
@@ -120,20 +123,34 @@ func listPermissionBL(startAt int64, endAt int64, companyID string) []model.Perm
 	if endAt < 0 {
 		log.Printf("The endAt is invalid: %d ", endAt)
 		return perms
-	} else if endAt > len(perm)
+	}
 
 	if endAt <= startAt {
 		log.Printf("The endAt index %d is lower or equal to startAt %d", endAt, startAt)
 		return perms
 	}
 
-	perms, err := model.ListPermissionsByCompanyID(companyID)
+	permModel, err := model.ListPermissionsByCompanyID(companyID)
 	if err != nil {
 		log.Printf("It was not possible to retrieve the permissions from the database, error:[%s]", err)
 		return perms
 	}
 
-	perms = perms[startAt:endAt]
+	if endAt > len(permModel) {
+		endAt = len(permModel)
+	}
 
+	permModel = permModel[startAt:endAt]
+
+	for i := range permModel {
+		p := permModel[i]
+		var permission permObj
+		permission.ID = p.ID.Hex()
+		permission.Description = p.Description
+		permission.Permission = p.Permission
+		perms.Perms = append(perms.Perms, permission)
+	}
+
+	perms.Status = StatusSuccess
 	return perms
 }

@@ -226,7 +226,7 @@ func CheckAndSuggestUniqueID(w http.ResponseWriter, r *http.Request) {
 	writeResponse(rsp, w)
 }
 
-type permReq struct {
+type permObj struct {
 	ID          string `json:"id,omitempty"`
 	Description string `json:"description,omitempty"`
 	Permission  string `json:"permission,omitempty"`
@@ -242,7 +242,7 @@ func InsertPermission(w http.ResponseWriter, r *http.Request) {
 
 	usr := r.Context().Value(CtxUser).(*model.User)
 
-	var rq permReq
+	var rq permObj
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&rq)
 	if err != nil {
@@ -273,7 +273,7 @@ func UpdatePermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var rq permReq
+	var rq permObj
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&rq)
 	if err != nil {
@@ -316,7 +316,7 @@ func RemovePermission(w http.ResponseWriter, r *http.Request) {
 
 type listPermResp struct {
 	Status string `json:"status"`
-	Perms []
+	Perms  []permObj
 }
 
 //ListPermissions ...

@@ -1,5 +1,10 @@
 package controller
 
+import (
+	"com/novare/auth/model"
+	"testing"
+)
+
 /**
 MIT License
 
@@ -23,3 +28,126 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
+func TestInsertPermission(t *testing.T) {
+
+	var perm permObj
+	perm.Description = "THIS IS JUST A PERMISSION TEST"
+	perm.Permission = "PERMISSION_TEST"
+
+	permRp := insertPermissionBL("UNIQUEIDCOMPANY", &perm)
+	if permRp.Status != StatusSuccess {
+		t.Errorf("The insertPermissionBL returned with: [%s]", permRp.Status)
+	}
+
+	permTest, err := model.FindPermissionByID(permRp.ID)
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+	}
+
+	if permTest.Description != "THIS IS JUST A PERMISSION TEST" {
+		t.Errorf("The permission was not properly stored!")
+	}
+
+	model.RemovePermissionByID(permTest.ID.Hex())
+
+}
+
+func TestUpdatePermission(t *testing.T) {
+
+	var perm permObj
+	perm.Description = "THIS IS JUST A PERMISSION TEST"
+	perm.Permission = "PERMISSION_TEST"
+
+	permRp := insertPermissionBL("UNIQUEIDCOMPANY", &perm)
+	if permRp.Status != StatusSuccess {
+		t.Errorf("The insertPermissionBL returned with: [%s]", permRp.Status)
+	}
+
+	permTest, err := model.FindPermissionByID(permRp.ID)
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+	}
+
+	var req permObj
+	req.ID = permTest.ID.Hex()
+	req.Description = "THIS IS A NEW DESCRIPTION"
+	req.Permission = permTest.Permission
+
+	rp := updatePermissionBL(permTest.ID.Hex(), "UNIQUEIDCOMPANY", &req)
+	if rp.Status != StatusSuccess {
+		t.Errorf("The following error occurred while saving the permission! :[%s - %s]", req.Permission, rp.Status)
+	}
+
+	permTest, _ = model.FindPermissionByID(req.ID)
+	if permTest.Description != req.Description {
+		t.Errorf("The permission was not properly stored! The description does not match!")
+	}
+
+	model.RemovePermissionByID(permTest.ID.Hex())
+
+}
+
+func TestRemovePermissionBL(t *testing.T) {
+	var perm permObj
+	perm.Description = "THIS IS JUST A PERMISSION TEST"
+	perm.Permission = "PERMISSION_TEST"
+
+	permRp := insertPermissionBL("UNIQUEIDCOMPANY", &perm)
+	if permRp.Status != StatusSuccess {
+		t.Errorf("The insertPermissionBL returned with: [%s]", permRp.Status)
+	}
+
+	permTest, err := model.FindPermissionByID(permRp.ID)
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+	}
+
+	rsp := removePermissionBL(permTest.ID.Hex(), permTest.CompanyID)
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The permission with ID:[%s] was not removed because, the response status was: [%s]", permTest.ID.Hex(), rsp.Status)
+	}
+}
+
+func TestListPermissions(t *testing.T) {
+	var perm permObj
+
+	perm.Description = "THIS IS JUST A PERMISSION TEST"
+	perm.Permission = "PERMISSION_TEST"
+
+	permRp := insertPermissionBL("UNIQUEIDCOMPANY", &perm)
+	if permRp.Status != StatusSuccess {
+		t.Errorf("The insertPermissionBL returned with: [%s]", permRp.Status)
+	}
+
+	//Test bad start
+	lstRsp := listPermissionBL(-1, 10, "UNIQUEIDCOMPANY")
+	if lstRsp.Status != StatusFailure {
+		t.Errorf("The following error occurred: [%s]", lstRsp.Status)
+	}
+
+	//Test bad end
+	lstRsp = listPermissionBL(0, -10, "UNIQUEIDCOMPANY")
+	if lstRsp.Status != StatusFailure {
+		t.Errorf("The following error occurred: [%s]", lstRsp.Status)
+	}
+
+	//Test long end
+	lstRsp = listPermissionBL(0, 10, "UNIQUEIDCOMPANY")
+	if lstRsp.Status != StatusSuccess {
+		t.Errorf("The following error occurred: [%s]", lstRsp.Status)
+	}
+
+	if len(lstRsp.Perms) != 1 {
+		t.Errorf("The number of permissions is: %d", len(lstRsp.Perms))
+	}
+
+	for i := range lstRsp.Perms {
+		p := lstRsp.Perms[i]
+		r := removePermissionBL(p.ID, "UNIQUEIDCOMPANY")
+		if r.Status != StatusSuccess {
+			t.Errorf("The following Permission was not removed: [%s]", p.Description)
+		}
+	}
+
+}
