@@ -27,6 +27,8 @@ Map<String, Map<String, String>> languages = {
                    "jwtDuration"     : "JWT Duration",
                    "passwordExp"     : "Password Expiration",
                    "passwordUnit"    : "Password Unit",
+                   "save"            : "Save",
+                   "cancel"          : "Cancel",                  
                   }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -51,6 +53,9 @@ Map<String, Map<String, String>> languages = {
                    "jwtDuration"     : "JWT Duration",
                    "passwordExp"     : "Password Expiration",
                    "passwordUnit"    : "Password Unit",
+                   "save"            : "Save",
+                   "cancel"          : "Cancel",                  
+
                    } 
 };
 

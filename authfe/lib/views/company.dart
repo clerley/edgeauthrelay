@@ -111,54 +111,46 @@ class _CompanyState extends State<CompanyBody> {
           children: <Widget>[
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: Text(this._company, 
-                    style: TextStyle(color: Colors.white, fontSize: 22.0),),
+              child: Text(this._company, style: Theme.of(context).primaryTextTheme.bodyText1,),
             ),
+            
             Container(
-              child: Text(this._nameText,
-                    style: TextStyle(color: Colors.white, fontSize: 22.0),),
+              child: Text(getText("uniqueID", this._language)),
             ),
-            Container(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  fillColor: Colors.white,
-                  filled: true,
-                ),
-              ),
-            ),
-            Container(
-              child: Text(this._addressText, 
-                            style: TextStyle(color: Colors.white, fontSize: 22.0)),),
 
             Container(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  fillColor: Colors.white,
-                  filled: true,
-                ),
-              ),
+              child: TextField(),
+            ),
+
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              child: Text(this._nameText,),
+            ),
+
+            Container(
+              child: TextField(),
+            ),
+            
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              child: Text(this._addressText,),
             ),
 
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  fillColor: Colors.white,
-                  filled: true,
-                ),
-              ),
+              child: TextField(),
+            ),
+
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+              child: TextField(),
             ),
             Row(children: <Widget>[
                Expanded(
                   flex: 24,
                   child: Container(
-                      child: Text(this._cityText, 
-                              style: TextStyle(color: Colors.white, fontSize: 22.0)),),
+                      child: Text(this._cityText,),
+                  ),
                 ),
 
                Spacer(), 
@@ -166,8 +158,8 @@ class _CompanyState extends State<CompanyBody> {
                Expanded(
                   flex: 12,
                   child: Container(
-                      child: Text(this._stateText, 
-                              style: TextStyle(color: Colors.white, fontSize: 22.0)),),
+                      child: Text(this._stateText,),
+                  ),
                 ),
 
                Spacer(),
@@ -175,8 +167,8 @@ class _CompanyState extends State<CompanyBody> {
                Expanded(
                   flex: 24,
                   child: Container(
-                      child: Text(this._zipText, 
-                              style: TextStyle(color: Colors.white, fontSize: 22.0)),),
+                      child: Text(this._zipText),
+                  ),
                 ),
                
 
@@ -188,13 +180,7 @@ class _CompanyState extends State<CompanyBody> {
                 flex: 24,
                   child: Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
+                  child: TextField(),
                 ),
               ),
 
@@ -204,13 +190,7 @@ class _CompanyState extends State<CompanyBody> {
                 flex: 12,
                   child: Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
+                  child: TextField(),
                 ),
               ),
 
@@ -220,13 +200,7 @@ class _CompanyState extends State<CompanyBody> {
                 flex: 24,
                 child: Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
+                  child: TextField(),
                 ),
               ),
             ],
@@ -243,8 +217,7 @@ class _CompanyState extends State<CompanyBody> {
                     },
                     value: this._isLocation,
                   ),
-                  Text(this._isLocationText,
-                          style: TextStyle(fontSize: 22.0, color: Colors.white)),
+                  Text(this._isLocationText),
                   Checkbox(
                     onChanged: (val) {
                       setState(() {
@@ -253,81 +226,64 @@ class _CompanyState extends State<CompanyBody> {
                     },
                     value: this._remoteAuth,
                   ),
-                  Text(this._remotelyManagedText,
-                          style: TextStyle(fontSize: 22.0, color: Colors.white)),
+                  Text(this._remotelyManagedText),
 
                 ],
               ),
             ),
 
             Container(
+              child:Text(getText("authrelay", this._language),
+              ),
+            ),
+
+            Container(
+              child:TextField()
+            ,),
+
+            Container(
               margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
               padding:EdgeInsets.all(10.0),
               width: 900.0,
               decoration: BoxDecoration(
-                            color: Colors.blueAccent,
+                            color: Theme.of(context).backgroundColor,
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            border: Border.all(color:Theme.of(context).accentColor),
               ),
               child: Column(
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Text(getText("settings", this._language),
-                          style: TextStyle(color: Colors.white, fontSize: 22.0))
-                    ],
-                  ),
                   Row(children: <Widget>[
                       Expanded(
                         flex: 24,
-                        child: Text(getText("jwtDuration", this._language), 
-                                style: TextStyle(color: Colors.white, fontSize: 22.0)),
+                        child: Text(getText("jwtDuration", this._language)),
                       ),
                       Spacer(),
                       Expanded(
                         flex: 24,
-                        child: Text(getText("passwordExp", this._language),
-                                style: TextStyle(color: Colors.white, fontSize: 22.0)),
+                        child: Text(getText("passwordExp", this._language)),
                       ),
                       Spacer(),
                       Expanded(
                         flex: 24,
-                        child: Text(getText("passwordUnit", this._language),
-                                style: TextStyle(color: Colors.white, fontSize: 22.0)),
+                        child: Text(getText("passwordUnit", this._language)),
                       )
                   ],), 
                   Row(children: <Widget>[
                       Expanded(
                         flex: 24,
                         child: TextField(
-                                decoration: InputDecoration(
-                                              border: OutlineInputBorder(),
-                                              fillColor: Colors.white,
-                                              filled: true,
-                                          ),
-                                )
+                          keyboardType: TextInputType.number,
+                          ),
                       ),
                       Spacer(),
                       Expanded(
                         flex: 24,
-                        child: TextField(
-                                decoration: InputDecoration(
-                                              border: OutlineInputBorder(),
-                                              fillColor: Colors.white,
-                                              filled: true,
-                                              
-                                          ),
-                                )
+                        child: TextField(keyboardType: TextInputType.number,),
                       ),
                       Spacer(),
                       Expanded(
                         flex: 24,
-                        child: TextField(
-                                decoration: InputDecoration(
-                                              border: OutlineInputBorder(),
-                                              fillColor: Colors.white,
-                                              filled: true,
-                                          ),
-                                )
+                        child: TextField(keyboardType: TextInputType.number,),
                       )
 
                   ],)
@@ -335,6 +291,41 @@ class _CompanyState extends State<CompanyBody> {
               )
 
             ),
+
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+              Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: OutlineButton(
+                  textColor: Colors.white,
+                  child: Text(getText("save", this._language), style: Theme.of(context).primaryTextTheme.button,),
+                  onPressed: () { 
+                    print ("Testing It"); 
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),)
+                ),
+              ),
+
+              Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: OutlineButton(
+                  textColor: Colors.white,
+                  child: Text(getText("cancel", this._language), style: Theme.of(context).primaryTextTheme.button,),
+                  onPressed: () { 
+                    Navigator.pop(context);
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),)
+                ),
+              ),
+
+
+            ],
+            ),
+
           ],
         ),
       ),
