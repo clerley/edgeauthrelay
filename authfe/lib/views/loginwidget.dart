@@ -79,44 +79,38 @@ class _LoginState extends State<LoginWidget> {
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                 child: Text(this._uniqueCompanyID, style: Theme.of(context).primaryTextTheme.bodyText1),
               ),
+
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                child: TextField(
-                  decoration: InputDecoration( 
-                    border: OutlineInputBorder(),
-                    fillColor: Colors.white,
-                    filled: true,
-                  ),
-                ),
+                child: TextField(),
               ),
+
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                 child: Text(this._userNameText,
                   style: Theme.of(context).primaryTextTheme.bodyText1),
               ),
+
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                child: TextField(
-                 
-                ),
+                child: TextField(),
               ),
+
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
                 child: Text(this._passwordText,
                   style: Theme.of(context).primaryTextTheme.bodyText1),
               ),
+
               TextField(
                 obscureText: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  fillColor: Colors.white,
-                  filled: true,
-                ),
               ),
+
               Divider(
                 color: Colors.white,
                 thickness: 1.0,
               ),
+
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -52,10 +52,13 @@ class MyApp extends StatelessWidget {
                 button: TextStyle(fontSize: 16.0, color:Colors.white),
                 bodyText2: TextStyle(fontSize: 16.0, color: Colors.black),
             ),
+
             inputDecorationTheme: InputDecorationTheme(
               fillColor: Color(0xff7b92ae),
               filled: true,
-            )
+            ),
+
+            toggleableActiveColor: Color(0xff506d90),
 
           ),
           home: MyHomePage(title: titleText),
