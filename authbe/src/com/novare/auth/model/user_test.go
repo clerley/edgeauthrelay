@@ -125,3 +125,41 @@ func TestUserFunctions(t *testing.T) {
 
 	}
 }
+
+func TestRemovingPermissionsAndRoles(t *testing.T) {
+
+	ID := "MYCOMPANY"
+
+	perm := NewPermission()
+	perm.CompanyID = ID
+	perm.Description = "Permission1"
+	perm.Permission = "MY_PERMISSION"
+
+	user := NewUser()
+	user.AddPermission(*perm)
+
+	perm1 := NewPermission()
+	perm1.CompanyID = ID
+	perm1.Description = "Permission2"
+	perm1.Permission = "MY_PERM_2"
+	user.AddPermission(*perm1)
+
+	role := NewRole()
+	role.AddPermission(*perm1)
+	user.AddRole(role.ID.Hex())
+
+	user.ClearPermissions()
+	user.ClearRoles()
+
+	if len(user.Permissions) > 0 {
+		t.Error("The clearPermissions function did not work")
+	}
+
+	if len(user.Roles) > 0 {
+		t.Error("The clearRoles did not work")
+	}
+
+	user.ClearPermissions()
+	user.ClearRoles()
+
+}
