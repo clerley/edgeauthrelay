@@ -175,6 +175,16 @@ func (user *User) RemoveRole(roleID string) {
 
 }
 
+//ClearPermissions - Remove all permissions from the permissions list
+func (user *User) ClearPermissions() {
+	user.Permissions = user.Permissions[0:0]
+}
+
+//ClearRoles - Remove all the roles from the roles list
+func (user *User) ClearRoles() {
+	user.Roles = user.Roles[0:0]
+}
+
 //NewUser ...
 func NewUser() *User {
 	user := new(User)

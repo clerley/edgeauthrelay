@@ -109,7 +109,7 @@ func TestRemovePermissionBL(t *testing.T) {
 	}
 }
 
-func TestListPermissions(t *testing.T) {
+func TestListPermissionsBL(t *testing.T) {
 	var perm permObj
 
 	perm.Description = "THIS IS JUST A PERMISSION TEST"

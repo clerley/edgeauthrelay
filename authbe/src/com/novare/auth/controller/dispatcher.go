@@ -27,6 +27,7 @@ package controller
 import (
 	"com/novare/auth/model"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -320,8 +321,156 @@ type listPermResp struct {
 	Perms  []permObj
 }
 
+func getStartEnd(w http.ResponseWriter, r *http.Request) (int64, int64, error) {
+	vars := mux.Vars(r)
+	s, ok := vars["startat"]
+	if !ok {
+		log.Printf("There was an error retrieving the the start from the request")
+		w.WriteHeader(http.StatusBadRequest)
+		return 0, 0, errors.New("InvalidStart")
+	}
+
+	e, ok := vars["endat"]
+	if !ok {
+		log.Printf("There is no end to the requested list of permissions")
+		w.WriteHeader(http.StatusBadRequest)
+		return 0, 0, errors.New("InvalidEnd")
+	}
+
+	startAt, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		log.Printf("The following error occurred while retrieving the startAt variable: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return 0, 0, errors.New("InvalidStart")
+	}
+
+	endAt, err := strconv.ParseInt(e, 10, 64)
+	if err != nil {
+		log.Printf("The following error occurred while retrieving the endAt variable: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return 0, 0, errors.New("InvalidEnd")
+	}
+
+	return startAt, endAt, nil
+}
+
 //ListPermissions ...
 func ListPermissions(w http.ResponseWriter, r *http.Request) {
+
+	startAt, endAt, err := getStartEnd(w, r)
+	if err != nil {
+		return
+	}
+
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	rsp := listPermissionBL(startAt, endAt, usr.CompanyID)
+
+	writeResponse(rsp, w)
+}
+
+//Users
+
+type usrObj struct {
+	ID              string             `json:"id,omitempty,omitempty"`
+	Username        string             `json:"username,omitempty"`    //Username
+	Name            string             `json:"name,omitempty"`        //The user's name/full name
+	Permissions     []model.Permission `json:"permissions,omitempty"` //All the permissions assigned to the user. Note that permissions can go cross companies
+	Roles           []string           `json:"roles,omitempty"`       //The Roles this user belongs to. Don't necessarily need a role
+	IsThing         string             `json:"isThing,omitempty"`     //This is a thing instead of a user
+	Password        string             `json:"password,omitempty"`
+	ConfirmPassword string             `json:"confirmPassword,omitempty"`
+}
+
+type usrResp struct {
+	Status  string `json:"status,omitempty"`
+	UserObj usrObj `json:"user,omitempty"`
+}
+
+//InsertUser ...
+func InsertUser(w http.ResponseWriter, r *http.Request) {
+
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	var rq usrObj
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&rq)
+	if err != nil {
+		log.Printf("The following error occurred when decoding the user request: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rp := insertUserBL(usr.CompanyID, &rq)
+	if rp == nil || rp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rp, w)
+
+}
+
+//UpdateUser ...
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	userName, ok := vars["username"]
+	if !ok {
+		log.Printf("The user ID was not defined!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var rq usrObj
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&rq)
+	if err != nil {
+		log.Printf("The following error occurred when decoding the user request: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rp := updateUserBL(userName, usr.CompanyID, &rq)
+	if rp == nil || rp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rp, w)
+
+}
+
+//RemoveUser ...
+func RemoveUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	userName, ok := vars["username"]
+	if !ok {
+		log.Printf("The userName ID was not defined!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := removeUserBL(userName, usr.CompanyID)
+
+	if rsp == nil || rsp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rsp, w)
+}
+
+type listUserResp struct {
+	Status string `json:"status"`
+	Users  []usrObj
+}
+
+//ListUsers ...
+func ListUsers(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	s, ok := vars["startat"]
 	if !ok {
@@ -332,7 +481,7 @@ func ListPermissions(w http.ResponseWriter, r *http.Request) {
 
 	e, ok := vars["endat"]
 	if !ok {
-		log.Printf("There is no end to the requested list of permissions")
+		log.Printf("There is no end to the requested list of users")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -353,7 +502,7 @@ func ListPermissions(w http.ResponseWriter, r *http.Request) {
 
 	usr := r.Context().Value(CtxUser).(*model.User)
 
-	rsp := listPermissionBL(startAt, endAt, usr.CompanyID)
+	rsp := listUsersBL(startAt, endAt, usr.CompanyID)
 
 	writeResponse(rsp, w)
 }

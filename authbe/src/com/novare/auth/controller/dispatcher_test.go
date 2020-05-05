@@ -28,11 +28,13 @@ import (
 	"bytes"
 	"com/novare/auth/model"
 	"com/novare/utils"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/gorilla/mux"
 )
@@ -598,4 +600,159 @@ func TestSuggestNewUniqueID(t *testing.T) {
 
 	performCompanyCleanup(company.ID.Hex(), t)
 
+}
+
+func TestPermissionsInsertUpdateRemove(t *testing.T) {
+
+	var p permObj
+	p.Description = "MyDescription"
+	p.Permission = "ANY_PERMISSION"
+
+	buf, err := json.Marshal(p)
+	if err != nil {
+		t.Errorf("The following error occurred while inserting the permission: [%s]", err)
+		return
+	}
+
+	usr := model.NewUser()
+	usr.Username = "superuser"
+	usr.SetPassword("123456789#")
+	usr.CompanyID = "COMPANYID"
+
+	//Add Permission
+	r := httptest.NewRequest("PUT", "/jwt/permission", bytes.NewReader(buf))
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, CtxUser, usr)
+	r = r.WithContext(ctx)
+
+	w := httptest.NewRecorder()
+	handler := http.HandlerFunc(InsertPermission)
+
+	handler.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Errorf("INSERT -> Expected code: StatusOK but got code: %d instead", code)
+	}
+
+	var permR permResp
+	err = json.Unmarshal(w.Body.Bytes(), &permR)
+	if err != nil {
+		t.Errorf("The object was not properly unmarshalled: [%s]", err)
+	}
+
+	if utf8.RuneCountInString(permR.ID) == 0 {
+		t.Error("The value of the ID is empty!")
+	}
+
+	permission, err := model.FindPermissionByID(permR.ID)
+	if err != nil {
+		t.Errorf("There was an error locating the permission object: [%s]", err)
+	}
+
+	//-------TEST UPDATE -------------
+
+	vars := map[string]string{
+		"permid": permR.ID,
+	}
+
+	p.ID = permission.ID.Hex()
+	p.Description = "JUST ANOTHER DESCRIPTION"
+	buf, _ = json.Marshal(p)
+	r = httptest.NewRequest("POST", "/jwt/permission", bytes.NewBuffer(buf))
+	ctx = r.Context()
+	ctx = context.WithValue(ctx, CtxUser, usr)
+	r = r.WithContext(ctx)
+
+	r = mux.SetURLVars(r, vars)
+
+	handler = http.HandlerFunc(UpdatePermission)
+	w = httptest.NewRecorder()
+
+	handler.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Errorf("UPDATE -> Expected code: StatusOK but got code: %d instead", code)
+	}
+
+	permission, err = model.FindPermissionByID(permission.ID.Hex())
+	if err != nil {
+		t.Errorf("The permission with ID:[%s] was not located", permR.ID)
+	}
+
+	if permission.Description != "JUST ANOTHER DESCRIPTION" {
+		t.Errorf("The permission should have been updated:[%s]", permission.Description)
+	}
+
+	//-------LAST TEST ------ REMOVE THE PERMISSION
+
+	r = httptest.NewRequest("DELETE", "/jwt/permission/{permid}", bytes.NewBuffer(buf))
+	ctx = r.Context()
+	ctx = context.WithValue(ctx, CtxUser, usr)
+	r = r.WithContext(ctx)
+
+	r = mux.SetURLVars(r, vars)
+
+	handler = http.HandlerFunc(RemovePermission)
+	w = httptest.NewRecorder()
+
+	handler.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Errorf("REMOVE -> There was an error removing the permission with ID: [%s]", permR.ID)
+	}
+
+}
+
+func TestListPermissions(t *testing.T) {
+
+	for i := 1; i <= 10; i++ {
+		perm := model.NewPermission()
+		perm.CompanyID = "COMPANYID"
+		perm.Description = fmt.Sprintf("Description %d", i)
+		perm.Permission = fmt.Sprintf("PERMISSION_%d", i)
+		err := model.InsertPermission(perm)
+		if err != nil {
+			t.Errorf("The following error occurred: %s", err)
+		}
+	}
+
+	usr := model.NewUser()
+	usr.Username = "superuser"
+	usr.SetPassword("123456789#")
+	usr.CompanyID = "COMPANYID"
+
+	r := httptest.NewRequest("GET", "/jwt/permissions", nil)
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, CtxUser, usr)
+	r = r.WithContext(ctx)
+
+	vars := map[string]string{
+		"startat": "0",
+		"endat":   "1000",
+	}
+
+	r = mux.SetURLVars(r, vars)
+
+	w := httptest.NewRecorder()
+	h := http.HandlerFunc(ListPermissions)
+
+	h.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Errorf("The following error occurred: %d", code)
+	}
+
+	var lst listPermResp
+	err := json.Unmarshal(w.Body.Bytes(), &lst)
+	if err != nil || lst.Status != StatusSuccess {
+		t.Errorf("The following error occurred while unmarshalling the list response: [%s]", lst.Status)
+	}
+
+	if len(lst.Perms) != 10 {
+		t.Errorf("The number of objects should have been 10 but, it is %d instead", len(lst.Perms))
+	}
+
+	//Now as the last step we need to remove all the permissions
+	for i := range lst.Perms {
+		err := model.RemovePermissionByID(lst.Perms[i].ID)
+		if err != nil {
+			t.Errorf("Error removing the permission with ID:[%s]", lst.Perms[i].ID)
+		}
+	}
 }

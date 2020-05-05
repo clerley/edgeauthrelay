@@ -27,6 +27,7 @@ package model
 import (
 	"com/novare/dbs"
 	"errors"
+	"log"
 	"unicode/utf8"
 
 	"gopkg.in/mgo.v2/bson"
@@ -113,5 +114,8 @@ func ListPermissionsByCompanyID(companyID string) ([]Permission, error) {
 
 	var permissions []Permission
 	err := mDBPerm.List(&permissions, bson.M{"companyid": companyID})
+	if err != nil {
+		log.Printf("There was an database error:[%s]", err)
+	}
 	return permissions, err
 }

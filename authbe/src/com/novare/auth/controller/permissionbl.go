@@ -140,6 +140,11 @@ func listPermissionBL(startAt int64, endAt int64, companyID string) listPermResp
 		endAt = int64(len(permModel))
 	}
 
+	//Lat check if there is no elements.
+	if startAt > endAt {
+		return perms
+	}
+
 	permModel = permModel[startAt:endAt]
 
 	for i := range permModel {
