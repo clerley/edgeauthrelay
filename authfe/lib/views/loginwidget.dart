@@ -25,6 +25,7 @@ SOFTWARE.
 import 'package:authfe/views/company.dart';
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
+import 'mainmenu.dart';
 
 class LoginWidget extends StatefulWidget {
 
@@ -121,7 +122,7 @@ class _LoginState extends State<LoginWidget> {
                           textColor: Colors.white,
                           child: Text(this._loginText, style: Theme.of(context).primaryTextTheme.button,),
                           onPressed: () { 
-                            print ("Testing It"); 
+                            Navigator.push(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),)

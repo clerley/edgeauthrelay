@@ -78,7 +78,8 @@ class _CompanyState extends State<CompanyBody> {
   String _remotelyManagedText;
   bool _remoteAuth;
   bool _isLocation;
-  
+  String _unit;
+  List<DropdownMenuItem<String>> _unitsMenuItems;
 
   _CompanyState(this._language) {
     this._company = getText("company", _language);
@@ -91,6 +92,19 @@ class _CompanyState extends State<CompanyBody> {
     this._remotelyManagedText = getText("remotelyManaged", _language);
     this._remoteAuth = false;
     this._isLocation = false;
+    this._unit = "Minute";
+    this._unitsMenuItems = _getUnitMenuItems();
+  }
+
+  List<DropdownMenuItem<String>> _getUnitMenuItems() {
+    List<DropdownMenuItem<String>> lst = new List<DropdownMenuItem<String>>();
+    DropdownMenuItem<String> item = new DropdownMenuItem<String>(child: Text("Minute"),value: "Minute");
+    lst.add(item);
+
+    item = new DropdownMenuItem<String>(child: Text("Week"), value: "Week");
+    lst.add(item);
+
+    return lst;
   }
 
   @override
@@ -283,7 +297,17 @@ class _CompanyState extends State<CompanyBody> {
                       Spacer(),
                       Expanded(
                         flex: 24,
-                        child: TextField(keyboardType: TextInputType.number,),
+                        //child: TextField(keyboardType: TextInputType.number,),
+                        child: new DropdownButton<String>(
+                              value: _unit,
+                              items: _unitsMenuItems,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _unit = newValue;
+                                }
+                              );
+                            },
+                        ),
                       )
 
                   ],)
