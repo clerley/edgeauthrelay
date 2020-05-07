@@ -1,10 +1,11 @@
 import "package:flutter/material.dart";
 import "../i18n/language.dart";
+import "../appbar/menudrawer.dart";
 
 
 class MainMenu extends StatefulWidget {
 
-  String _language;
+  final String _language;
 
   MainMenu(this._language);
 
@@ -29,7 +30,9 @@ class _MainMenuState extends State<MainMenu> {
       appBar: AppBar(
         title: Text(this._title),
       ),
-      body: SingleChildScrollView(child: _MainMenuBody(),) 
+      body: SingleChildScrollView(child: _MainMenuBody(),
+      ) ,
+      drawer: getDrawer(this._language),
       );
   }
 
@@ -40,7 +43,9 @@ class _MainMenuBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column();
+    return Column(
+
+    );
   }
 
 }

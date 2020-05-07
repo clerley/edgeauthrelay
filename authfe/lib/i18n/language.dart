@@ -28,7 +28,11 @@ Map<String, Map<String, String>> languages = {
                    "passwordExp"     : "Password Expiration",
                    "passwordUnit"    : "Password Unit",
                    "save"            : "Save",
-                   "cancel"          : "Cancel",                  
+                   "cancel"          : "Cancel",
+                   "roles"           : "Roles",
+                   "permissions"     : "Permissions",
+                   "users"           : "Users",
+                   "companies"       : "Companies",                
                   }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -55,7 +59,10 @@ Map<String, Map<String, String>> languages = {
                    "passwordUnit"    : "Password Unit",
                    "save"            : "Save",
                    "cancel"          : "Cancel",                  
-
+                   "roles"           : "Roles",
+                   "permissions"     : "Permissions",
+                   "users"           : "Users",
+                   "companies"       : "Companies", 
                    } 
 };
 
