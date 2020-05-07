@@ -471,32 +471,9 @@ type listUserResp struct {
 
 //ListUsers ...
 func ListUsers(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	s, ok := vars["startat"]
-	if !ok {
-		log.Printf("There was an error retrieving the the start from the request")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
-	e, ok := vars["endat"]
-	if !ok {
-		log.Printf("There is no end to the requested list of users")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	startAt, err := strconv.ParseInt(s, 10, 64)
+	startAt, endAt, err := getStartEnd(w, r)
 	if err != nil {
-		log.Printf("The following error occurred while retrieving the startAt variable: [%s]", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	endAt, err := strconv.ParseInt(e, 10, 64)
-	if err != nil {
-		log.Printf("The following error occurred while retrieving the endAt variable: [%s]", err)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
