@@ -122,7 +122,7 @@ class _LoginState extends State<LoginWidget> {
                           textColor: Colors.white,
                           child: Text(this._loginText, style: Theme.of(context).primaryTextTheme.button,),
                           onPressed: () { 
-                            Navigator.push(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
+                            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),)

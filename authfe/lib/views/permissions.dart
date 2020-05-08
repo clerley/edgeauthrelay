@@ -21,55 +21,72 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import 'package:flutter/material.dart';
+import '../appbar/menudrawer.dart';
+import '../i18n/language.dart';
 
-import "package:flutter/material.dart";
-import "../i18n/language.dart";
-import "../appbar/menudrawer.dart";
-
-
-class MainMenu extends StatefulWidget {
+class PermissionsView extends StatefulWidget {
 
   final String _language;
 
-  MainMenu(this._language);
+  PermissionsView(this._language);
+
 
   @override
-  State<StatefulWidget> createState() => _MainMenuState(this._language);
+  State<StatefulWidget> createState() => _PermissionsState(this._language);
 
 }
 
-class _MainMenuState extends State<MainMenu> {
+class _PermissionsState extends State<PermissionsView> {
 
-  String _language;
-  String _title;
+  final String _language;
 
-  _MainMenuState(this._language) {
-    this._title = getText("title", this._language);
-  }
-
+  _PermissionsState(this._language);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    
+     return Scaffold(
       appBar: AppBar(
-        title: Text(this._title),
+        title: Text(getText("title", this._language)),
       ),
-      body: SingleChildScrollView(child: _MainMenuBody(),
-      ) ,
-      drawer: DistAuthDrawer(this._language),
+      body: SingleChildScrollView(child: _PermissionBody(this._language),)
+      ,
+      drawer: DistAuthDrawer(this._language), 
       );
+ 
   }
+}
+
+class _PermissionBody extends StatefulWidget {
+
+  final String _language;
+
+  _PermissionBody(this._language);
+
+  @override
+  State<StatefulWidget> createState() => _PermissionBodyState(this._language);
 
 }
 
-class _MainMenuBody extends StatelessWidget {
+class _PermissionBodyState extends State<_PermissionBody> {
 
+  final String _language;
+
+  _PermissionBodyState(this._language);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+     return  Center(
+              child: Container(
+                  child: Column(children: <Widget>[
 
-    );
+                    Text(getText("permissions", this._language)),
+
+                  ],
+                ),
+              ),
+            );
   }
 
 }

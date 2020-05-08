@@ -32,7 +32,8 @@ Map<String, Map<String, String>> languages = {
                    "roles"           : "Roles",
                    "permissions"     : "Permissions",
                    "users"           : "Users",
-                   "companies"       : "Companies",                
+                   "companies"       : "Companies", 
+                   "logout"          : "Logout",               
                   }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -62,7 +63,8 @@ Map<String, Map<String, String>> languages = {
                    "roles"           : "Roles",
                    "permissions"     : "Permissions",
                    "users"           : "Users",
-                   "companies"       : "Companies", 
+                   "companies"       : "Companies",
+                   "logout"          : "Logout", 
                    } 
 };
 
