@@ -756,3 +756,88 @@ func TestListPermissions(t *testing.T) {
 		}
 	}
 }
+
+func TestUserInsertUpdateRemove(t *testing.T) {
+
+	userModel := model.NewUser()
+	userModel.CompanyID = "MyCOMPANY"
+	userModel.Name = "MyNAME"
+
+	perm := model.NewPermission()
+	perm.CompanyID = "MyCOMPANY"
+	perm.Description = "Permission"
+	perm.Permission = "PERMISSION_ANY"
+	err := model.InsertPermission(perm)
+	if err != nil {
+		t.Errorf("The following error occurred: <%s>", err)
+		return
+	}
+
+	var usr usrObj
+	usr.Name = "Testing Name"
+	usr.IsThing = "false"
+	usr.ConfirmPassword = "@1234567A"
+	usr.Password = "@1234567A"
+	usr.Permissions = append(usr.Permissions, *perm)
+	usr.Username = "username"
+
+	buf, err := json.Marshal(&usr)
+	if err != nil {
+		t.Errorf("Could not convert the object into a json binary representation:[%s]", err)
+		return
+	}
+
+	r := httptest.NewRequest("POST", "/jwt/user", bytes.NewBuffer(buf))
+	w := httptest.NewRecorder()
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, CtxUser, userModel)
+	r = r.WithContext(ctx)
+
+	handler := http.HandlerFunc(InsertUser)
+
+	handler.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Errorf("The code expected was 200 but, received %d instead", code)
+	}
+
+	usr.Name = "BillyBob"
+	buf, err = json.Marshal(&usr)
+	if err != nil {
+		t.Errorf("The error response was not null when marshalling the object: {%s}", err)
+	}
+	r = httptest.NewRequest("GET", "/jwt/user/{username}", bytes.NewReader(buf))
+
+	var vars = map[string]string{
+		"username": "username",
+	}
+
+	ctx = r.Context()
+	ctx = context.WithValue(ctx, CtxUser, userModel)
+	r = r.WithContext(ctx)
+
+	r = mux.SetURLVars(r, vars)
+
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(UpdateUser)
+
+	handler.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Errorf("There was an error updating the user, the expected code was 200 the received code was :%d", code)
+	}
+
+	r = httptest.NewRequest("DELETE", "/jwt/user/{username}", nil)
+	ctx = r.Context()
+	ctx = context.WithValue(ctx, CtxUser, userModel)
+	r = r.WithContext(ctx)
+
+	r = mux.SetURLVars(r, vars)
+
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(RemoveUser)
+
+	handler.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Errorf("Unexpected response received. Expected 200 but, received: %d", code)
+	}
+
+}
