@@ -483,3 +483,111 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	writeResponse(rsp, w)
 }
+
+type roleObj struct {
+	ID          string             `json:"id"`          //
+	Description string             `json:"name"`        //Role description
+	Permissions []model.Permission `json:"permissions"` //List of permissions for the role
+}
+
+type roleResp struct {
+	Status string  `json:"status"`
+	Role   roleObj `json:"role"`
+}
+
+//InsertRole ...
+func InsertRole(w http.ResponseWriter, r *http.Request) {
+
+	usr := r.Context().Value(CtxUser).(*model.Role)
+
+	var rq roleObj
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&rq)
+	if err != nil {
+		log.Printf("The following error occurred when decoding the role request: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rp := insertRoleBL(usr.CompanyID, &rq)
+	if rp == nil || rp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rp, w)
+
+}
+
+//UpdateRole ...
+func UpdateRole(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	usr := r.Context().Value(CtxUser).(*model.Role)
+
+	roleID, ok := vars["roleid"]
+	if !ok {
+		log.Printf("The user ID was not defined!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var rq usrObj
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&rq)
+	if err != nil {
+		log.Printf("The following error occurred when decoding the role request: [%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rp := updateUserBL(roleID, usr.CompanyID, &rq)
+	if rp == nil || rp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rp, w)
+
+}
+
+//RemoveRole ...
+func RemoveRole(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	usr := r.Context().Value(CtxUser).(*model.User)
+
+	roleID, ok := vars["roleid"]
+	if !ok {
+		log.Printf("The role ID was not defined!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := removeRoleBL(roleID, usr.CompanyID)
+
+	if rsp == nil || rsp.Status == StatusFailure {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	writeResponse(rsp, w)
+}
+
+type listRoleResp struct {
+	Status string `json:"status"`
+	Roles  []roleObj
+}
+
+//ListRoles ...
+func ListRoles(w http.ResponseWriter, r *http.Request) {
+
+	startAt, endAt, err := getStartEnd(w, r)
+	if err != nil {
+		return
+	}
+
+	usr := r.Context().Value(CtxUser).(*model.Role)
+
+	rsp := listRolesBL(startAt, endAt, usr.CompanyID)
+
+	writeResponse(rsp, w)
+}
