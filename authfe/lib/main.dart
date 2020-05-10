@@ -50,11 +50,12 @@ class MyApp extends StatelessWidget {
             primaryTextTheme: TextTheme(
                 bodyText1: TextStyle(fontSize: 22.0, color:Colors.white),
                 button: TextStyle(fontSize: 16.0, color:Colors.white),
-                bodyText2: TextStyle(fontSize: 16.0, color: Colors.black),
+                bodyText2: TextStyle(fontSize: 16.0, color: Colors.yellow),
             ),
 
             inputDecorationTheme: InputDecorationTheme(
               fillColor: Color(0xff7b92ae),
+              //fillColor: Colors.black,
               filled: true,
             ),
 
