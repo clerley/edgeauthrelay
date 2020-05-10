@@ -25,7 +25,7 @@ SOFTWARE.
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../views/permissions.dart';
-import '../views/loginwidget.dart';
+import '../main.dart';
 
 
 
@@ -46,9 +46,9 @@ class DistAuthDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text(getText("title", this._language)),
+            child: Text(getText("title", this._language), style: TextStyle(fontSize:22.0),),
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Theme.of(context).backgroundColor,
             ),
           ),
           ListTile(
@@ -74,7 +74,9 @@ class DistAuthDrawer extends StatelessWidget {
           ListTile(
             title: Text(getText("logout", this._language)),
             onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginWidget()),);
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                    builder: (context) => MyHomePage(title:getText("title", this._language))),
+              );
             },
           ),
 

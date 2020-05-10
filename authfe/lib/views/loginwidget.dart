@@ -83,7 +83,7 @@ class _LoginState extends State<LoginWidget> {
 
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                child: TextField(),
+                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,),
               ),
 
               Container(
@@ -94,7 +94,7 @@ class _LoginState extends State<LoginWidget> {
 
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                child: TextField(),
+                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,),
               ),
 
               Container(
@@ -105,6 +105,7 @@ class _LoginState extends State<LoginWidget> {
 
               TextField(
                 obscureText: true,
+                  style: Theme.of(context).primaryTextTheme.bodyText2
               ),
 
               Divider(

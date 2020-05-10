@@ -133,7 +133,7 @@ class _CompanyState extends State<CompanyBody> {
             ),
 
             Container(
-              child: TextField(),
+              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
             ),
 
             Container(
@@ -142,7 +142,7 @@ class _CompanyState extends State<CompanyBody> {
             ),
 
             Container(
-              child: TextField(),
+              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
             ),
             
             Container(
@@ -152,12 +152,12 @@ class _CompanyState extends State<CompanyBody> {
 
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: TextField(),
+              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
             ),
 
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: TextField(),
+              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
             ),
             Row(children: <Widget>[
                Expanded(
@@ -194,7 +194,7 @@ class _CompanyState extends State<CompanyBody> {
                 flex: 24,
                   child: Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(),
+                  child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
                 ),
               ),
 
@@ -204,7 +204,7 @@ class _CompanyState extends State<CompanyBody> {
                 flex: 12,
                   child: Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(),
+                  child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
                 ),
               ),
 
@@ -214,7 +214,7 @@ class _CompanyState extends State<CompanyBody> {
                 flex: 24,
                 child: Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(),
+                  child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
                 ),
               ),
             ],
@@ -252,7 +252,7 @@ class _CompanyState extends State<CompanyBody> {
             ),
 
             Container(
-              child:TextField()
+              child:TextField(style: Theme.of(context).primaryTextTheme.bodyText2)
             ,),
 
             Container(
@@ -287,12 +287,14 @@ class _CompanyState extends State<CompanyBody> {
                         flex: 24,
                         child: TextField(
                           keyboardType: TextInputType.number,
+                          style: Theme.of(context).primaryTextTheme.bodyText2,
                           ),
                       ),
                       Spacer(),
                       Expanded(
                         flex: 24,
-                        child: TextField(keyboardType: TextInputType.number,),
+                        child: TextField(keyboardType: TextInputType.number,
+                                style: Theme.of(context).primaryTextTheme.bodyText2,),
                       ),
                       Spacer(),
                       Expanded(

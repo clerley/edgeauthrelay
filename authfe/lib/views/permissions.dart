@@ -77,16 +77,83 @@ class _PermissionBodyState extends State<_PermissionBody> {
 
   @override
   Widget build(BuildContext context) {
-     return  Center(
-              child: Container(
-                  child: Column(children: <Widget>[
+     return Center(
+      child: Container(
+        margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+        padding:EdgeInsets.all(10.0),
+        width: 900.0,
+        decoration: BoxDecoration(
+          color: Theme.of(context).backgroundColor,
+          borderRadius: BorderRadius.all(Radius.circular(10.0))
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+              child: Text(getText("permissions", this._language), 
+                      style: Theme.of(context).primaryTextTheme.bodyText1,),
+            ),
 
-                    Text(getText("permissions", this._language)),
+            Container(
+              child: Text(getText("permission", this._language)),
+            ),
 
+            Container(
+              child: TextField(
+                  style: Theme.of(context).primaryTextTheme.bodyText2),
+            ),
+
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              child: Text(getText("description", this._language),),
+            ),
+
+            Container(
+              child: TextField(
+                  style: Theme.of(context).primaryTextTheme.bodyText2),
+            ),
+
+            Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                        padding: EdgeInsets.all(5.0),
+                        child: OutlineButton(
+                          textColor: Colors.white,
+                          child: Text(getText("save", this._language), style: Theme.of(context).primaryTextTheme.button,),
+                          onPressed: () { 
+                            
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),)
+                        ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: OutlineButton(
+                        textColor: Colors.white,
+                        onPressed: () {
+                          
+                        },
+                        child: Text(getText("cancel", this._language), style: Theme.of(context).primaryTextTheme.button,),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      )
+                    ),
                   ],
                 ),
               ),
-            );
+
+
+          ]
+        ),
+      ),
+    );
+          
   }
 
 }
