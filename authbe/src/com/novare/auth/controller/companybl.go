@@ -30,6 +30,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -163,4 +164,45 @@ func suggestCompanyUniqueIDBL(uniqueID string) *checkSuggestIDResp {
 
 	return &rsp
 
+}
+
+func updateCompanyBL(req *updateCompanyReq) *updateCompanyResponse {
+
+	var rsp updateCompanyResponse
+	rsp.Status = StatusFailure
+
+	companyModel, err := model.FindCompanyByUniqueID(req.UniqueID)
+	if err != nil {
+		return &rsp
+	}
+
+	companyModel.Address1 = req.Address1
+	companyModel.Address2 = req.Address2
+	companyModel.AuthRelay = req.AuthRelay
+	companyModel.City = req.City
+	if req.IsInLocation == "true" {
+		companyModel.IsInLocation = true
+	} else {
+		companyModel.IsInLocation = false
+	}
+	companyModel.Name = req.Name
+	if strings.ToLower(req.RemotelyManaged) == "true" || strings.ToLower(req.RemotelyManaged) == "yes" {
+		companyModel.RemotelyManaged = true
+	} else {
+		companyModel.RemotelyManaged = false
+	}
+	companyModel.Settings = req.Settings
+	companyModel.State = req.State
+	companyModel.Zip = req.Zip
+
+	err = model.SaveCompany(companyModel)
+	if err != nil {
+		log.Printf("Error saving the Company with UniqueID: [%s]", err)
+		return &rsp
+	}
+
+	rsp.Status = StatusSuccess
+	rsp.UpdateCompanyReq = *req
+
+	return &rsp
 }

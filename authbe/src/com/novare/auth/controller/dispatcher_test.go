@@ -841,3 +841,65 @@ func TestUserInsertUpdateRemove(t *testing.T) {
 	}
 
 }
+
+func TestUpdateCompany(t *testing.T) {
+
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISUNIQUEID"
+	req.Password = "@123ABC789"
+	req.ConfirmPassword = req.Password
+
+	rsp := createCompanyBL(req)
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The company should have been created but it did not!")
+		return
+	}
+
+	var ureq updateCompanyReq
+	ureq.Address1 = req.Address1
+	ureq.Address2 = req.Address2
+	ureq.AuthRelay = req.AuthRelay
+	ureq.City = req.City
+	ureq.IsInLocation = req.IsInLocation
+	ureq.Name = req.Name
+	ureq.RemotelyManaged = req.RemotelyManaged
+	ureq.Settings = req.Settings
+	ureq.State = req.State
+	ureq.UniqueID = req.UniqueID
+	ureq.Zip = req.Zip
+	ureq.Address1 = "300 Nowhere St."
+	ureq.City = "NowhereCity"
+
+	buf, err := json.Marshal(&ureq)
+	if err != nil {
+		t.Errorf("The error was not nil! Error: [%s]", err)
+	}
+
+	usr := model.NewUser()
+	usr.CompanyID = rsp.CompanyID
+	usr.Username = "Test"
+
+	r := httptest.NewRequest("PUT", "/company", bytes.NewReader(buf))
+	w := httptest.NewRecorder()
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, CtxUser, usr)
+	r = r.WithContext(ctx)
+
+	handler := http.HandlerFunc(UpdateCompany)
+
+	handler.ServeHTTP(w, r)
+	if code := w.Code; code != http.StatusOK {
+		t.Error("The status should have been OK but it is not.")
+	}
+
+	performCompanyCleanup(rsp.CompanyID, t)
+}

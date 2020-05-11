@@ -93,6 +93,42 @@ func CreateCompany(w http.ResponseWriter, r *http.Request) {
 
 }
 
+type updateCompanyReq struct {
+	Name            string                `json:"name,omitempty"`
+	Address1        string                `json:"address1,omitempty"`
+	Address2        string                `json:"address2,omitempty"`
+	City            string                `json:"city,omitempty"`
+	State           string                `json:"state,omitempty"`
+	Zip             string                `json:"zip,omitempty"`
+	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
+	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
+	UniqueID        string                `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
+	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
+}
+
+type updateCompanyResponse struct {
+	Status           string           `json:"status"`
+	UpdateCompanyReq updateCompanyReq `json:"companyInfo"`
+}
+
+//UpdateCompany - Update the company information
+func UpdateCompany(w http.ResponseWriter, r *http.Request) {
+
+	var req updateCompanyReq
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&req)
+	if err != nil {
+		log.Printf("There was an error unmarshalling the update company request")
+		return
+	}
+
+	rsp := updateCompanyBL(&req)
+
+	writeResponse(rsp, w)
+
+}
+
 type getCompanyResponse struct {
 	Status   string `json:"status"`
 	UniqueID string `json:"uniqueID"`

@@ -209,3 +209,54 @@ func TestSuggestUniqueID(t *testing.T) {
 
 	performCompanyCleanup(rsp.CompanyID, t)
 }
+
+func TestUpdateCompanBL(t *testing.T) {
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISUNIQUEID"
+	req.Password = "@123ABC789"
+	req.ConfirmPassword = req.Password
+
+	rsp := createCompanyBL(req)
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The company should have been created but it did not!")
+		return
+	}
+
+	var ureq updateCompanyReq
+	ureq.Address1 = req.Address1
+	ureq.Address2 = req.Address2
+	ureq.AuthRelay = req.AuthRelay
+	ureq.City = req.City
+	ureq.IsInLocation = req.IsInLocation
+	ureq.Name = req.Name
+	ureq.RemotelyManaged = req.RemotelyManaged
+	ureq.Settings = req.Settings
+	ureq.State = req.State
+	ureq.UniqueID = req.UniqueID
+	ureq.Zip = req.Zip
+
+	ureq.Address1 = "300 Nowhere St."
+	ureq.City = "NowhereCity"
+	ursp := updateCompanyBL(&ureq)
+
+	if ursp.Status != StatusSuccess {
+		t.Errorf("The response to the request to update the company was not successful!")
+	}
+
+	company, err := model.FindCompanyByUniqueID(ursp.UpdateCompanyReq.UniqueID)
+	if err != nil {
+		t.Errorf("There was an error retrieving the company with ID: [%s]", err)
+	}
+
+	performCompanyCleanup(company.ID.Hex(), t)
+
+}
