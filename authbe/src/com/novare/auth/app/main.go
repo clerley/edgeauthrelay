@@ -56,12 +56,31 @@ func main() {
 	//-------------------------------------------------------------------------
 	//Permissions
 	//-------------------------------------------------------------------------
-
-	//Add
 	mux.Handle("/jwt/permission", controller.CheckAuthorizedMW(http.HandlerFunc(controller.InsertPermission), "ADD_PERMISSION")).Methods("PUT")
 	mux.Handle("/jwt/permission/{permid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdatePermission), "UPDATE_PERMISSION")).Methods("POST")
 	mux.Handle("/jwt/permission/{permid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.RemovePermission), "REMOVE_PERMISSION")).Methods("DELETE")
 	mux.Handle("/jwt/permission/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListPermissions), "GET_PERMISSION")).Methods("GET")
+
+	//-------------------------------------------------------------------------
+	//Roles
+	//-------------------------------------------------------------------------
+	mux.Handle("/jwt/role", controller.CheckAuthorizedMW(http.HandlerFunc(controller.InsertRole), "ADD_ROLE")).Methods("PUT")
+	mux.Handle("/jwt/role/{roleid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateRole), "UPDATE_ROLE")).Methods("POST")
+	mux.Handle("/jwt/role/{roleid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.RemoveRole), "REMOVE_ROLE")).Methods("DELETE")
+	mux.Handle("/jwt/role/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListRoles), "GET_ROLE")).Methods("GET")
+
+	//-------------------------------------------------------------------------
+	//Users
+	//-------------------------------------------------------------------------
+	mux.Handle("/jwt/user", controller.CheckAuthorizedMW(http.HandlerFunc(controller.InsertRole), "ADD_USER")).Methods("PUT")
+	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateRole), "UPDATE_USER")).Methods("POST")
+	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.RemoveRole), "REMOVE_USER")).Methods("DELETE")
+	mux.Handle("/jwt/role/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListRoles), "GET_USER")).Methods("GET")
+
+	//-------------------------------------------------------------------------
+	//Users
+	//-------------------------------------------------------------------------
+	mux.Handle("/jwt/company/{uniqueid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateCompany), "UPDATE_COMPANY")).Methods("POST")
 
 	grantHandler := http.HandlerFunc(controller.GrantRequest)
 	mux.Handle("/jwt/grant/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")
