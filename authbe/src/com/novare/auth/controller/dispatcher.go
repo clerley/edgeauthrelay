@@ -635,15 +635,14 @@ func ListRoles(w http.ResponseWriter, r *http.Request) {
 //CreateCompanyRemote - Remote requests purposes.
 func CreateCompanyRemote(w http.ResponseWriter, r *http.Request) {
 
-	vars := r.URL.Query()
-	groupOwnerID := vars["group"][0]
+	groupOwnerID := r.URL.Query().Get("group")
 	if utf8.RuneCountInString(groupOwnerID) == 0 {
 		log.Printf("Invalid group owner ID... Not defined")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	apiKey := vars["apikey"][0]
+	apiKey := r.URL.Query().Get("apikey")
 	if utf8.RuneCountInString(apiKey) == 0 {
 		log.Printf("The API Key was not provided")
 		w.WriteHeader(http.StatusBadRequest)
