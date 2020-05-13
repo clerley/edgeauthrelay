@@ -93,6 +93,9 @@ type Company struct {
 	RemotelyManaged bool            `json:"remotelyManaged"` //Is this Auth system managed remotely
 	AuthRelay       string          `json:"authRelay"`       //If it is remotely managed, we need the path to it.
 	UniqueID        string          `json:"uniqueID"`        //This must be provided in the request
+	APIKey          string          `json:"apiKey"`          //The key required to access remote servers
+	GroupOwnerID    string          `json:"groupOwnerID"`    //Group Owner ID
+	MemberOfGroups  []string        `json:"memberOfGroups"`  //Groups this Company Belongs to
 	Settings        CompanySettings `json:"settings"`        //Settings
 }
 

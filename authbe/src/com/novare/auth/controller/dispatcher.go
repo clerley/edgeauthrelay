@@ -49,6 +49,9 @@ type createCompanyReq struct {
 	Password        string                `json:"password"`                  //No empty allowed. This is required. The user is superuser
 	ConfirmPassword string                `json:"confirmPassword"`           //Confirm the password when creating the account
 	UniqueID        string                `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
+	APIKey          string                `json:"apiKey"`                    //APIKey
+	GroupOwnerID    string                `json:"groupOwnerID"`              //Group Owner ID
+	MemberOfGroups  []string              `json:"memberOfGroups"`            //Groups this Company Belongs to
 	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
 }
 

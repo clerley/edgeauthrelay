@@ -25,18 +25,104 @@ SOFTWARE.
 package controller
 
 import (
+	"bytes"
 	"com/novare/auth/model"
 	"com/novare/utils"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"gopkg.in/mgo.v2/bson"
 )
+
+func isValidRemotelyManaged(req createCompanyReq) error {
+
+	//It seems like the flag calls for remotely managed.
+
+	flagStr := strings.ToLower(req.RemotelyManaged)
+	if flagStr == "true" || flagStr == "yes" || flagStr == "y" {
+
+		log.Printf("The company with ID: %s is supposed to be remotely managed", req.UniqueID)
+		if utf8.RuneCountInString(req.AuthRelay) < 10 {
+			log.Printf("The remote Auth host name is not valid")
+			return errors.New("InvalidAuthRelay")
+		}
+
+		if utf8.RuneCountInString(req.APIKey) == 0 {
+			log.Printf("The remote APIKey was not properly populated")
+			return errors.New("InvalidAPIKey")
+		}
+
+		if utf8.RuneCountInString(req.GroupOwnerID) == 0 {
+			log.Printf("The GroupOwnerID was not defined for the request, the field is required for remote configuration")
+			return errors.New("InvalidGroupOwner")
+		}
+	}
+
+	return nil
+}
+
+func requestRemoteCompanyBL(req createCompanyReq) *createCompanyResp {
+
+	var resp createCompanyResp
+	resp.Status = StatusFailure
+
+	url := fmt.Sprintf("%s/createremotecompany?apikey=%s&group=%s", req.AuthRelay, req.APIKey, req.GroupOwnerID)
+	//We need to marshall the request
+	buf, err := json.Marshal(req)
+	if err != nil {
+		log.Printf("An error occurred while processing the error response: [%s]", err)
+		return &resp
+	}
+
+	r, err := http.Post(url, "application/json", bytes.NewReader(buf))
+	if err != nil {
+		log.Printf("The request was not properly created! ERROR: [%s]", err)
+		return &resp
+	}
+
+	if r.StatusCode != http.StatusOK {
+		log.Printf("The server replied with the status code: %d", r.StatusCode)
+		return &resp
+	}
+
+	jdec := json.NewDecoder(r.Body)
+	err = jdec.Decode(&resp)
+	if err != nil {
+		log.Printf("The response did not contain a valid JSON object. [%s]", err)
+		resp.Status = StatusFailure
+		return &resp
+	}
+
+	resp.Status = StatusSuccess
+	return &resp
+}
 
 func createCompanyBL(req createCompanyReq) *createCompanyResp {
 
 	company := model.NewCompany()
+	var r createCompanyResp
+	r.Status = StatusFailure
+
+	if isValidRemotelyManaged(req) != nil {
+		return &r
+	}
+
+	flagStr := strings.ToLower(req.RemotelyManaged)
+	if flagStr == "true" || flagStr == "yes" || flagStr == "y" {
+		remRsp := requestRemoteCompanyBL(req)
+		if remRsp.Status != StatusSuccess {
+			return remRsp
+		}
+		//We will use the ID from the remote server
+		log.Printf("Overwritting the ID with the remote server ID")
+		company.ID = bson.ObjectIdHex(remRsp.CompanyID)
+	}
 
 	log.Printf("Parsing the request")
 	company.Name = req.Name
@@ -62,9 +148,6 @@ func createCompanyBL(req createCompanyReq) *createCompanyResp {
 	}
 	company.AuthRelay = req.AuthRelay
 	company.UniqueID = req.UniqueID
-
-	var r createCompanyResp
-	r.Status = StatusFailure
 
 	if req.Password != req.ConfirmPassword {
 		r.Status = StatusPasswordMismatch
