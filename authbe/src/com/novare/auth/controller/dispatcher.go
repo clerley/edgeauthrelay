@@ -31,6 +31,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"unicode/utf8"
 
 	"github.com/gorilla/mux"
 )
@@ -627,6 +628,39 @@ func ListRoles(w http.ResponseWriter, r *http.Request) {
 	usr := r.Context().Value(CtxUser).(*model.Role)
 
 	rsp := listRolesBL(startAt, endAt, usr.CompanyID)
+
+	writeResponse(rsp, w)
+}
+
+//CreateCompanyRemote - Remote requests purposes.
+func CreateCompanyRemote(w http.ResponseWriter, r *http.Request) {
+
+	vars := r.URL.Query()
+	groupOwnerID := vars["group"][0]
+	if utf8.RuneCountInString(groupOwnerID) == 0 {
+		log.Printf("Invalid group owner ID... Not defined")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	apiKey := vars["apikey"][0]
+	if utf8.RuneCountInString(apiKey) == 0 {
+		log.Printf("The API Key was not provided")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var req createCompanyReq
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&req)
+
+	if err != nil {
+		log.Printf("Invalid request, the JSON payload could not be parsed!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := remoteCompanyInsertBL(apiKey, groupOwnerID, req)
 
 	writeResponse(rsp, w)
 }

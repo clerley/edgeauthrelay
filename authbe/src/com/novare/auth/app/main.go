@@ -51,6 +51,9 @@ func main() {
 	//Logout
 	mux.HandleFunc("/jwt/company/logout", controller.Logout).Methods("POST")
 
+	//Remote Create Company
+	mux.HandleFunc("/company/remote", controller.CreateCompanyRemote).Methods("POST")
+
 	//These calls below require grants
 
 	//-------------------------------------------------------------------------

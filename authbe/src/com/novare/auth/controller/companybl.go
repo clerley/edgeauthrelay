@@ -72,7 +72,7 @@ func requestRemoteCompanyBL(req createCompanyReq) *createCompanyResp {
 	var resp createCompanyResp
 	resp.Status = StatusFailure
 
-	url := fmt.Sprintf("%s/createremotecompany?apikey=%s&group=%s", req.AuthRelay, req.APIKey, req.GroupOwnerID)
+	url := fmt.Sprintf("%s/company/remote?apikey=%s&group=%s", req.AuthRelay, req.APIKey, req.GroupOwnerID)
 	//We need to marshall the request
 	buf, err := json.Marshal(req)
 	if err != nil {
@@ -288,4 +288,31 @@ func updateCompanyBL(req *updateCompanyReq) *updateCompanyResponse {
 	rsp.UpdateCompanyReq = *req
 
 	return &rsp
+}
+
+func remoteCompanyInsertBL(apiKey string, groupOwnerID string, req createCompanyReq) *createCompanyResp {
+	var rsp createCompanyResp
+	rsp.Status = StatusFailure
+
+	groupOwner, err := model.FindCompanyByID(groupOwnerID)
+	if err != nil {
+		log.Printf("There was an error retrieving the company with ID:[%s]", groupOwnerID)
+		return &rsp
+	}
+
+	if groupOwner.APIKey != apiKey {
+		log.Printf("The APIKey and the group owner API Key do not match")
+		return &rsp
+	}
+
+	if isCompanyUniqueIDTaken(req.UniqueID) {
+		log.Printf("The UniqueID specified is already taken")
+		return &rsp
+	}
+
+	req.GroupOwnerID = groupOwnerID
+	req.APIKey = apiKey
+	rspPtr := createCompanyBL(req)
+
+	return rspPtr
 }
