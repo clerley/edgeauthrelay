@@ -138,12 +138,27 @@ class _PermissionBodyState extends State<_PermissionBody> {
                         onPressed: () {
                           
                         },
+                        child: Text(getText("search", this._language), style: Theme.of(context).primaryTextTheme.button,),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      )
+                    ),
+
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: OutlineButton(
+                        textColor: Colors.white,
+                        onPressed: () {
+                          
+                        },
                         child: Text(getText("cancel", this._language), style: Theme.of(context).primaryTextTheme.button,),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       )
                     ),
+
                   ],
                 ),
               ),
@@ -153,7 +168,7 @@ class _PermissionBodyState extends State<_PermissionBody> {
         ),
       ),
     );
-          
+
   }
 
 }
