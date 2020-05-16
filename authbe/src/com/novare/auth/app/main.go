@@ -47,6 +47,7 @@ func main() {
 
 	//Login
 	mux.HandleFunc("/jwt/company/login", controller.Login).Methods("POST")
+	mux.HandleFunc("/jwt/company/machine_login", controller.LoginBySecret).Methods("POST")
 
 	//Logout
 	mux.HandleFunc("/jwt/company/logout", controller.Logout).Methods("POST")
@@ -81,9 +82,14 @@ func main() {
 	mux.Handle("/jwt/role/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListRoles), "GET_USER")).Methods("GET")
 
 	//-------------------------------------------------------------------------
-	//Users
+	//Company
 	//-------------------------------------------------------------------------
 	mux.Handle("/jwt/company/{uniqueid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateCompany), "UPDATE_COMPANY")).Methods("POST")
+
+	//-------------------------------------------------------------------------
+	//Server Sent Events
+	//-------------------------------------------------------------------------
+	mux.Handle("/jwt/events", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ServerSentEvents), "RECEIVE_EVENTS")).Methods("POST")
 
 	grantHandler := http.HandlerFunc(controller.GrantRequest)
 	mux.Handle("/jwt/grant/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")

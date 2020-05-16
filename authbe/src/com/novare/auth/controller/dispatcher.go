@@ -663,3 +663,28 @@ func CreateCompanyRemote(w http.ResponseWriter, r *http.Request) {
 
 	writeResponse(rsp, w)
 }
+
+type loginSecretReq struct {
+	UniqueID string `json:"uniqueID"`
+	Username string `json:"username"`
+	Secret   string `json:"secret"`
+	APIKey   string `json:"apiKey"`
+}
+
+//LoginBySecret ...
+func LoginBySecret(w http.ResponseWriter, r *http.Request) {
+
+	var req loginSecretReq
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&req)
+	if err != nil {
+		log.Printf("Could not unmarshall the JSON object provided in the request")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	rsp := loginBySecretBL(req)
+
+	writeResponse(rsp, w)
+
+}

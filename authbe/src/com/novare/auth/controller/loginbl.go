@@ -27,7 +27,34 @@ package controller
 import (
 	"com/novare/auth/model"
 	"log"
+	"unicode/utf8"
 )
+
+func getJWTToken(user *model.User, company *model.Company, lrsp *loginResp) *loginResp {
+
+	jwtTmp, err := model.FindJWTTokenByUserIDCompanyID(user.ID.Hex(), company.ID.Hex())
+	if err == nil {
+		log.Printf("A JWT already exist for this user and company. Removing it now")
+		model.RemoveJWTTokenByID(jwtTmp.ID.Hex())
+	}
+
+	//Now we need to create JWT token
+	jwtToken := model.NewJWTToken(user.ID.Hex(), company.ID.Hex())
+	encodedToken, ok := jwtToken.EncodeJWT()
+	if !ok {
+		log.Printf("The token could not be encoded: [%s]", encodedToken)
+		return lrsp
+	}
+
+	err = model.InsertJWTToken(jwtToken)
+	if err != nil {
+		log.Printf("There was an error inserting the JWT Token:[%s] ", err)
+		return lrsp
+	}
+	lrsp.Status = StatusSuccess
+	lrsp.SessionToken = encodedToken
+	return lrsp
+}
 
 func loginBL(lreq loginReq) *loginResp {
 
@@ -54,28 +81,43 @@ func loginBL(lreq loginReq) *loginResp {
 		return &lrsp
 	}
 
-	jwtTmp, err := model.FindJWTTokenByUserIDCompanyID(user.ID.Hex(), company.ID.Hex())
-	if err == nil {
-		log.Printf("A JWT already exist for this user and company. Removing it now")
-		model.RemoveJWTTokenByID(jwtTmp.ID.Hex())
-	}
+	r := getJWTToken(user, company, &lrsp)
+	return r
+}
 
-	//Now we need to create JWT token
-	jwtToken := model.NewJWTToken(user.ID.Hex(), company.ID.Hex())
-	encodedToken, ok := jwtToken.EncodeJWT()
-	if !ok {
-		log.Printf("The token could not be encoded: [%s]", encodedToken)
-		return &lrsp
-	}
+func loginBySecretBL(req loginSecretReq) *loginResp {
 
-	err = model.InsertJWTToken(jwtToken)
+	var resp loginResp
+	resp.Status = StatusFailure
+
+	company, err := model.FindCompanyByUniqueID(req.UniqueID)
 	if err != nil {
-		log.Printf("There was an error inserting the JWT Token:[%s] ", err)
-		return &lrsp
+		log.Printf("ERROR:[%s] Login not possible", err)
+		return &resp
 	}
 
-	//Response back
-	lrsp.SessionToken = encodedToken
-	lrsp.Status = StatusSuccess
-	return &lrsp
+	if company.APIKey != req.APIKey {
+		log.Printf("The APIKey is not valid")
+		return &resp
+	}
+
+	user, err := model.FindUserByUsernameCompanyID(req.Username, company.ID.Hex())
+	if err != nil {
+		log.Printf("Error retrieving the user:[%s]", err)
+		return &resp
+	}
+
+	if utf8.RuneCountInString(req.Secret) == 0 {
+		log.Printf("The Secret is not valid, aborting the request")
+		return &resp
+	}
+
+	if user.Secret != req.Secret {
+		log.Printf("The secret does not match, the login will be rejected")
+		return &resp
+	}
+
+	r := getJWTToken(user, company, &resp)
+
+	return r
 }

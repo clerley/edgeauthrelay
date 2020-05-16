@@ -48,6 +48,7 @@ type User struct {
 	CompanyID      string        `json:"companyID"`     //The companyID that created this user
 	Roles          []string      `json:"roles"`         //The Roles this user belongs to. Don't necessarily need a role
 	IsThing        bool          `json:"isThing"`       //This is for the devices/things that need approval
+	Secret         string        `json:"-"`             //This is the secret that should be kept with the user
 }
 
 //SetPassword -  Will set the user's password
