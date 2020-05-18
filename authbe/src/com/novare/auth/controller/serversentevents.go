@@ -30,8 +30,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"novacity.org/controller"
 )
 
 type eventsReq struct {
@@ -46,7 +44,7 @@ func ServerSentEvents(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var events eventsReq
-	usr := r.Context().Value(controller.CtxUser).(model.User)
+	usr := r.Context().Value(CtxUser).(model.User)
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&events)
