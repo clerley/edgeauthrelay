@@ -60,7 +60,10 @@ Map<String, Map<String, String>> languages = {
                    "permission"      : "Permission",         
                    "description"     : "Description",  
                    "search"          : "Search",
-                  }
+                   "search_perm"     : "Search Permissions",
+                   "search_role"     : "Search Roles",
+                   "add"             : "Add",
+                   }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
                    "title"           : "Novare Security Systems",
@@ -94,6 +97,9 @@ Map<String, Map<String, String>> languages = {
                    "permission"      : "Permission", 
                    "description"     : "Description",
                    "search"          : "Search",
+                   "search_perm"     : "Search Permissions",
+                   "search_role"     : "Search Roles",
+                   "add"             : "Add",
                    } 
 };
 

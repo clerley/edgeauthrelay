@@ -26,20 +26,20 @@ import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../appbar/menudrawer.dart';
 
-class SearchPermissions extends StatefulWidget {
+class SearchRoles extends StatefulWidget {
   final String _language;
 
-  SearchPermissions(this._language);
+  SearchRoles(this._language);
 
   @override
   State<StatefulWidget> createState() =>
-      _SearchPermissionsState(this._language);
+      _SearchRolesState(this._language);
 }
 
-class _SearchPermissionsState extends State<SearchPermissions> {
+class _SearchRolesState extends State<SearchRoles> {
   final String _language;
 
-  _SearchPermissionsState(this._language);
+  _SearchRolesState(this._language);
 
   @override
   Widget build(BuildContext context) {
@@ -48,23 +48,23 @@ class _SearchPermissionsState extends State<SearchPermissions> {
         title: Text(getText("title", this._language)),
       ),
       body: SingleChildScrollView(
-        child: _SearchPermissionBody(this._language),
+        child: _SearchRoleBody(this._language),
       ),
       drawer: DistAuthDrawer(this._language),
     );
   }
 }
 
-class _SearchPermissionBody extends StatefulWidget {
+class _SearchRoleBody extends StatefulWidget {
   final String _language;
 
-  _SearchPermissionBody(this._language);
+  _SearchRoleBody(this._language);
 
   @override
   State<StatefulWidget> createState() => _SearchBodyView(this._language);
 }
 
-class _SearchBodyView extends State<_SearchPermissionBody> {
+class _SearchBodyView extends State<_SearchRoleBody> {
   final String _language;
 
   _SearchBodyView(this._language);
@@ -86,7 +86,7 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
                 Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                   child: Text(
-                    getText("search_perm", this._language),
+                    getText("search_role", this._language),
                     style: Theme.of(context).primaryTextTheme.bodyText1,
                   ),
                 ),
@@ -116,7 +116,7 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
                         label: Text(getText("description", this._language)),
                       ),
                       DataColumn(
-                          label: Text(getText("permission", this._language))),
+                          label: Text(getText("role", this._language))),
                     ], 
                     rows: _getDataRows(),
                     ),

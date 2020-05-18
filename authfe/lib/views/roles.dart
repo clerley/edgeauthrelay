@@ -24,25 +24,25 @@ SOFTWARE.
 import 'package:flutter/material.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
-import 'searchpermission.dart';
+import 'searchrole.dart';
 
-class PermissionsView extends StatefulWidget {
+class RolesView extends StatefulWidget {
 
   final String _language;
 
-  PermissionsView(this._language);
+  RolesView(this._language);
 
 
   @override
-  State<StatefulWidget> createState() => _PermissionsState(this._language);
+  State<StatefulWidget> createState() => _RolesState(this._language);
 
 }
 
-class _PermissionsState extends State<PermissionsView> {
+class _RolesState extends State<RolesView> {
 
   final String _language;
 
-  _PermissionsState(this._language);
+  _RolesState(this._language);
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class _PermissionsState extends State<PermissionsView> {
       appBar: AppBar(
         title: Text(getText("title", this._language)),
       ),
-      body: SingleChildScrollView(child: _PermissionBody(this._language),)
+      body: SingleChildScrollView(child: _RoleBody(this._language),)
       ,
       drawer: DistAuthDrawer(this._language), 
       );
@@ -59,22 +59,22 @@ class _PermissionsState extends State<PermissionsView> {
   }
 }
 
-class _PermissionBody extends StatefulWidget {
+class _RoleBody extends StatefulWidget {
 
   final String _language;
 
-  _PermissionBody(this._language);
+  _RoleBody(this._language);
 
   @override
-  State<StatefulWidget> createState() => _PermissionBodyState(this._language);
+  State<StatefulWidget> createState() => _RoleBodyState(this._language);
 
 }
 
-class _PermissionBodyState extends State<_PermissionBody> {
+class _RoleBodyState extends State<_RoleBody> {
 
   final String _language;
 
-  _PermissionBodyState(this._language);
+  _RoleBodyState(this._language);
 
   @override
   Widget build(BuildContext context) {
@@ -93,12 +93,12 @@ class _PermissionBodyState extends State<_PermissionBody> {
           children: <Widget>[
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: Text(getText("permissions", this._language), 
+              child: Text(getText("roles", this._language), 
                       style: Theme.of(context).primaryTextTheme.bodyText1,),
             ),
 
             Container(
-              child: Text(getText("permission", this._language)),
+              child: Text(getText("description", this._language)),
             ),
 
             Container(
@@ -106,21 +106,22 @@ class _PermissionBodyState extends State<_PermissionBody> {
                   style: Theme.of(context).primaryTextTheme.bodyText2),
             ),
 
-            Container(
-              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-              child: Text(getText("description", this._language),),
-            ),
 
-            Container(
-              child: TextField(
-                  style: Theme.of(context).primaryTextTheme.bodyText2),
-            ),
+            Center(
+                child:DataTable(
+                      columns: [
+                        DataColumn(label: Text("")),
+                        DataColumn(label: Text(getText("description", this._language)))],
+                      rows: _getDataSource(),
+                    ),
+              ),
+
 
             Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                     Container(
+                    Container(
                         padding: EdgeInsets.all(5.0),
                         child: OutlineButton(
                           textColor: Colors.white,
@@ -150,7 +151,7 @@ class _PermissionBodyState extends State<_PermissionBody> {
                         textColor: Colors.white,
                         onPressed: () {
                           Navigator.pushReplacement(context, 
-                              MaterialPageRoute(builder: (context) => SearchPermissions(this._language)),);
+                              MaterialPageRoute(builder: (context) => SearchRoles(this._language)),);
                         },
                         child: Text(getText("search", this._language), style: Theme.of(context).primaryTextTheme.button,),
                         shape: RoundedRectangleBorder(
@@ -176,13 +177,27 @@ class _PermissionBodyState extends State<_PermissionBody> {
                   ],
                 ),
               ),
-
-
           ]
         ),
       ),
     );
 
+  }
+
+  bool _test1Checked = false;
+  List<DataRow> _getDataSource() {
+    var dataRows = List<DataRow>();
+    var row = DataRow(cells: []);
+    DataCell cell = new DataCell(Checkbox(onChanged: (bool value) {  
+      setState(() {
+        this._test1Checked = value;
+      });
+    }, value:this._test1Checked));
+    row.cells.add(cell);
+    cell = new DataCell(Text('Testing 1'));
+    row.cells.add(cell);
+    dataRows.add(row);
+    return dataRows;
   }
 
 }

@@ -25,6 +25,7 @@ SOFTWARE.
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../views/permissions.dart';
+import '../views/roles.dart';
 import '../main.dart';
 
 
@@ -54,8 +55,7 @@ class DistAuthDrawer extends StatelessWidget {
           ListTile(
             title: Text(getText("roles", this._language)),
             onTap: () {
-              // Update the state of the app.
-              // ...
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RolesView(_language)));
             },
           ),
           ListTile(
