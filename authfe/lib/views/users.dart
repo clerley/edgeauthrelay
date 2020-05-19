@@ -24,22 +24,22 @@ SOFTWARE.
 import 'package:flutter/material.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
-import 'searchrole.dart';
+import 'searchuser.dart';
 import '../main.dart';
 
-class RolesView extends StatefulWidget {
+class UsersView extends StatefulWidget {
   final String _language;
 
-  RolesView(this._language);
+  UsersView(this._language);
 
   @override
-  State<StatefulWidget> createState() => _RolesState(this._language);
+  State<StatefulWidget> createState() => _UsersState(this._language);
 }
 
-class _RolesState extends State<RolesView> {
+class _UsersState extends State<UsersView> {
   final String _language;
 
-  _RolesState(this._language);
+  _UsersState(this._language);
 
   @override
   Widget build(BuildContext context) {
@@ -48,26 +48,26 @@ class _RolesState extends State<RolesView> {
         title: Text(getText("title", this._language)),
       ),
       body: SingleChildScrollView(
-        child: _RoleBody(this._language),
+        child: _UserBody(this._language),
       ),
       drawer: DistAuthDrawer(this._language),
     );
   }
 }
 
-class _RoleBody extends StatefulWidget {
+class _UserBody extends StatefulWidget {
   final String _language;
 
-  _RoleBody(this._language);
+  _UserBody(this._language);
 
   @override
-  State<StatefulWidget> createState() => _RoleBodyState(this._language);
+  State<StatefulWidget> createState() => _UserBodyState(this._language);
 }
 
-class _RoleBodyState extends State<_RoleBody> {
+class _UserBodyState extends State<_UserBody> {
   final String _language;
 
-  _RoleBodyState(this._language);
+  _UserBodyState(this._language);
 
   @override
   Widget build(BuildContext context) {
@@ -84,25 +84,55 @@ class _RoleBodyState extends State<_RoleBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
                 child: Text(
-                  getText("roles", this._language),
+                  getText("users", this._language),
                   style: Theme.of(context).primaryTextTheme.bodyText1,
                 ),
               ),
               Container(
-                child: Text(getText("description", this._language)),
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                child: Text(getText("username", this._language)),
               ),
               Container(
                 child: TextField(
                     style: Theme.of(context).primaryTextTheme.bodyText2),
               ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                child: Text(getText("name", this._language)),
+              ),
+              Container(
+                child: TextField(
+                    style: Theme.of(context).primaryTextTheme.bodyText2),
+              ),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+              ),
+
+              Row(children: [
+                Container(
+                    child: Checkbox(onChanged: (bool value) {}, value: true)),
+                Container(
+                  child: Text(getText("isthing", this._language)),
+                ),
+              ]),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
+                child: Text(getText("secret", this._language)),
+              ),
+              Container(
+                child: TextField(
+                    style: Theme.of(context).primaryTextTheme.bodyText2),
+              ),
+
               Center(
                 child: DataTable(
                   columns: [
                     DataColumn(label: Text("")),
-                    DataColumn(
-                        label: Text(getText("description", this._language)))
+                    DataColumn(label: Text(getText("name", this._language)))
                   ],
                   rows: _getDataSource(),
                 ),
@@ -146,7 +176,7 @@ class _RoleBodyState extends State<_RoleBody> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      SearchRoles(this._language)),
+                                      SearchUsers(this._language)),
                             );
                           },
                           child: Text(
@@ -162,12 +192,10 @@ class _RoleBodyState extends State<_RoleBody> {
                         child: OutlineButton(
                           textColor: Colors.white,
                           onPressed: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyHomePage(
-                                        title:
-                                            getText("title", this._language))));
+                             Navigator.pushReplacement(
+                               context,
+                               MaterialPageRoute(
+                                 builder: (context) => MyHomePage(title: getText("title", this._language))));
                           },
                           child: Text(
                             getText("cancel", this._language),

@@ -54,8 +54,8 @@ class MyApp extends StatelessWidget {
             ),
 
             inputDecorationTheme: InputDecorationTheme(
-              fillColor: Color(0xff7b92ae),
-              //fillColor: Colors.black,
+              //fillColor: Color(0xff7b92ae),
+              fillColor: Color(0xff222831),
               filled: true,
             ),
 
