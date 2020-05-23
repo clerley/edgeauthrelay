@@ -131,11 +131,13 @@ class _LoginState extends State<LoginWidget> {
                           textColor: Colors.white,
                           child: Text(this._loginText, style: Theme.of(context).primaryTextTheme.button,),
                           onPressed: () async { 
+                            debugPrint("Starting the onPressed request now");
                             var login = await userProvider.requestLogin(_uniqueIDController.text, 
-                                          _usernameController.text, 
-                                          _passwordController.text);
-                            if (login.user.loggedIn) {
+                            _usernameController.text, _passwordController.text);
+                            if (login.isLoggedIn()) {
                               Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
+                            } else {
+                              debugPrint("The user is not logged in now!");
                             }
                           },
                           shape: RoundedRectangleBorder(

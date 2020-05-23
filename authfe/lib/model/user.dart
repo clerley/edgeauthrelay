@@ -48,26 +48,31 @@ class UserProvider extends ChangeNotifier {
   static var login = Login("Failure", "---");
 
   Future<Login> requestLogin(String uniqueID, String username, String password) async {
-    var loginRequest = LoginRequest(uniqueID, username, password);
-    HttpClient httpClient = HttpClient();
-    HttpClientRequest httpRequest = await httpClient.postUrl(Uri.parse(uri));
-    httpRequest.headers.add("content-type", "application/json");
-    httpRequest.add(utf8.encode(json.encode(loginRequest.toJson())));
-    var httpResponse = await httpRequest.close();
-    if(httpResponse.statusCode == HttpStatus.ok) {
-        httpResponse.transform(utf8.decoder).listen((content) {
-          login = Login.fromJson(json.decode(content));
-          UserProvider.login.user = User(username);
-          UserProvider.login.sessionToken = login.sessionToken;
-          UserProvider.login.status = login.status;
-        });
+    try {
+      var loginRequest = LoginRequest(uniqueID, username, password);
+      HttpClient httpClient = HttpClient();
+      HttpClientRequest httpRequest = await httpClient.postUrl(Uri.parse(uri));
+      httpRequest.headers.add("content-type", "application/json");
+      httpRequest.add(utf8.encode(json.encode(loginRequest.toJson())));
+      var httpResponse = await httpRequest.close();
+      if(httpResponse.statusCode == HttpStatus.ok) {
+          httpResponse.transform(utf8.decoder).listen((content) {
+            login = Login.fromJson(json.decode(content));
+            UserProvider.login.user = User(username);
+            UserProvider.login.sessionToken = login.sessionToken;
+            UserProvider.login.status = login.status;
+          });
 
-    } else {
-        login = Login("Failure", "---");
-        UserProvider.login.user.loggedIn = false;
+      } else {
+          login = Login("Failure", "---");
+          UserProvider.login.user.loggedIn = false;
+      }
+
+      notifyListeners();
+
+    } catch (e)  {
+      print(e.toString());
     }
-
-    notifyListeners();
     return login;
   }
 }
@@ -110,6 +115,15 @@ class Login {
     status = json['status'],
     sessionToken = json['sessionToken'],
     user = User.fromJson(json);
+
+
+  bool isLoggedIn() {
+    if(user != null) {
+      return user.loggedIn;
+    }
+
+    return false;
+  }
     
 
 }
