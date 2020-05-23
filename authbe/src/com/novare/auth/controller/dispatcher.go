@@ -170,6 +170,8 @@ type loginReq struct {
 type loginResp struct {
 	Status       string `json:"status"`
 	SessionToken string `json:"sessionToken"`
+	Username     string `json:"userName"`
+	Fullname     string `json:"fullName"`
 }
 
 //Login ...
