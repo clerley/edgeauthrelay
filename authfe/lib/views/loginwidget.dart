@@ -22,8 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'package:authfe/model/user.dart';
 import 'package:authfe/views/company.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../i18n/language.dart';
 import 'mainmenu.dart';
 
@@ -43,6 +45,9 @@ class _LoginState extends State<LoginWidget> {
   String _loginText;
   String _uniqueCompanyID;
   String _newCompany;
+  TextEditingController _uniqueIDController = TextEditingController();
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   _LoginState(this._language) {
     this._userNameText = getText("username", _language);
@@ -56,7 +61,7 @@ class _LoginState extends State<LoginWidget> {
 
   @override
   Widget build(BuildContext context) {
-
+    var userProvider = Provider.of<UserProvider>(context);
     return 
       Center(
         child: Container(
@@ -83,7 +88,8 @@ class _LoginState extends State<LoginWidget> {
 
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,),
+                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,
+                                controller: _uniqueIDController),
               ),
 
               Container(
@@ -94,7 +100,8 @@ class _LoginState extends State<LoginWidget> {
 
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,),
+                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,
+                                controller: _usernameController),
               ),
 
               Container(
@@ -105,7 +112,8 @@ class _LoginState extends State<LoginWidget> {
 
               TextField(
                 obscureText: true,
-                  style: Theme.of(context).primaryTextTheme.bodyText2
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  controller: _passwordController,
               ),
 
               Divider(
@@ -122,8 +130,13 @@ class _LoginState extends State<LoginWidget> {
                         child: OutlineButton(
                           textColor: Colors.white,
                           child: Text(this._loginText, style: Theme.of(context).primaryTextTheme.button,),
-                          onPressed: () { 
-                            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
+                          onPressed: () async { 
+                            var login = await userProvider.requestLogin(_uniqueIDController.text, 
+                                          _usernameController.text, 
+                                          _passwordController.text);
+                            if (login.user.loggedIn) {
+                              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
+                            }
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),)

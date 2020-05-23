@@ -23,10 +23,17 @@ SOFTWARE.
 */
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'i18n/language.dart';
 import 'views/loginwidget.dart';
+import 'model/user.dart';
 
-void main() => runApp(MyApp());
+
+void main() => runApp(MultiProvider(
+                          providers:[
+                            ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider(),),
+                          ],
+                          child: MyApp()));
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
