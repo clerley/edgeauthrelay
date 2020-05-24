@@ -66,6 +66,7 @@ Map<String, Map<String, String>> languages = {
                    "search_user"     : "Search Users",
                    "isthing"         : "Is Thing?",
                    "secret"          : "Secret",
+                   "please_wait"     : "Please wait, processing request",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -106,6 +107,7 @@ Map<String, Map<String, String>> languages = {
                    "search_user"     : "Search Users",
                    "isthing"         : "Is Thing?",
                    "secret"          : "Secret",
+                   "please_wait"     : "Please wait, processing request",
                    } 
 };
 

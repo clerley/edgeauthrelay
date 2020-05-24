@@ -24,6 +24,7 @@ SOFTWARE.
 
 import 'package:authfe/model/user.dart';
 import 'package:authfe/views/company.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../i18n/language.dart';
@@ -61,10 +62,12 @@ class _LoginState extends State<LoginWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var pr = ProgressDialogHelper().createProgressDialog(getText("please_wait", this._language), context);
     var userProvider = Provider.of<UserProvider>(context);
     return 
       Center(
         child: Container(
+          margin: EdgeInsets.all(16.0),
           padding:EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             color: Theme.of(context).backgroundColor,
@@ -131,13 +134,15 @@ class _LoginState extends State<LoginWidget> {
                           textColor: Colors.white,
                           child: Text(this._loginText, style: Theme.of(context).primaryTextTheme.button,),
                           onPressed: () async { 
+                            pr.show();
                             debugPrint("Starting the onPressed request now");
                             var login = await userProvider.requestLogin(_uniqueIDController.text, 
                             _usernameController.text, _passwordController.text);
+                            pr.hide();
                             if (login.isLoggedIn()) {
                               Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
                             } else {
-                              debugPrint("The user is not logged in now!");
+                              debugPrint("The user is not logged in now! ${_uniqueIDController.text}");
                             }
                           },
                           shape: RoundedRectangleBorder(

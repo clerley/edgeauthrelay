@@ -23,15 +23,15 @@ SOFTWARE.
 */
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:async';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 
 String host = "192.168.10.94";
 int port = 9119;
 String path = "/jwt/company/login";
-String uri = "http://192.168.10.94:9119/jwt/company/login";
+String url = "http://192.168.10.94:9119/jwt/company/login";
 
 
 
@@ -50,27 +50,27 @@ class UserProvider extends ChangeNotifier {
   Future<Login> requestLogin(String uniqueID, String username, String password) async {
     try {
       var loginRequest = LoginRequest(uniqueID, username, password);
-      HttpClient httpClient = HttpClient();
-      HttpClientRequest httpRequest = await httpClient.postUrl(Uri.parse(uri));
-      httpRequest.headers.add("content-type", "application/json");
-      httpRequest.add(utf8.encode(json.encode(loginRequest.toJson())));
-      var httpResponse = await httpRequest.close();
-      if(httpResponse.statusCode == HttpStatus.ok) {
-          httpResponse.transform(utf8.decoder).listen((content) {
-            login = Login.fromJson(json.decode(content));
-            UserProvider.login.user = User(username);
-            UserProvider.login.sessionToken = login.sessionToken;
-            UserProvider.login.status = login.status;
-          });
-
-      } else {
-          login = Login("Failure", "---");
+      var response = await http.post(url, body: utf8.encode(json.encode(loginRequest.toJson())));
+      if(response.statusCode == 200) {
+        login = Login.fromJson(json.decode(response.body));
+        if(login.status == "Success") {
+          UserProvider.login.user = User(username);
+          UserProvider.login.sessionToken = login.sessionToken;
+          UserProvider.login.status = login.status;        
+        } else {
+          print("The user was not successfully logged in");
           UserProvider.login.user.loggedIn = false;
+        }
+      } else {
+        print('The response was a failure. Could not connect to the server!');
+        login = Login("Failure", "---");
+        UserProvider.login.user.loggedIn = false;
       }
 
       notifyListeners();
 
     } catch (e)  {
+      print("An error occurred while processing the login request");
       print(e.toString());
     }
     return login;
