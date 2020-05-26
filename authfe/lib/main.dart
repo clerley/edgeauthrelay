@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'package:authfe/views/settingsview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'i18n/language.dart';
@@ -89,6 +90,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [IconButton(
+          icon: Icon(Icons.settings), 
+          onPressed: () {
+            Navigator.pushReplacement(
+                               context,
+                               MaterialPageRoute(
+                                 builder: (context) => SettingsView()));
+          },
+        )],
       ),
       body: SingleChildScrollView(child: LoginWidget(),), 
       );

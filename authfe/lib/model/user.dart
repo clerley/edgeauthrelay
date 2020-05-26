@@ -28,10 +28,8 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 
-String host = "192.168.10.94";
-int port = 9119;
 String path = "/jwt/company/login";
-String url = "http://192.168.10.94:9119/jwt/company/login";
+String url = "http://127.0.0.1:9119";
 
 
 
@@ -50,7 +48,8 @@ class UserProvider extends ChangeNotifier {
   Future<Login> requestLogin(String uniqueID, String username, String password) async {
     try {
       var loginRequest = LoginRequest(uniqueID, username, password);
-      var response = await http.post(url, body: utf8.encode(json.encode(loginRequest.toJson())));
+      var fullURL = url + path;
+      var response = await http.post(fullURL, body: utf8.encode(json.encode(loginRequest.toJson())));
       if(response.statusCode == 200) {
         login = Login.fromJson(json.decode(response.body));
         if(login.status == "Success") {

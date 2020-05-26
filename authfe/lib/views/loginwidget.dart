@@ -142,6 +142,7 @@ class _LoginState extends State<LoginWidget> {
                             if (login.isLoggedIn()) {
                               Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
                             } else {
+                              pr.hide();
                               debugPrint("The user is not logged in now! ${_uniqueIDController.text}");
                             }
                           },
