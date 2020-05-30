@@ -102,6 +102,11 @@ func (user *User) IsGranted(permission string) bool {
 		return true
 	}
 
+	if user.Username == "superuser" {
+		log.Printf("The current user is the superuser. All rights are granted. This is a dangerous way to handle requests.")
+		return true
+	}
+
 	for i := range user.Permissions {
 		if user.Permissions[i].Permission == permission {
 			return true
