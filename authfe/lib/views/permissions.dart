@@ -25,6 +25,7 @@ import 'package:flutter/material.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
 import 'searchpermission.dart';
+import '../main.dart';
 
 class PermissionsView extends StatefulWidget {
 
@@ -164,9 +165,11 @@ class _PermissionBodyState extends State<_PermissionBody> {
                       child: OutlineButton(
                         textColor: Colors.white,
                         onPressed: () {
-                          
-                        },
-                        child: Text(getText("cancel", this._language), style: Theme.of(context).primaryTextTheme.button,),
+                             Navigator.pushReplacement(
+                               context,
+                               MaterialPageRoute(
+                                 builder: (context) => MyHomePage(title: getText("title", this._language))));
+                          },                        child: Text(getText("cancel", this._language), style: Theme.of(context).primaryTextTheme.button,),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),

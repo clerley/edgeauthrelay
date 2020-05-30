@@ -21,56 +21,53 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import 'package:authfe/i18n/language.dart';
+import 'package:authfe/model/settings.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
-import '../appbar/menudrawer.dart';
-import '../i18n/language.dart';
-import 'searchrole.dart';
+
 import '../main.dart';
 
-class RolesView extends StatefulWidget {
-  final String _language;
-
-  RolesView(this._language);
-
+/*
+ * SettingsView ...
+ */
+class SettingsView extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _RolesState(this._language);
+  State<StatefulWidget> createState() => _SettingsViewState();
 }
 
-class _RolesState extends State<RolesView> {
-  final String _language;
-
-  _RolesState(this._language);
-
+class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(getText("title", this._language)),
+        title: Text(getText("title", LANG_ENGLISH)),
       ),
       body: SingleChildScrollView(
-        child: _RoleBody(this._language),
+        child: _SettingsViewBody(),
       ),
-      drawer: DistAuthDrawer(this._language),
     );
   }
 }
 
-class _RoleBody extends StatefulWidget {
-  final String _language;
-
-  _RoleBody(this._language);
-
+class _SettingsViewBody extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _RoleBodyState(this._language);
+  State<StatefulWidget> createState() => _SettingsViewBodyState();
 }
 
-class _RoleBodyState extends State<_RoleBody> {
-  final String _language;
+class _SettingsViewBodyState extends State<_SettingsViewBody> {
+  TextEditingController _urlController = TextEditingController();
 
-  _RoleBodyState(this._language);
+  _SettingsViewBodyState() {
+    _urlController.text = GlobalSettings().url;
+  }
 
   @override
   Widget build(BuildContext context) {
+    var pr = ProgressDialogHelper()
+        .createProgressDialog(getText("please_wait", LANG_ENGLISH), context);
+
+
     return Center(
       child: Container(
         margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
@@ -86,25 +83,17 @@ class _RoleBodyState extends State<_RoleBody> {
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                 child: Text(
-                  getText("roles", this._language),
+                  "Settings",
                   style: Theme.of(context).primaryTextTheme.bodyText1,
                 ),
               ),
               Container(
-                child: Text(getText("description", this._language)),
+                child: Text("URL"),
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2),
-              ),
-              Center(
-                child: DataTable(
-                  columns: [
-                    DataColumn(label: Text("")),
-                    DataColumn(
-                        label: Text(getText("description", this._language)))
-                  ],
-                  rows: _getDataSource(),
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  controller: _urlController,
                 ),
               ),
               Center(
@@ -116,47 +105,26 @@ class _RoleBodyState extends State<_RoleBody> {
                       child: OutlineButton(
                           textColor: Colors.white,
                           child: Text(
-                            getText("add", this._language),
+                            getText("save", LANG_ENGLISH),
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
-                          onPressed: () {},
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("save", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {},
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
-                    ),
-                    Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
-                          textColor: Colors.white,
-                          onPressed: () {
+                          onPressed: () async {
+                            pr.show();
+                            var gset = GlobalSettings();
+                            gset.url = _urlController.text;
+                            await gset.save();
+                            pr.hide();
                             Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      SearchRoles(this._language)),
-                            );
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MyHomePage(
+                                        title:
+                                            getText("title", LANG_ENGLISH))));
                           },
-                          child: Text(
-                            getText("search", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        )),
+                          )),
+                    ),
                     Container(
                         padding: EdgeInsets.all(5.0),
                         child: OutlineButton(
@@ -167,10 +135,10 @@ class _RoleBodyState extends State<_RoleBody> {
                                 MaterialPageRoute(
                                     builder: (context) => MyHomePage(
                                         title:
-                                            getText("title", this._language))));
+                                            getText("title", LANG_ENGLISH))));
                           },
                           child: Text(
-                            getText("cancel", this._language),
+                            getText("cancel", LANG_ENGLISH),
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
                           shape: RoundedRectangleBorder(
@@ -183,23 +151,5 @@ class _RoleBodyState extends State<_RoleBody> {
             ]),
       ),
     );
-  }
-
-  bool _test1Checked = false;
-  List<DataRow> _getDataSource() {
-    var dataRows = List<DataRow>();
-    var row = DataRow(cells: []);
-    DataCell cell = new DataCell(Checkbox(
-        onChanged: (bool value) {
-          setState(() {
-            this._test1Checked = value;
-          });
-        },
-        value: this._test1Checked));
-    row.cells.add(cell);
-    cell = new DataCell(Text('Testing 1'));
-    row.cells.add(cell);
-    dataRows.add(row);
-    return dataRows;
   }
 }

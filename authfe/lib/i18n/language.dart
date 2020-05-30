@@ -63,6 +63,10 @@ Map<String, Map<String, String>> languages = {
                    "search_perm"     : "Search Permissions",
                    "search_role"     : "Search Roles",
                    "add"             : "Add",
+                   "search_user"     : "Search Users",
+                   "isthing"         : "Is Thing?",
+                   "secret"          : "Secret",
+                   "please_wait"     : "Please wait, processing request",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -100,6 +104,10 @@ Map<String, Map<String, String>> languages = {
                    "search_perm"     : "Search Permissions",
                    "search_role"     : "Search Roles",
                    "add"             : "Add",
+                   "search_user"     : "Search Users",
+                   "isthing"         : "Is Thing?",
+                   "secret"          : "Secret",
+                   "please_wait"     : "Please wait, processing request",
                    } 
 };
 

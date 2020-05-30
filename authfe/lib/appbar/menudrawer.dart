@@ -26,12 +26,10 @@ import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../views/permissions.dart';
 import '../views/roles.dart';
+import '../views/users.dart';
 import '../main.dart';
 
-
-
 class DistAuthDrawer extends StatelessWidget {
-
   final String _language;
 
   DistAuthDrawer(this._language);
@@ -47,7 +45,10 @@ class DistAuthDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text(getText("title", this._language), style: TextStyle(fontSize:22.0),),
+            child: Text(
+              getText("title", this._language),
+              style: TextStyle(fontSize: 22.0),
+            ),
             decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,
             ),
@@ -55,36 +56,48 @@ class DistAuthDrawer extends StatelessWidget {
           ListTile(
             title: Text(getText("roles", this._language)),
             onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RolesView(_language)));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RolesView(_language)));
             },
           ),
           ListTile(
             title: Text(getText("permissions", this._language)),
             onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PermissionsView(_language)),);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PermissionsView(_language)),
+              );
             },
           ),
           ListTile(
             title: Text(getText("users", this._language)),
             onTap: () {
-              // Update the state of the app.
-              // ...
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UsersView(_language)));
             },
+          ),
+          ListTile(
+            title: Text(getText("company", this._language)),
+            onTap: () {},
           ),
           ListTile(
             title: Text(getText("logout", this._language)),
             onTap: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => MyHomePage(title:getText("title", this._language))),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        MyHomePage(title: getText("title", this._language))),
               );
             },
           ),
-
         ],
       ),
     );
-}
-
- 
- 
+  }
 }

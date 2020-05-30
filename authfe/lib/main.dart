@@ -22,11 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'package:authfe/views/settingsview.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'i18n/language.dart';
 import 'views/loginwidget.dart';
+import 'model/user.dart';
 
-void main() => runApp(MyApp());
+
+void main() => runApp(MultiProvider(
+                          providers:[
+                            ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider(),),
+                          ],
+                          child: MyApp()));
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -54,8 +62,8 @@ class MyApp extends StatelessWidget {
             ),
 
             inputDecorationTheme: InputDecorationTheme(
-              fillColor: Color(0xff7b92ae),
-              //fillColor: Colors.black,
+              //fillColor: Color(0xff7b92ae),
+              fillColor: Color(0xff222831),
               filled: true,
             ),
 
@@ -82,8 +90,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [IconButton(
+          icon: Icon(Icons.settings), 
+          onPressed: () {
+            Navigator.pushReplacement(
+                               context,
+                               MaterialPageRoute(
+                                 builder: (context) => SettingsView()));
+          },
+        )],
       ),
-      body: LoginWidget(), 
+      body: SingleChildScrollView(child: LoginWidget(),), 
       );
   }
 }
