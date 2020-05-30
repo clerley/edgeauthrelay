@@ -86,6 +86,7 @@ func CreateCompany(w http.ResponseWriter, r *http.Request) {
 	jsonDecoder := json.NewDecoder(r.Body)
 	err := jsonDecoder.Decode(&req)
 	if err != nil {
+		log.Printf("The following error occurred: [%s]", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
