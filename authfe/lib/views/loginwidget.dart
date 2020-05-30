@@ -138,12 +138,15 @@ class _LoginState extends State<LoginWidget> {
                             debugPrint("Starting the onPressed request now");
                             var login = await userProvider.requestLogin(_uniqueIDController.text, 
                             _usernameController.text, _passwordController.text);
-                            pr.hide();
+                            if(pr.isShowing()) {
+                              pr.hide();
+                            }
                             if (login.isLoggedIn()) {
                               Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
                             } else {
-                              pr.hide();
                               debugPrint("The user is not logged in now! ${_uniqueIDController.text}");
+                              ProgressDialogHelper pdh = ProgressDialogHelper();
+                              pdh.showMessageDialog(getText("user_not_logged", this._language), context, this._language);
                             }
                           },
                           shape: RoundedRectangleBorder(

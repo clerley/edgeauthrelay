@@ -67,6 +67,11 @@ Map<String, Map<String, String>> languages = {
                    "isthing"         : "Is Thing?",
                    "secret"          : "Secret",
                    "please_wait"     : "Please wait, processing request",
+                   "confirmPassword" : "Confirm Password",
+                   "warning"         : "Warning",
+                   "close"           : "Close",
+                   "error_add_cmp"   : "Error adding company. Not additional information available!",
+                   "new_cmp_create"  : "A new company has been created!",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -108,6 +113,11 @@ Map<String, Map<String, String>> languages = {
                    "isthing"         : "Is Thing?",
                    "secret"          : "Secret",
                    "please_wait"     : "Please wait, processing request",
+                   "confirmPassword" : "Confirm Password",
+                   "warning"         : "Warning",
+                   "close"           : "Close",
+                   "error_add_cmp"   : "Error adding company. Not additional information available!",
+                   "new_cmp_create"  : "A new company has been created!",
                    } 
 };
 

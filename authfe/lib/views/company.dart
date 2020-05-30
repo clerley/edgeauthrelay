@@ -22,11 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'dart:developer';
+
+import 'package:authfe/model/companymodel.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../i18n/language.dart';
 
 class CompanyWidget extends StatefulWidget {
-
   final String _language;
 
   CompanyWidget(this._language);
@@ -36,7 +40,6 @@ class CompanyWidget extends StatefulWidget {
 }
 
 class _CompanyWidgetState extends State<CompanyWidget> {
-
   String _language;
   String _title;
   _CompanyWidgetState(this._language) {
@@ -46,24 +49,22 @@ class _CompanyWidgetState extends State<CompanyWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(this._title),
-      ),
-      body: SingleChildScrollView(child: CompanyBody(this.widget._language),) 
-      );
+        appBar: AppBar(
+          title: Text(this._title),
+        ),
+        body: SingleChildScrollView(
+          child: CompanyBody(this.widget._language),
+        ));
   }
 }
 
-
 class CompanyBody extends StatefulWidget {
-  
   final String _language;
 
   CompanyBody(this._language);
 
   @override
   State<StatefulWidget> createState() => _CompanyState(_language);
-
 }
 
 class _CompanyState extends State<CompanyBody> {
@@ -80,6 +81,20 @@ class _CompanyState extends State<CompanyBody> {
   bool _isLocation;
   String _unit;
   List<DropdownMenuItem<String>> _unitsMenuItems;
+  Company company;
+
+  TextEditingController _uniqueIDTec;
+  TextEditingController _nameTec;
+  TextEditingController _addressTec;
+  TextEditingController _cityTec;
+  TextEditingController _stateTec;
+  TextEditingController _zipTec;
+  TextEditingController _authRelayTec;
+  TextEditingController _jwtDurationTec;
+  TextEditingController _passExpTec;
+  TextEditingController _address1Tec;
+  TextEditingController _passwordTec;
+  TextEditingController _confirmPasswordTec;
 
   _CompanyState(this._language) {
     this._company = getText("company", _language);
@@ -94,132 +109,191 @@ class _CompanyState extends State<CompanyBody> {
     this._isLocation = false;
     this._unit = "Minute";
     this._unitsMenuItems = _getUnitMenuItems();
+
+    _uniqueIDTec = TextEditingController();
+    _nameTec = TextEditingController();
+    _addressTec = TextEditingController();
+    _cityTec = TextEditingController();
+    _stateTec = TextEditingController();
+    _zipTec = TextEditingController();
+    _authRelayTec = TextEditingController();
+    _jwtDurationTec = TextEditingController();
+    _passExpTec = TextEditingController();
+    _address1Tec = TextEditingController();
+    _passwordTec = TextEditingController();
+    _confirmPasswordTec = TextEditingController();
+
+    company = Company();
   }
+
+  _CompanyState.withCompany(this._language, this._company);
 
   List<DropdownMenuItem<String>> _getUnitMenuItems() {
     List<DropdownMenuItem<String>> lst = new List<DropdownMenuItem<String>>();
-    DropdownMenuItem<String> item = new DropdownMenuItem<String>(child: Text("Minute"),value: "Minute");
+    DropdownMenuItem<String> item =
+        new DropdownMenuItem<String>(child: Text("Hour"), value: "Hour");
+    lst.add(item);
+
+    item = new DropdownMenuItem<String>(child: Text("Day"), value: "Day");
     lst.add(item);
 
     item = new DropdownMenuItem<String>(child: Text("Week"), value: "Week");
     lst.add(item);
 
+    item = new DropdownMenuItem<String>(child: Text("Month"), value: "Month");
+    lst.add(item);
+
+    item = new DropdownMenuItem<String>(child: Text("Minute"), value: "Minute");
+    lst.add(item);
     return lst;
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    if (company == null) {
+      log("The company object is null, creating a new company now!");
+      company = Company();
+    }
+    _uniqueIDTec.text = company.uniqueID;
+    _nameTec.text = company.name;
+    _addressTec.text = company.address1;
+    _cityTec.text = company.city;
+    _stateTec.text = company.state;
+    _zipTec.text = company.zip;
+    _authRelayTec.text = company.authRelay;
+    _jwtDurationTec.text = company.jwtDuration.toString();
+    _passExpTec.text = company.passwordExpiration.toString();
+    _address1Tec.text = company.address2;
+  }
 
+  CompanyProvider companyProvider;
+
+  @override
+  Widget build(BuildContext context) {
+    companyProvider = Provider.of<CompanyProvider>(context);
     return Center(
       child: Container(
         margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-        padding:EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(10.0),
         width: 900.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
-          borderRadius: BorderRadius.all(Radius.circular(10.0))
-        ),
+            color: Theme.of(context).backgroundColor,
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: Text(this._company, style: Theme.of(context).primaryTextTheme.bodyText1,),
+              child: Text(
+                this._company,
+                style: Theme.of(context).primaryTextTheme.bodyText1,
+              ),
             ),
-            
             Container(
               child: Text(getText("uniqueID", this._language)),
             ),
-
             Container(
-              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
+              child: TextField(
+                style: Theme.of(context).primaryTextTheme.bodyText2,
+                controller: _uniqueIDTec,
+              ),
             ),
-
-            Container(
-              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-              child: Text(this._nameText,),
-            ),
-
-            Container(
-              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
-            ),
-            
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-              child: Text(this._addressText,),
+              child: Text(
+                this._nameText,
+              ),
             ),
-
+            Container(
+              child: TextField(
+                style: Theme.of(context).primaryTextTheme.bodyText2,
+                controller: _nameTec,
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              child: Text(
+                this._addressText,
+              ),
+            ),
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
+              child: TextField(
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  controller: _addressTec),
             ),
-
             Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
+              child: TextField(
+                style: Theme.of(context).primaryTextTheme.bodyText2,
+                controller: _address1Tec,
+              ),
             ),
-            Row(children: <Widget>[
-               Expanded(
+            Row(
+              children: <Widget>[
+                Expanded(
                   flex: 24,
                   child: Container(
-                      child: Text(this._cityText,),
+                    child: Text(
+                      this._cityText,
+                    ),
                   ),
                 ),
-
-               Spacer(), 
-
-               Expanded(
+                Spacer(),
+                Expanded(
                   flex: 12,
                   child: Container(
-                      child: Text(this._stateText,),
+                    child: Text(
+                      this._stateText,
+                    ),
                   ),
                 ),
-
-               Spacer(),
-
-               Expanded(
+                Spacer(),
+                Expanded(
                   flex: 24,
                   child: Container(
-                      child: Text(this._zipText),
+                    child: Text(this._zipText),
                   ),
                 ),
-               
-
-            ],),
-
-            Row(children: <Widget>[
-
-              Expanded(
-                flex: 24,
-                  child: Container(
-                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
-                ),
-              ),
-
-              Spacer(),
-
-              Expanded(
-                flex: 12,
-                  child: Container(
-                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
-                ),
-              ),
-
-              Spacer(), 
-              
-              Expanded(
-                flex: 24,
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                  child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2),
-                ),
-              ),
-            ],
+              ],
             ),
-
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 24,
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                    child: TextField(
+                      style: Theme.of(context).primaryTextTheme.bodyText2,
+                      controller: _cityTec,
+                    ),
+                  ),
+                ),
+                Spacer(),
+                Expanded(
+                  flex: 12,
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                    child: TextField(
+                        style: Theme.of(context).primaryTextTheme.bodyText2,
+                        controller: _stateTec),
+                  ),
+                ),
+                Spacer(),
+                Expanded(
+                  flex: 24,
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                    child: TextField(
+                      style: Theme.of(context).primaryTextTheme.bodyText2,
+                      controller: _zipTec,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             Container(
               child: Row(
                 children: <Widget>[
@@ -241,121 +315,178 @@ class _CompanyState extends State<CompanyBody> {
                     value: this._remoteAuth,
                   ),
                   Text(this._remotelyManagedText),
-
                 ],
               ),
             ),
-
             Container(
-              child:Text(getText("authrelay", this._language),
+              child: Text(
+                getText("authrelay", this._language),
               ),
             ),
-
             Container(
-              child:TextField(style: Theme.of(context).primaryTextTheme.bodyText2)
-            ,),
-
+              child: TextField(
+                  style: Theme.of(context).primaryTextTheme.bodyText2),
+            ),
             Container(
-              margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-              padding:EdgeInsets.all(10.0),
-              width: 900.0,
-              decoration: BoxDecoration(
-                            color: Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            border: Border.all(color:Theme.of(context).accentColor),
-              ),
-              child: Column(
-                children: <Widget>[
-                  Row(children: <Widget>[
-                      Expanded(
-                        flex: 24,
-                        child: Text(getText("jwtDuration", this._language)),
-                      ),
-                      Spacer(),
-                      Expanded(
-                        flex: 24,
-                        child: Text(getText("passwordExp", this._language)),
-                      ),
-                      Spacer(),
-                      Expanded(
-                        flex: 24,
-                        child: Text(getText("passwordUnit", this._language)),
-                      )
-                  ],), 
-                  Row(children: <Widget>[
-                      Expanded(
-                        flex: 24,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          style: Theme.of(context).primaryTextTheme.bodyText2,
-                          ),
-                      ),
-                      Spacer(),
-                      Expanded(
-                        flex: 24,
-                        child: TextField(keyboardType: TextInputType.number,
-                                style: Theme.of(context).primaryTextTheme.bodyText2,),
-                      ),
-                      Spacer(),
-                      Expanded(
-                        flex: 24,
-                        //child: TextField(keyboardType: TextInputType.number,),
-                        child: new DropdownButton<String>(
-                              value: _unit,
-                              items: _unitsMenuItems,
-                              onChanged: (String newValue) {
-                                setState(() {
-                                  _unit = newValue;
-                                }
-                              );
-                            },
+                margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                padding: EdgeInsets.all(10.0),
+                width: 900.0,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).backgroundColor,
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  border: Border.all(color: Theme.of(context).accentColor),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 24,
+                          child: Text(getText("jwtDuration", this._language)),
                         ),
-                      )
-
-                  ],)
-                ],
-              )
-
+                        Spacer(),
+                        Expanded(
+                          flex: 24,
+                          child: Text(getText("passwordExp", this._language)),
+                        ),
+                        Spacer(),
+                        Expanded(
+                          flex: 24,
+                          child: Text(getText("passwordUnit", this._language)),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 24,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            style: Theme.of(context).primaryTextTheme.bodyText2,
+                            controller: _jwtDurationTec,
+                          ),
+                        ),
+                        Spacer(),
+                        Expanded(
+                          flex: 24,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            style: Theme.of(context).primaryTextTheme.bodyText2,
+                            controller: _passExpTec,
+                          ),
+                        ),
+                        Spacer(),
+                        Expanded(
+                          flex: 24,
+                          //child: TextField(keyboardType: TextInputType.number,),
+                          child: new DropdownButton<String>(
+                            value: _unit,
+                            items: _unitsMenuItems,
+                            onChanged: (String newValue) {
+                              setState(() {
+                                _unit = newValue;
+                              });
+                            },
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                )),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                  child: Text(
+                    getText('password', this._language),
+                  ),
+                ),
+                TextField(
+                  controller: _passwordTec,
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  obscureText: true,
+                ),
+                Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                    child: Text(
+                      getText('confirmPassword', this._language),
+                    )),
+                TextField(
+                  controller: _confirmPasswordTec,
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  obscureText: true,
+                ),
+              ],
             ),
-
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-              Container(
+                Container(
                   padding: EdgeInsets.all(5.0),
                   child: OutlineButton(
-                  textColor: Colors.white,
-                  child: Text(getText("save", this._language), style: Theme.of(context).primaryTextTheme.button,),
-                  onPressed: () { 
-                    print ("Testing It"); 
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),)
+                      textColor: Colors.white,
+                      child: Text(
+                        getText("save", this._language),
+                        style: Theme.of(context).primaryTextTheme.button,
+                      ),
+                      onPressed: () {
+                        saveCompany();
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      )),
                 ),
-              ),
-
-              Container(
+                Container(
                   padding: EdgeInsets.all(5.0),
                   child: OutlineButton(
-                  textColor: Colors.white,
-                  child: Text(getText("cancel", this._language), style: Theme.of(context).primaryTextTheme.button,),
-                  onPressed: () { 
-                    Navigator.pop(context);
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),)
+                      textColor: Colors.white,
+                      child: Text(
+                        getText("cancel", this._language),
+                        style: Theme.of(context).primaryTextTheme.button,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      )),
                 ),
-              ),
-
-
-            ],
+              ],
             ),
-
           ],
         ),
       ),
     );
+  }
+
+  void saveCompany() async {
+    company.address1 = _addressTec.text;
+    company.address2 = _address1Tec.text;
+    company.authRelay = _authRelayTec.text;
+    company.city = _cityTec.text;
+    company.isLocation = _isLocation;
+    company.jwtDuration = int.parse(_jwtDurationTec.text);
+    company.name = _nameTec.text;
+    company.passwordExpiration = int.parse(_passExpTec.text);
+    company.passwordUnit = _unit;
+    company.remotelyManaged = _remoteAuth;
+    company.state = _stateTec.text;
+    company.uniqueID = _uniqueIDTec.text;
+    company.zip = _zipTec.text;
+    company.passwordHandler.password = _passwordTec.text;
+    company.passwordHandler.confirmPassword = _confirmPasswordTec.text;
+
+    if (company.companyID == null || company.companyID.length == 0) {
+      var rsp = await companyProvider.addCompany(company);
+      ProgressDialogHelper pdh = ProgressDialogHelper();
+      if (!rsp) {
+        log("An error occured while adding a new company");
+        pdh.showMessageDialog(getText("error_add_cmp", this._language), context, this._language);
+      } else {
+        pdh.showMessageDialog(getText("new_cmp_create", this._language), context, this._language);
+      }
+    }
   }
 
 }

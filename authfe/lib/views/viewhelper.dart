@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'package:authfe/i18n/language.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -52,5 +53,35 @@ class ProgressDialogHelper {
           );
     return pr;
   }   
+
+
+    void showMessageDialog(String msg, BuildContext context, String language) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(getText("warning", language)),
+          content: new Text(msg),
+          actions: <Widget>[
+            OutlineButton(
+                textColor: Colors.white,
+                child: Text(
+                  getText("close", language),
+                  style: Theme.of(context).primaryTextTheme.button,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                )),
+          ],
+        );
+      },
+    );
+  }
+
 
 }

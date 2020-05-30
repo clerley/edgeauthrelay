@@ -26,6 +26,7 @@ import 'package:authfe/views/settingsview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'i18n/language.dart';
+import 'model/companymodel.dart';
 import 'views/loginwidget.dart';
 import 'model/user.dart';
 
@@ -33,6 +34,7 @@ import 'model/user.dart';
 void main() => runApp(MultiProvider(
                           providers:[
                             ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider(),),
+                            ChangeNotifierProvider<CompanyProvider>(create: (_)=> CompanyProvider(),),
                           ],
                           child: MyApp()));
 

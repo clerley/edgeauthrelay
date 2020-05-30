@@ -24,14 +24,12 @@ SOFTWARE.
 
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
+import 'package:authfe/model/settings.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-
-String path = "/jwt/company/login";
-String url = "http://127.0.0.1:9119";
-
-
+import 'package:http/http.dart';
 
 class UserProvider extends ChangeNotifier {
   static final UserProvider _theInstance = UserProvider._privateConstructor();
@@ -47,29 +45,37 @@ class UserProvider extends ChangeNotifier {
 
   Future<Login> requestLogin(String uniqueID, String username, String password) async {
     try {
+      String path = "/jwt/company/login";
+      GlobalSettings globalSettings = GlobalSettings();
       var loginRequest = LoginRequest(uniqueID, username, password);
-      var fullURL = url + path;
-      var response = await http.post(fullURL, body: utf8.encode(json.encode(loginRequest.toJson())));
+      var fullURL = globalSettings.url + path;
+      String bodyStr = json.encode(loginRequest.toJson());
+      var response = await http.post(fullURL, 
+                    headers: {'Content-type': 'application/json'}, 
+                    body: bodyStr);
       if(response.statusCode == 200) {
         login = Login.fromJson(json.decode(response.body));
         if(login.status == "Success") {
-          UserProvider.login.user = User(username);
-          UserProvider.login.sessionToken = login.sessionToken;
-          UserProvider.login.status = login.status;        
+          login.user.loggedIn = true;    
         } else {
           print("The user was not successfully logged in");
-          UserProvider.login.user.loggedIn = false;
+          login.user.loggedIn = false;
         }
       } else {
         print('The response was a failure. Could not connect to the server!');
         login = Login("Failure", "---");
-        UserProvider.login.user.loggedIn = false;
+        login.user.loggedIn = false;
       }
 
       notifyListeners();
+    } on SocketException {
+      print('The socket threw a SocketException');
 
-    } catch (e)  {
-      print("An error occurred while processing the login request");
+    } on ClientException {
+      print('The socket threw a ClientException');
+
+    } catch (e, stackTrace)  {
+      print("An error occurred while processing the login request ${stackTrace.toString()}");
       print(e.toString());
     }
     return login;
@@ -87,12 +93,13 @@ class LoginRequest {
   String get password => _password;
   String get username => _username;
 
-  Map<String, dynamic> toJson() =>
-  {
-    "uniqueID" : _uniqueID,
-    "username" : _username,
-    "password" : _password
-  };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> jsonMap = Map<String, dynamic>();
+    jsonMap["uniqueID"] = _uniqueID;
+    jsonMap["username"] = _username;
+    jsonMap["password"] = _password;
+    return jsonMap;
+  }
 
   //LoginRequest - Constructor to initialize with a json object
   LoginRequest.fromJson(Map<String, dynamic> json) : 
@@ -117,7 +124,7 @@ class Login {
 
 
   bool isLoggedIn() {
-    if(user != null) {
+    if(user != null && user.loggedIn != null){
       return user.loggedIn;
     }
 
@@ -142,5 +149,7 @@ class User {
 
   User.fromJson(Map<String, dynamic> json):
     name = json['fullName'],
-    username = json['userName'];
+    username = json['userName'],
+    secret = json['secret'],
+    isThing = json['isThing'];
 }

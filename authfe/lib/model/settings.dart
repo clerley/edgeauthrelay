@@ -28,6 +28,8 @@ class GlobalSettings {
 
   static final GlobalSettings _theInstance = GlobalSettings._internal();
   String url;
+  String companyUniqueID; //This is the ID provided by the user
+  String companyID; //This is the database ID.
   bool _loaded = false;
 
   GlobalSettings._internal();
@@ -43,12 +45,16 @@ class GlobalSettings {
     
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('url', url);
+    await prefs.setString('companyUniqueID', companyUniqueID);
+    await prefs.setString('companyID', companyID);
 
   }
 
   Future<void> load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this.url = prefs.getString('url');
+    this.companyUniqueID = prefs.getString('companyUniqueID');
+    this.companyID = prefs.getString('companyID');
     this._loaded = true;
   }
 
