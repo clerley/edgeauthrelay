@@ -84,6 +84,8 @@ func loginBL(lreq loginReq) *loginResp {
 	r := getJWTToken(user, company, &lrsp)
 	r.Fullname = user.Name
 	r.Username = user.Username
+	r.IsThing = user.IsThing
+	r.Secret = user.Secret
 	return r
 }
 

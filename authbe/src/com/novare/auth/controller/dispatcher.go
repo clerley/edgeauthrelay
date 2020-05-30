@@ -173,6 +173,8 @@ type loginResp struct {
 	SessionToken string `json:"sessionToken"`
 	Username     string `json:"userName"`
 	Fullname     string `json:"fullName"`
+	IsThing      bool   `json:"isThing"`
+	Secret       string `json:"secret"`
 }
 
 //Login ...
@@ -182,6 +184,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&lr)
 	if err != nil {
+		log.Printf("An issue occurred while performing the login request:[%s]", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
