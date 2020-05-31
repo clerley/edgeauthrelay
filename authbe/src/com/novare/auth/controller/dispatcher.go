@@ -363,8 +363,8 @@ func RemovePermission(w http.ResponseWriter, r *http.Request) {
 }
 
 type listPermResp struct {
-	Status string `json:"status"`
-	Perms  []permObj
+	Status string    `json:"status"`
+	Perms  []permObj `json:"permissions"`
 }
 
 func getStartEnd(w http.ResponseWriter, r *http.Request) (int64, int64, error) {
@@ -619,8 +619,8 @@ func RemoveRole(w http.ResponseWriter, r *http.Request) {
 }
 
 type listRoleResp struct {
-	Status string `json:"status"`
-	Roles  []roleObj
+	Status string    `json:"status"`
+	Roles  []roleObj `json:"roles"`
 }
 
 //ListRoles ...
