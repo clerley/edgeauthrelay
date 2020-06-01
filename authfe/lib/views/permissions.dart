@@ -21,7 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import 'package:authfe/model/permissionmodel.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
 import 'searchpermission.dart';
@@ -74,8 +77,13 @@ class _PermissionBody extends StatefulWidget {
 class _PermissionBodyState extends State<_PermissionBody> {
 
   final String _language;
+  TextEditingController _permController;
+  TextEditingController _descrController;
 
-  _PermissionBodyState(this._language);
+  _PermissionBodyState(this._language) {
+    this._permController = TextEditingController();
+    this._descrController = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +112,8 @@ class _PermissionBodyState extends State<_PermissionBody> {
 
             Container(
               child: TextField(
-                  style: Theme.of(context).primaryTextTheme.bodyText2),
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  controller: _permController,),
             ),
 
             Container(
@@ -114,7 +123,8 @@ class _PermissionBodyState extends State<_PermissionBody> {
 
             Container(
               child: TextField(
-                  style: Theme.of(context).primaryTextTheme.bodyText2),
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  controller: _descrController,),
             ),
 
             Center(
@@ -127,7 +137,7 @@ class _PermissionBodyState extends State<_PermissionBody> {
                           textColor: Colors.white,
                           child: Text(getText("add", this._language), style: Theme.of(context).primaryTextTheme.button,),
                           onPressed: () { 
-                            
+                            addPermission();
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),)
@@ -186,6 +196,27 @@ class _PermissionBodyState extends State<_PermissionBody> {
       ),
     );
 
+  }
+
+  addPermission() async {
+    Permission perm = Permission();
+    perm.id = "";
+    perm.description = _descrController.text;
+    perm.permission = _permController.text;
+
+    var pdh = ProgressDialogHelper();
+    var pd = pdh.createProgressDialog(getText("please_wait", this._language), context);
+    pd.show();
+    PermissionProvider permProvider = Provider.of<PermissionProvider>(context);
+    var resp = await permProvider.insertPermission(perm);
+    if(resp.status == "Success") {
+      _permController.text = "";
+      _descrController.text = "";
+      pdh.showMessageDialog(getText("perm_ins_success", this._language), context, this._language);
+    } else {
+      pdh.showMessageDialog(getText("perm_ins_error", this._language), context, this._language);
+    }
+    pd.hide();
   }
 
 }

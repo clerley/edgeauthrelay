@@ -41,7 +41,7 @@ class UserProvider extends ChangeNotifier {
   }
 
 
-  static var login = Login("Failure", "---");
+  var login = Login("Failure", "---");
 
   Future<Login> requestLogin(String uniqueID, String username, String password) async {
     try {

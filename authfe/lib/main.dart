@@ -29,12 +29,14 @@ import 'i18n/language.dart';
 import 'model/companymodel.dart';
 import 'views/loginwidget.dart';
 import 'model/user.dart';
+import 'model/permissionmodel.dart';
 
 
 void main() => runApp(MultiProvider(
                           providers:[
                             ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider(),),
-                            ChangeNotifierProvider<CompanyProvider>(create: (_)=> CompanyProvider(),),
+                            ChangeNotifierProvider<CompanyProvider>(create: (_) => CompanyProvider(),),
+                            ChangeNotifierProvider<PermissionProvider>(create: (_) => PermissionProvider(),),
                           ],
                           child: MyApp()));
 

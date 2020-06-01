@@ -59,7 +59,6 @@ class _LoginState extends State<LoginWidget> {
     this._newCompany = getText("newcompany", _language);
   }
 
-
   @override
   Widget build(BuildContext context) {
     var pr = ProgressDialogHelper().createProgressDialog(getText("please_wait", this._language), context);

@@ -72,6 +72,9 @@ Map<String, Map<String, String>> languages = {
                    "close"           : "Close",
                    "error_add_cmp"   : "Error adding company. Not additional information available!",
                    "new_cmp_create"  : "A new company has been created!",
+                   "user_not_logged" : "User was not properly logged in! Verify the company ID, username and password",
+                   "perm_ins_success": "Permission was successfully inserted",
+                   "perm_ins_error"  : "Error inserting the permission", 
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -118,6 +121,9 @@ Map<String, Map<String, String>> languages = {
                    "close"           : "Close",
                    "error_add_cmp"   : "Error adding company. Not additional information available!",
                    "new_cmp_create"  : "A new company has been created!",
+                   "user_not_logged" : "User was not properly logged in! Verify the company ID, username and password",
+                   "perm_ins_success": "Permission was successfully inserted",
+                   "perm_ins_error"  : "Error inserting the permission", 
                    } 
 };
 

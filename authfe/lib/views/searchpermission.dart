@@ -22,6 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'dart:developer';
+
+import 'package:authfe/model/permissionmodel.dart';
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../appbar/menudrawer.dart';
@@ -68,6 +71,12 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
   final String _language;
 
   _SearchBodyView(this._language);
+
+  @override
+  void initState() {
+    super.initState();
+    _getDataRows();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +127,7 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
                       DataColumn(
                           label: Text(getText("permission", this._language))),
                     ], 
-                    rows: _getDataRows(),
+                    rows: rows,
                     ),
                   ),
                 ),
@@ -126,17 +135,36 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
     );
   }
 
-  _getDataRows() {
-    var drs = [ 
-                      DataRow(
-                        cells: <DataCell>[
-                          DataCell(Text("...")),
-                          DataCell(Text('...')),
-                        ],
-                      )
-                      
-    ];
+  List<DataRow> rows = [];
 
-    return drs;
+  _getDataRows() async {
+    List<DataRow> localRows = [];
+    PermissionProvider permProvider = PermissionProvider();
+    ListPermissionResponse permResp = await permProvider.listPermissions(0, 1000);
+
+    if(permResp.permissions == null) {
+      log('The permissions have not been retrieved yet!');
+      return;
+    }
+
+    if(permResp.permissions.length == 0) {
+      return;
+    }
+
+    for(int i=0;i<permResp.permissions.length;i++) {
+      var element = permResp.permissions[i];
+      var drow = DataRow(
+          cells:<DataCell>[
+            DataCell(Text(element.description)),            
+            DataCell(Text(element.permission)),
+          ],
+        );
+      localRows.add(drow);
+    }
+
+    setState(() {
+      rows = localRows;
+    });
+
   }
 }

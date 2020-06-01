@@ -126,17 +126,6 @@ class _SearchBodyView extends State<_SearchUserBody> {
     );
   }
 
-  _getDataRows() {
-    var drs = [ 
-                      DataRow(
-                        cells: <DataCell>[
-                          DataCell(Text("...")),
-                          DataCell(Text('...')),
-                        ],
-                      )
-                      
-    ];
-
-    return drs;
+  _getDataRows() async {
   }
 }
