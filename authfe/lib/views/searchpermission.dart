@@ -28,6 +28,7 @@ import 'package:authfe/model/permissionmodel.dart';
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../appbar/menudrawer.dart';
+import 'permissions.dart';
 
 class SearchPermissions extends StatefulWidget {
   final String _language;
@@ -69,8 +70,11 @@ class _SearchPermissionBody extends StatefulWidget {
 
 class _SearchBodyView extends State<_SearchPermissionBody> {
   final String _language;
+  TextEditingController _searchText;
 
-  _SearchBodyView(this._language);
+  _SearchBodyView(this._language) {
+    _searchText = TextEditingController();
+  }
 
   @override
   void initState() {
@@ -101,14 +105,18 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
                 ),
                 Container(
                   child: TextField(
-                      style: Theme.of(context).primaryTextTheme.bodyText2),
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    controller: _searchText,
+                  ),
                 ),
                 Center(
                   child: Container(
                       padding: EdgeInsets.all(5.0),
                       child: OutlineButton(
                         textColor: Colors.white,
-                        onPressed: () {},
+                        onPressed: () {
+                          _filterRows();
+                        },
                         child: Text(
                           getText("search", this._language),
                           style: Theme.of(context).primaryTextTheme.button,
@@ -120,14 +128,15 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
                 ),
                 Center(
                   child: Container(
-                    child: DataTable(columns: [
-                      DataColumn(
-                        label: Text(getText("description", this._language)),
-                      ),
-                      DataColumn(
-                          label: Text(getText("permission", this._language))),
-                    ], 
-                    rows: rows,
+                    child: DataTable(
+                      columns: [
+                        DataColumn(
+                          label: Text(getText("description", this._language)),
+                        ),
+                        DataColumn(
+                            label: Text(getText("permission", this._language))),
+                      ],
+                      rows: rows,
                     ),
                   ),
                 ),
@@ -136,35 +145,83 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
   }
 
   List<DataRow> rows = [];
+  List<DataRow> fullList = [];
+
+  _filterRows() async {
+    if (_searchText.text.length == 0) {
+      rows = fullList;
+      setState(() {
+        rows = fullList;
+      });
+    }
+
+    List<DataRow> tmpList = [];
+    for (int i = 0; i < fullList.length; i++) {
+      if (fullList[i].cells[0].child is Text) {
+        var textField = fullList[i].cells[0].child;
+
+        if (textField.toString().indexOf(_searchText.text) >= 0) {
+          tmpList.add(fullList[i]);
+          continue;
+        }
+      }
+
+      if (fullList[i].cells[1].child is Text) {
+        var textField = fullList[i].cells[1].child;
+
+        if (textField.toString().indexOf(_searchText.text) >= 0) {
+          tmpList.add(fullList[i]);
+        }
+      }
+    }
+
+    if (tmpList.length > 0) {
+      setState(() {
+        rows = tmpList;
+      });
+    }
+  }
 
   _getDataRows() async {
     List<DataRow> localRows = [];
     PermissionProvider permProvider = PermissionProvider();
-    ListPermissionResponse permResp = await permProvider.listPermissions(0, 1000);
+    ListPermissionResponse permResp =
+        await permProvider.listPermissions(0, 1000);
 
-    if(permResp.permissions == null) {
+    if (permResp.permissions == null) {
       log('The permissions have not been retrieved yet!');
       return;
     }
 
-    if(permResp.permissions.length == 0) {
+    if (permResp.permissions.length == 0) {
       return;
     }
 
-    for(int i=0;i<permResp.permissions.length;i++) {
+    for (int i = 0; i < permResp.permissions.length; i++) {
       var element = permResp.permissions[i];
       var drow = DataRow(
-          cells:<DataCell>[
-            DataCell(Text(element.description)),            
-            DataCell(Text(element.permission)),
-          ],
-        );
+        onSelectChanged: (value) => rowSelected(element.id),
+        cells: <DataCell>[
+          DataCell(Text(element.description)),
+          DataCell(Text(element.permission)),
+        ],
+      );
       localRows.add(drow);
     }
 
+    fullList = localRows;
     setState(() {
       rows = localRows;
     });
-
   }
+
+  rowSelected(String selected) {
+    PermissionProvider permissions = PermissionProvider();
+    Permission perm = permissions.findPermissionById(selected);
+    if(perm != null) {
+      Navigator.pushReplacement(context, 
+        MaterialPageRoute(builder: (context) => PermissionsView.forEditing(_language, perm),));
+    }
+  }
+
 }

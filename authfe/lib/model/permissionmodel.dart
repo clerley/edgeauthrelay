@@ -40,6 +40,46 @@ class PermissionProvider extends ChangeNotifier {
     return _theInstance;
   }
 
+  ListPermissionResponse _cachedPermissions;
+
+  Permission findPermission(String description, String permission) {
+    Permission perm;
+
+    if(_cachedPermissions == null) {
+      log('There is currently no cached permission');
+      return perm;
+    }
+
+    for(int i=0;i<_cachedPermissions.permissions.length;i++) {
+      if(_cachedPermissions.permissions[i].description == description
+            && _cachedPermissions.permissions[i].permission == permission) {
+              perm = _cachedPermissions.permissions[i];
+              break;
+      }
+    }
+
+    return perm;
+  }
+
+  Permission findPermissionById(String id) {
+    Permission perm;
+
+    if(_cachedPermissions == null) {
+      log('There is currently no cached permission');
+      return perm;
+    }
+
+    for(int i=0;i<_cachedPermissions.permissions.length;i++) {
+      if(_cachedPermissions.permissions[i].id == id) {
+              perm = _cachedPermissions.permissions[i];
+              break;
+      }
+    }
+
+    return perm;
+
+  }
+
   Future<ListPermissionResponse> listPermissions(int startAt, int endAt) async {
     GlobalSettings settings = GlobalSettings();
     UserProvider userProvider = UserProvider();
@@ -54,6 +94,7 @@ class PermissionProvider extends ChangeNotifier {
       listResp.status = "Failure";
     }
     notifyListeners();
+    _cachedPermissions = listResp;
     return listResp;
   }
 

@@ -33,29 +33,41 @@ import '../main.dart';
 class PermissionsView extends StatefulWidget {
 
   final String _language;
+  final Permission _perm;
 
-  PermissionsView(this._language);
+  PermissionsView(this._language): _perm = null;
+
+  PermissionsView.forEditing(this._language, this._perm);
 
 
   @override
-  State<StatefulWidget> createState() => _PermissionsState(this._language);
+  State<StatefulWidget> createState() {
+
+    if(_perm != null) {
+      return _PermissionsState.forEditting(this._language, this._perm);
+    }
+
+    return _PermissionsState(this._language);
+  } 
 
 }
 
 class _PermissionsState extends State<PermissionsView> {
 
   final String _language;
+  final Permission _perm;
 
-  _PermissionsState(this._language);
+  _PermissionsState(this._language): _perm = null;
+
+  _PermissionsState.forEditting(this._language, this._perm);
 
   @override
   Widget build(BuildContext context) {
-    
      return Scaffold(
       appBar: AppBar(
         title: Text(getText("title", this._language)),
       ),
-      body: SingleChildScrollView(child: _PermissionBody(this._language),)
+      body: SingleChildScrollView(child: _PermissionBody.forEditing(this._language, this._perm),)
       ,
       drawer: DistAuthDrawer(this._language), 
       );
@@ -66,11 +78,14 @@ class _PermissionsState extends State<PermissionsView> {
 class _PermissionBody extends StatefulWidget {
 
   final String _language;
+  final Permission _perm;
 
-  _PermissionBody(this._language);
+  _PermissionBody(this._language): _perm = null;
+
+  _PermissionBody.forEditing(this._language, this._perm);
 
   @override
-  State<StatefulWidget> createState() => _PermissionBodyState(this._language);
+  State<StatefulWidget> createState() => _PermissionBodyState.forEditting(this._language, this._perm);
 
 }
 
@@ -79,10 +94,24 @@ class _PermissionBodyState extends State<_PermissionBody> {
   final String _language;
   TextEditingController _permController;
   TextEditingController _descrController;
+  Permission _perm;
 
   _PermissionBodyState(this._language) {
+    _perm = null;
+  }
+
+  _PermissionBodyState.forEditting(this._language, this._perm);
+
+
+  @override
+  void initState() {
+    super.initState();
     this._permController = TextEditingController();
     this._descrController = TextEditingController();
+    if(this._perm != null) {
+      _permController.text = _perm.permission;
+      _descrController.text = _perm.description;
+    }
   }
 
   @override
