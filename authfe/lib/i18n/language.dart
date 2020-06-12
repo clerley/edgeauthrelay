@@ -75,6 +75,8 @@ Map<String, Map<String, String>> languages = {
                    "user_not_logged" : "User was not properly logged in! Verify the company ID, username and password",
                    "perm_ins_success": "Permission was successfully inserted",
                    "perm_ins_error"  : "Error inserting the permission", 
+                   "perm_upd_success": "Permission was successfully updated",
+                   "perm_upd_error"  : "Error updating the permission"
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -124,6 +126,8 @@ Map<String, Map<String, String>> languages = {
                    "user_not_logged" : "User was not properly logged in! Verify the company ID, username and password",
                    "perm_ins_success": "Permission was successfully inserted",
                    "perm_ins_error"  : "Error inserting the permission", 
+                   "perm_upd_success": "Permission was successfully updated",
+                   "perm_upd_error"  : "Error updating the permission"
                    } 
 };
 

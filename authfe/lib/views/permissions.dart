@@ -27,70 +27,63 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
+import 'mainmenu.dart';
 import 'searchpermission.dart';
-import '../main.dart';
 
 class PermissionsView extends StatefulWidget {
-
   final String _language;
   final Permission _perm;
 
-  PermissionsView(this._language): _perm = null;
+  PermissionsView(this._language) : _perm = null;
 
   PermissionsView.forEditing(this._language, this._perm);
 
-
   @override
   State<StatefulWidget> createState() {
-
-    if(_perm != null) {
+    if (_perm != null) {
       return _PermissionsState.forEditting(this._language, this._perm);
     }
 
     return _PermissionsState(this._language);
-  } 
-
+  }
 }
 
 class _PermissionsState extends State<PermissionsView> {
-
   final String _language;
   final Permission _perm;
 
-  _PermissionsState(this._language): _perm = null;
+  _PermissionsState(this._language) : _perm = null;
 
   _PermissionsState.forEditting(this._language, this._perm);
 
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text(getText("title", this._language)),
       ),
-      body: SingleChildScrollView(child: _PermissionBody.forEditing(this._language, this._perm),)
-      ,
-      drawer: DistAuthDrawer(this._language), 
-      );
- 
+      body: SingleChildScrollView(
+        child: _PermissionBody.forEditing(this._language, this._perm),
+      ),
+      drawer: DistAuthDrawer(this._language),
+    );
   }
 }
 
 class _PermissionBody extends StatefulWidget {
-
   final String _language;
   final Permission _perm;
 
-  _PermissionBody(this._language): _perm = null;
+  _PermissionBody(this._language) : _perm = null;
 
   _PermissionBody.forEditing(this._language, this._perm);
 
   @override
-  State<StatefulWidget> createState() => _PermissionBodyState.forEditting(this._language, this._perm);
-
+  State<StatefulWidget> createState() =>
+      _PermissionBodyState.forEditting(this._language, this._perm);
 }
 
 class _PermissionBodyState extends State<_PermissionBody> {
-
   final String _language;
   TextEditingController _permController;
   TextEditingController _descrController;
@@ -102,13 +95,12 @@ class _PermissionBodyState extends State<_PermissionBody> {
 
   _PermissionBodyState.forEditting(this._language, this._perm);
 
-
   @override
   void initState() {
     super.initState();
     this._permController = TextEditingController();
     this._descrController = TextEditingController();
-    if(this._perm != null) {
+    if (this._perm != null) {
       _permController.text = _perm.permission;
       _descrController.text = _perm.description;
     }
@@ -116,115 +108,141 @@ class _PermissionBodyState extends State<_PermissionBody> {
 
   @override
   Widget build(BuildContext context) {
-     return Center(
+    return Center(
       child: Container(
         margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-        padding:EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(10.0),
         width: 900.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
-          borderRadius: BorderRadius.all(Radius.circular(10.0))
-        ),
+            color: Theme.of(context).backgroundColor,
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              child: Text(getText("permissions", this._language), 
-                      style: Theme.of(context).primaryTextTheme.bodyText1,),
-            ),
-
-            Container(
-              child: Text(getText("permission", this._language)),
-            ),
-
-            Container(
-              child: TextField(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                child: Text(
+                  getText("permissions", this._language),
+                  style: Theme.of(context).primaryTextTheme.bodyText1,
+                ),
+              ),
+              Container(
+                child: Text(getText("permission", this._language)),
+              ),
+              Container(
+                child: TextField(
                   style: Theme.of(context).primaryTextTheme.bodyText2,
-                  controller: _permController,),
-            ),
-
-            Container(
-              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-              child: Text(getText("description", this._language),),
-            ),
-
-            Container(
-              child: TextField(
+                  controller: _permController,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                child: Text(
+                  getText("description", this._language),
+                ),
+              ),
+              Container(
+                child: TextField(
                   style: Theme.of(context).primaryTextTheme.bodyText2,
-                  controller: _descrController,),
-            ),
-
-            Center(
+                  controller: _descrController,
+                ),
+              ),
+              Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                     Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: OutlineButton(
                           textColor: Colors.white,
-                          child: Text(getText("add", this._language), style: Theme.of(context).primaryTextTheme.button,),
-                          onPressed: () { 
+                          child: Text(
+                            getText("add", this._language),
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
+                          onPressed: () {
                             addPermission();
                           },
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),)
-                        ),
+                            borderRadius: BorderRadius.circular(30.0),
+                          )),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: OutlineButton(
+                          textColor: Colors.white,
+                          child: Text(
+                            getText("save", this._language),
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
+                          onPressed: () {
+                            savePermission();
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          )),
                     ),
                     Container(
                         padding: EdgeInsets.all(5.0),
                         child: OutlineButton(
                           textColor: Colors.white,
-                          child: Text(getText("save", this._language), style: Theme.of(context).primaryTextTheme.button,),
-                          onPressed: () { 
-                            
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SearchPermissions(this._language)),
+                            );
                           },
+                          child: Text(
+                            getText("search", this._language),
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),)
-                        ),
-                    ),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        )),
                     Container(
-                      padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                        textColor: Colors.white,
-                        onPressed: () {
-                          Navigator.pushReplacement(context, 
-                              MaterialPageRoute(builder: (context) => SearchPermissions(this._language)),);
-                        },
-                        child: Text(getText("search", this._language), style: Theme.of(context).primaryTextTheme.button,),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      )
-                    ),
-
-                    Container(
-                      padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                        textColor: Colors.white,
-                        onPressed: () {
-                             Navigator.pushReplacement(
-                               context,
-                               MaterialPageRoute(
-                                 builder: (context) => MyHomePage(title: getText("title", this._language))));
-                          },                        child: Text(getText("cancel", this._language), style: Theme.of(context).primaryTextTheme.button,),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      )
-                    ),
-
+                        padding: EdgeInsets.all(5.0),
+                        child: OutlineButton(
+                          textColor: Colors.white,
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MainMenu(this._language)));
+                          },
+                          child: Text(
+                            getText("cancel", this._language),
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        )),
                   ],
                 ),
               ),
-
-
-          ]
-        ),
+            ]),
       ),
     );
+  }
 
+  savePermission() async {
+    if(this._perm != null) {
+      this._perm.description = _descrController.text;
+      this._perm.permission = _permController.text;
+      PermissionProvider permProvider = Provider.of<PermissionProvider>(context);
+      InsertPermissionResponse resp = await permProvider.updatePermission(this._perm);
+      var pdh = ProgressDialogHelper();
+      if(resp.status == "Success") {
+        pdh.showMessageDialog(
+          getText("perm_upd_success", this._language), context, this._language);
+      } else {
+        pdh.showMessageDialog(
+          getText("perm_upd_error", this._language), context, this._language);
+      }
+    }
   }
 
   addPermission() async {
@@ -234,18 +252,20 @@ class _PermissionBodyState extends State<_PermissionBody> {
     perm.permission = _permController.text;
 
     var pdh = ProgressDialogHelper();
-    var pd = pdh.createProgressDialog(getText("please_wait", this._language), context);
+    var pd = pdh.createProgressDialog(
+        getText("please_wait", this._language), context);
     pd.show();
     PermissionProvider permProvider = Provider.of<PermissionProvider>(context);
     var resp = await permProvider.insertPermission(perm);
-    if(resp.status == "Success") {
+    if (resp.status == "Success") {
       _permController.text = "";
       _descrController.text = "";
-      pdh.showMessageDialog(getText("perm_ins_success", this._language), context, this._language);
+      pdh.showMessageDialog(
+          getText("perm_ins_success", this._language), context, this._language);
     } else {
-      pdh.showMessageDialog(getText("perm_ins_error", this._language), context, this._language);
+      pdh.showMessageDialog(
+          getText("perm_ins_error", this._language), context, this._language);
     }
     pd.hide();
   }
-
 }

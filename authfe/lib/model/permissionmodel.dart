@@ -122,6 +122,35 @@ class PermissionProvider extends ChangeNotifier {
     notifyListeners();
     return resp;
   }
+
+
+  Future<InsertPermissionResponse> updatePermission(Permission perm) async {
+    InsertPermissionResponse resp;
+    GlobalSettings settings = GlobalSettings();
+    UserProvider userProvider = UserProvider();
+    String fullURL = settings.url + "/jwt/permission/${perm.id}";
+    try {
+      var jsonObj = json.encode(perm.toJson());
+      var response = await http.post(fullURL,
+          headers: {
+            "Content-type": "application/json",
+            "Authorization": "bearer ${userProvider.login.sessionToken}"
+          },
+          body: jsonObj);
+      if (response.statusCode == 200) {
+        resp = InsertPermissionResponse.fromJson(json.decode(response.body));
+        perm.id = resp.id;
+      }
+    } catch (e, stacktrace) {
+      print(stacktrace.toString());
+      print(e.toString());
+    }
+    notifyListeners();
+
+
+    return resp;
+  }
+ 
 }
 
 class InsertPermissionResponse {
@@ -142,7 +171,7 @@ class ListPermissionResponse {
   List<Permission> permissions;
   int startAt;
   int endAt;
-
+ 
   ListPermissionResponse.fromJson(Map<String, dynamic> jsonObj) {
     this.status = jsonObj['status'];
     List<dynamic> jsonEncodedList = jsonObj['permissions'];
