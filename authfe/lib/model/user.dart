@@ -51,7 +51,8 @@ class UserProvider extends ChangeNotifier {
       var fullURL = globalSettings.url + path;
       String bodyStr = json.encode(loginRequest.toJson());
       var response = await http.post(fullURL, 
-                    headers: {'Content-type': 'application/json'}, 
+                    headers: {'Content-type': 'application/json',
+                              'Access-Control-Allow-Origin':'*'}, 
                     body: bodyStr);
       if(response.statusCode == 200) {
         login = Login.fromJson(json.decode(response.body));

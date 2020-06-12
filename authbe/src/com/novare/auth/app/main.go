@@ -29,6 +29,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 /**
@@ -94,5 +95,10 @@ func main() {
 	grantHandler := http.HandlerFunc(controller.GrantRequest)
 	mux.Handle("/jwt/grant/{ucid}", controller.AuthorizationRequest(grantHandler)).Methods("GET")
 
-	http.ListenAndServe(":9119", mux)
+	//--------------------------------------------------------------------------
+	//This is to handle CORs issues
+	//--------------------------------------------------------------------------
+	handler := cors.Default().Handler(mux)
+
+	http.ListenAndServe(":9119", handler)
 }
