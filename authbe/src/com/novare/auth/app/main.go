@@ -98,7 +98,7 @@ func main() {
 	//--------------------------------------------------------------------------
 	//This is to handle CORs issues
 	//--------------------------------------------------------------------------
-	handler := cors.Default().Handler(mux)
+	handler := cors.AllowAll().Handler(mux)
 
 	http.ListenAndServe(":9119", handler)
 }
