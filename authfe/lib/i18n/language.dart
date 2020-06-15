@@ -76,7 +76,11 @@ Map<String, Map<String, String>> languages = {
                    "perm_ins_success": "Permission was successfully inserted",
                    "perm_ins_error"  : "Error inserting the permission", 
                    "perm_upd_success": "Permission was successfully updated",
-                   "perm_upd_error"  : "Error updating the permission"
+                   "perm_upd_error"  : "Error updating the permission",
+                   "add_role_failed" : "Unable to add the role",
+                   "update_role_failed": "Unable to update the role",
+                   "update_role_success": "Role update was successful!",
+                   "add_role_success": "Role was successfully added"
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -127,7 +131,12 @@ Map<String, Map<String, String>> languages = {
                    "perm_ins_success": "Permission was successfully inserted",
                    "perm_ins_error"  : "Error inserting the permission", 
                    "perm_upd_success": "Permission was successfully updated",
-                   "perm_upd_error"  : "Error updating the permission"
+                   "perm_upd_error"  : "Error updating the permission",
+                   "add_role_failed" : "Unable to add the role",
+                   "update_role_failed": "Unable to update the role",
+                   "update_role_success": "Role update was successful!",
+                   "add_role_success": "Role was successfully added"
+
                    } 
 };
 

@@ -21,11 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import 'package:authfe/model/permissionmodel.dart';
+import 'package:authfe/model/rolesmodel.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
+import 'mainmenu.dart';
 import 'searchrole.dart';
-import '../main.dart';
 
 class RolesView extends StatefulWidget {
   final String _language;
@@ -67,7 +71,26 @@ class _RoleBody extends StatefulWidget {
 class _RoleBodyState extends State<_RoleBody> {
   final String _language;
 
-  _RoleBodyState(this._language);
+  Role role;
+  TextEditingController _description;
+
+  _RoleBodyState(this._language) {
+    this.role = Role();
+  }
+
+  _RoleBodyState.withRole(this.role, this._language);
+
+  @override
+  void initState() {
+    if (this.role != null && this.role.description != null) {
+      _description.text = role.description;
+    }
+
+    var permissionProvider = PermissionProvider();
+    Future.sync(() async => await permissionProvider.listPermissions(0, 1000));
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,14 +121,17 @@ class _RoleBodyState extends State<_RoleBody> {
                     style: Theme.of(context).primaryTextTheme.bodyText2),
               ),
               Center(
-                child: DataTable(
-                  columns: [
-                    DataColumn(label: Text("")),
-                    DataColumn(
-                        label: Text(getText("description", this._language)))
-                  ],
-                  rows: _getDataSource(),
-                ),
+                child: Consumer<PermissionProvider>(
+                    builder: (context, permissionProvider, child) {
+                  return DataTable(
+                    columns: [
+                      DataColumn(label: Text("")),
+                      DataColumn(
+                          label: Text(getText("description", this._language)))
+                    ],
+                    rows: _getDataSource(),
+                  );
+                }),
               ),
               Center(
                 child: Row(
@@ -119,7 +145,9 @@ class _RoleBodyState extends State<_RoleBody> {
                             getText("add", this._language),
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            addRole();
+                          },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           )),
@@ -132,7 +160,9 @@ class _RoleBodyState extends State<_RoleBody> {
                             getText("save", this._language),
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            updateRole();
+                          },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           )),
@@ -165,9 +195,8 @@ class _RoleBodyState extends State<_RoleBody> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MyHomePage(
-                                        title:
-                                            getText("title", this._language))));
+                                    builder: (context) =>
+                                        MainMenu(this._language)));
                           },
                           child: Text(
                             getText("cancel", this._language),
@@ -185,21 +214,96 @@ class _RoleBodyState extends State<_RoleBody> {
     );
   }
 
-  bool _test1Checked = false;
   List<DataRow> _getDataSource() {
+    PermissionProvider permissionsProvider = PermissionProvider();
+    if (!permissionsProvider.isCached()) {
+      Future.sync(
+          () async => await permissionsProvider.listPermissions(0, 10000));
+    }
+
+    List<Permission> cachedPermissions =
+        permissionsProvider.getCachedPermissions();
     var dataRows = List<DataRow>();
-    var row = DataRow(cells: []);
-    DataCell cell = new DataCell(Checkbox(
-        onChanged: (bool value) {
-          setState(() {
-            this._test1Checked = value;
-          });
-        },
-        value: this._test1Checked));
-    row.cells.add(cell);
-    cell = new DataCell(Text('Testing 1'));
-    row.cells.add(cell);
-    dataRows.add(row);
+    if (cachedPermissions.length > 0) {
+      for (var i = 0; i < cachedPermissions.length; i++) {
+        var permission = cachedPermissions[i];
+        var row = DataRow(
+          selected: role.hasPermission(permission),
+          cells: [],
+          onSelectChanged: (value) {
+            permissionSelected(permission, value);
+          },
+        );
+        DataCell cell = new DataCell(Text(permission.permission));
+        row.cells.add(cell);
+
+        cell = new DataCell(Text(permission.description));
+        row.cells.add(cell);
+        dataRows.add(row);
+      }
+    }
     return dataRows;
+  }
+
+  bool permissionSelected(Permission perm, bool value) {
+    if (role != null) {
+      if (role.hasPermission(perm)) {
+        role.removePermission(perm);
+      } else {
+        role.addPermission(perm);
+      }
+    }
+
+    PermissionProvider permProv = PermissionProvider();
+    permProv.doNotification();
+
+    return value;
+  }
+
+  void addPermission(Permission perm) {
+    if (this.role != null) {
+      this.role.addPermission(perm);
+    }
+  }
+
+  addRole() {
+    _updateRole("add");
+  }
+
+  updateRole() {
+    _updateRole("update");
+  }
+
+  _updateRole(String updateType) async {
+    bool success = false;
+    if (this.role != null && this.role.id != "-1") {
+      role.description = _description.text;
+      RolesProvider rolesProvider = RolesProvider();
+      var response;
+      if (updateType == "update") {
+        response = await rolesProvider.saveRole(role);
+      } else {
+        response = await rolesProvider.insertRole(role);
+      }
+      if (response.status == "Success") {
+        success = true;
+      }
+    }
+
+    String msg;
+    DialogHelper dialogHelper = DialogHelper();
+    if (updateType == "update") {
+      msg = getText("update_role_failed", this._language);
+      if (success) {
+        msg = getText("update_role_success", this._language);
+      }
+    } else {
+      msg = getText("add_role_failed", this._language);
+      if (success) {
+        msg = getText("add_role_success", this._language);
+      }
+    }
+
+    dialogHelper.showMessageDialog(msg, context, this._language);
   }
 }

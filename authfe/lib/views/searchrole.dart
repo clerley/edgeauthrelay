@@ -32,8 +32,7 @@ class SearchRoles extends StatefulWidget {
   SearchRoles(this._language);
 
   @override
-  State<StatefulWidget> createState() =>
-      _SearchRolesState(this._language);
+  State<StatefulWidget> createState() => _SearchRolesState(this._language);
 }
 
 class _SearchRolesState extends State<SearchRoles> {
@@ -111,14 +110,15 @@ class _SearchBodyView extends State<_SearchRoleBody> {
                 ),
                 Center(
                   child: Container(
-                    child: DataTable(columns: [
-                      DataColumn(
-                        label: Text(getText("description", this._language)),
-                      ),
-                      DataColumn(
-                          label: Text(getText("role", this._language))),
-                    ], 
-                    rows: _getDataRows(),
+                    child: DataTable(
+                      columns: [
+                        DataColumn(
+                          label: Text(getText("description", this._language)),
+                        ),
+                        DataColumn(
+                            label: Text(getText("role", this._language))),
+                      ],
+                      rows: _getDataRows(),
                     ),
                   ),
                 ),
@@ -127,14 +127,13 @@ class _SearchBodyView extends State<_SearchRoleBody> {
   }
 
   _getDataRows() {
-    var drs = [ 
-                      DataRow(
-                        cells: <DataCell>[
-                          DataCell(Text("...")),
-                          DataCell(Text('...')),
-                        ],
-                      )
-                      
+    var drs = [
+      DataRow(
+        cells: <DataCell>[
+          DataCell(Text("...")),
+          DataCell(Text('...')),
+        ],
+      )
     ];
 
     return drs;

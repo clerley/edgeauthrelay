@@ -64,7 +64,7 @@ class _SettingsViewBodyState extends State<_SettingsViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    var pr = ProgressDialogHelper()
+    var pr = DialogHelper()
         .createProgressDialog(getText("please_wait", LANG_ENGLISH), context);
 
 

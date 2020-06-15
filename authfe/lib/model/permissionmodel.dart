@@ -108,7 +108,7 @@ class PermissionProvider extends ChangeNotifier {
       var response = await http.put(fullURL,
           headers: {
             "Content-type": "application/json",
-            "Authorization": "bearer ${userProvider.login.sessionToken}"
+            "Authorization": "bearer ${userProvider.login.sessionToken}",
           },
           body: jsonObj);
       if (response.statusCode == 200) {
@@ -149,6 +149,37 @@ class PermissionProvider extends ChangeNotifier {
 
 
     return resp;
+  }
+
+  bool isCached() {
+
+    if(this._cachedPermissions == null) {
+      return false;
+    }
+
+    if(this._cachedPermissions.permissions == null) {
+      return false;
+    }
+
+    return (this._cachedPermissions.permissions.length > 0);
+  }
+
+  List<Permission> getCachedPermissions() {
+    List<Permission> permissions = [];
+
+    if(!isCached()) {
+      return permissions;
+    }
+
+    this._cachedPermissions.permissions.forEach((element) {
+      permissions.add(element);  
+    });
+
+    return permissions;
+  }
+
+  doNotification() {
+    notifyListeners();
   }
  
 }

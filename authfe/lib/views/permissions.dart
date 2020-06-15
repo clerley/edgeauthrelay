@@ -234,7 +234,7 @@ class _PermissionBodyState extends State<_PermissionBody> {
       this._perm.permission = _permController.text;
       PermissionProvider permProvider = Provider.of<PermissionProvider>(context);
       InsertPermissionResponse resp = await permProvider.updatePermission(this._perm);
-      var pdh = ProgressDialogHelper();
+      var pdh = DialogHelper();
       if(resp.status == "Success") {
         pdh.showMessageDialog(
           getText("perm_upd_success", this._language), context, this._language);
@@ -251,7 +251,7 @@ class _PermissionBodyState extends State<_PermissionBody> {
     perm.description = _descrController.text;
     perm.permission = _permController.text;
 
-    var pdh = ProgressDialogHelper();
+    var pdh = DialogHelper();
     var pd = pdh.createProgressDialog(
         getText("please_wait", this._language), context);
     pd.show();

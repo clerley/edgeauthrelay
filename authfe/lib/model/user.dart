@@ -45,14 +45,14 @@ class UserProvider extends ChangeNotifier {
 
   Future<Login> requestLogin(String uniqueID, String username, String password) async {
     try {
-      String path = "/jwt/company/login";
+      //var val = await http.get("https://jsonplaceholder.typicode.com/albums/1");
+      //print(val.body);
       GlobalSettings globalSettings = GlobalSettings();
       var loginRequest = LoginRequest(uniqueID, username, password);
-      var fullURL = globalSettings.url + path;
+      var fullURL = globalSettings.url + "/jwt/company/login";
       String bodyStr = json.encode(loginRequest.toJson());
       var response = await http.post(fullURL, 
-                    headers: {'Content-type': 'application/json',
-                              'Access-Control-Allow-Origin':'*'}, 
+                    headers: {'Content-type': 'application/json'}, 
                     body: bodyStr);
       if(response.statusCode == 200) {
         login = Login.fromJson(json.decode(response.body));

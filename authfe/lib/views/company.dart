@@ -479,7 +479,7 @@ class _CompanyState extends State<CompanyBody> {
 
     if (company.companyID == null || company.companyID.length == 0) {
       var rsp = await companyProvider.addCompany(company);
-      ProgressDialogHelper pdh = ProgressDialogHelper();
+      DialogHelper pdh = DialogHelper();
       if (!rsp) {
         log("An error occured while adding a new company");
         pdh.showMessageDialog(getText("error_add_cmp", this._language), context, this._language);

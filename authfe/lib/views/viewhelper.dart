@@ -26,12 +26,12 @@ import 'package:authfe/i18n/language.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
-class ProgressDialogHelper {
-  static final ProgressDialogHelper _theInstance = ProgressDialogHelper._internalConstructor();
+class DialogHelper {
+  static final DialogHelper _theInstance = DialogHelper._internalConstructor();
 
-  ProgressDialogHelper._internalConstructor();
+  DialogHelper._internalConstructor();
 
-  factory ProgressDialogHelper() {
+  factory DialogHelper() {
     return _theInstance;
   }
   

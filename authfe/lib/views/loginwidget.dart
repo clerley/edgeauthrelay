@@ -61,7 +61,7 @@ class _LoginState extends State<LoginWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var pr = ProgressDialogHelper().createProgressDialog(getText("please_wait", this._language), context);
+    var pr = DialogHelper().createProgressDialog(getText("please_wait", this._language), context);
     var userProvider = Provider.of<UserProvider>(context);
     return 
       Center(
@@ -144,7 +144,7 @@ class _LoginState extends State<LoginWidget> {
                               Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
                             } else {
                               debugPrint("The user is not logged in now! ${_uniqueIDController.text}");
-                              ProgressDialogHelper pdh = ProgressDialogHelper();
+                              DialogHelper pdh = DialogHelper();
                               pdh.showMessageDialog(getText("user_not_logged", this._language), context, this._language);
                             }
                           },
