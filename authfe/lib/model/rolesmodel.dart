@@ -62,7 +62,7 @@ class RolesProvider extends ChangeNotifier {
       var jsonObject = json.encode(jn);
       var httpHeader = {
         "Content-type": "application/json",
-        "Authentication": "bearer ${users.login.sessionToken}"
+        "Authorization": "bearer ${users.login.sessionToken}"
       };
       var rawResp;
       if (updateType == "insert") {
@@ -227,5 +227,9 @@ class Role {
       this.permissions.remove(tempPerm);
       log("Removed the permission with ID:${tempPerm.id}");
     }
+  }
+
+  bool isInsertable() {
+    return this.id == "-1";
   }
 }

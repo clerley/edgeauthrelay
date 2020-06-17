@@ -82,6 +82,7 @@ class _RoleBodyState extends State<_RoleBody> {
 
   @override
   void initState() {
+    _description = TextEditingController();
     if (this.role != null && this.role.description != null) {
       _description.text = role.description;
     }
@@ -276,19 +277,22 @@ class _RoleBodyState extends State<_RoleBody> {
 
   _updateRole(String updateType) async {
     bool success = false;
-    if (this.role != null && this.role.id != "-1") {
-      role.description = _description.text;
-      RolesProvider rolesProvider = RolesProvider();
-      var response;
-      if (updateType == "update") {
-        response = await rolesProvider.saveRole(role);
-      } else {
+    role.description = _description.text;
+    RolesProvider rolesProvider = RolesProvider();
+    
+    var response;
+    if (this.role != null && updateType != "update" && this.role.isInsertable()) {
         response = await rolesProvider.insertRole(role);
-      }
-      if (response.status == "Success") {
-        success = true;
-      }
+
+    } else if(this.role != null && updateType == "update" && !this.role.isInsertable()) {
+        response = await rolesProvider.saveRole(role);
+
     }
+
+    if (response != null && response.status == "Success") {
+      success = true;
+    }
+
 
     String msg;
     DialogHelper dialogHelper = DialogHelper();

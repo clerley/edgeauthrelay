@@ -544,7 +544,7 @@ type roleResp struct {
 //InsertRole ...
 func InsertRole(w http.ResponseWriter, r *http.Request) {
 
-	usr := r.Context().Value(CtxUser).(*model.Role)
+	usr := r.Context().Value(CtxUser).(*model.User)
 
 	var rq roleObj
 	decoder := json.NewDecoder(r.Body)
@@ -568,7 +568,7 @@ func InsertRole(w http.ResponseWriter, r *http.Request) {
 //UpdateRole ...
 func UpdateRole(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	usr := r.Context().Value(CtxUser).(*model.Role)
+	usr := r.Context().Value(CtxUser).(*model.User)
 
 	roleID, ok := vars["roleid"]
 	if !ok {
@@ -631,7 +631,7 @@ func ListRoles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr := r.Context().Value(CtxUser).(*model.Role)
+	usr := r.Context().Value(CtxUser).(*model.User)
 
 	rsp := listRolesBL(startAt, endAt, usr.CompanyID)
 
