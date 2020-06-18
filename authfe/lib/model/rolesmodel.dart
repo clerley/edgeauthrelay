@@ -181,13 +181,15 @@ class Role {
   }
 
   toJson() {
-    var jsonMap = {};
+    Map<String, dynamic> jsonMap = Map<String, dynamic>();
     jsonMap['id'] = id;
     jsonMap['description'] = description;
-    jsonMap['permissions'] = [];
-    this.permissions.forEach((element) {
-      jsonMap['permissions'].add(element.toJson());
-    });
+    jsonMap['permissions'] = List<dynamic>();
+    for (var i =0; i< this.permissions.length;i++) {
+      var perm = this.permissions[i];
+      jsonMap['permissions'].add(perm.toJson());
+    }
+    return jsonMap;
   }
 
   bool hasPermission(Permission perm) {

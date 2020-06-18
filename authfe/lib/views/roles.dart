@@ -119,12 +119,14 @@ class _RoleBodyState extends State<_RoleBody> {
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2),
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    controller: _description,),
               ),
               Center(
                 child: Consumer<PermissionProvider>(
                     builder: (context, permissionProvider, child) {
                   return DataTable(
+                    onSelectAll: (value) => allRolesSelected(value),
                     columns: [
                       DataColumn(label: Text("")),
                       DataColumn(
@@ -309,5 +311,27 @@ class _RoleBodyState extends State<_RoleBody> {
     }
 
     dialogHelper.showMessageDialog(msg, context, this._language);
+  }
+
+
+  allRolesSelected(bool isSelected) {
+    if(this.role == null) {
+      return;
+    }
+
+    PermissionProvider permissionsProvider = PermissionProvider();
+    var cachedPermissions = permissionsProvider.getCachedPermissions();
+    if(cachedPermissions != null) {
+      for(var i=0;i<cachedPermissions.length;i++) {
+        if(isSelected) {
+          this.role.addPermission(cachedPermissions[i]);
+        } else {
+          this.role.removePermission(cachedPermissions[i]);
+        }
+      }
+    }
+
+    permissionsProvider.doNotification();
+
   }
 }
