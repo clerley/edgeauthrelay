@@ -30,6 +30,7 @@ import 'package:authfe/model/settings.dart';
 import 'package:authfe/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 class RolesProvider extends ChangeNotifier {
   static final RolesProvider _theInstance = RolesProvider._internal();
@@ -86,6 +87,7 @@ class RolesProvider extends ChangeNotifier {
 
   Future<ListRolesResponse> listRoles(int startAt, int endAt) async {
     ListRolesResponse resp = ListRolesResponse();
+    resp.status = "Failure";
     GlobalSettings settings = GlobalSettings();
     try {
       UserProvider users = UserProvider();
@@ -93,17 +95,21 @@ class RolesProvider extends ChangeNotifier {
         return resp;
       }
       var httpHeader = {
-        "Content-type": "application/json",
-        "Authentication": "bearer ${users.login.sessionToken}"
+        "Authorization": "bearer ${users.login.sessionToken}"
       };
-      var rawResp;
+      Response rawResp;
       var fullUrl = settings.url + "/jwt/role/$startAt/$endAt";
-      rawResp = await http.put(fullUrl, headers: httpHeader);
-      resp = ListRolesResponse.fromJson(json.decode(rawResp.body));
+      rawResp = await http.get(fullUrl, headers: httpHeader);
+      if(rawResp.statusCode == 200) {
+        resp = ListRolesResponse.fromJson(json.decode(rawResp.body));
+      }
       this._cachedRoles = resp;
+
+      notifyListeners();
+
     } catch (e, stacktrace) {
       print(stacktrace.toString());
-      print(e.toString());
+      print("Error: ${e.toString()}");
     }
 
     return resp;
@@ -116,14 +122,53 @@ class RolesProvider extends ChangeNotifier {
       return role;
     }
 
-    this._cachedRoles.roles.forEach((element) {
-      if (element.id == id) {
-        return element;
+    for(var i=0;i< this._cachedRoles.roles.length;i++) {
+      Role role = this._cachedRoles.roles[i];
+      if (role.id == id) {
+        return role;
       }
-    });
+    }
 
     return role;
   }
+
+  bool isCached() {
+    if(this._cachedRoles != null && this._cachedRoles.roles != null && this._cachedRoles.roles.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  List<Role> getCached() {
+    if(this.isCached()) {
+      return this._cachedRoles.roles;
+    }
+    return List<Role>();
+  }
+
+  doNotification() {
+    notifyListeners();
+  }
+
+  List<Role> filterByDescription(String description) {
+
+    List<Role> filteredList = List<Role>();
+
+    if(!isCached()) {
+      return filteredList;
+    }
+
+    for(var i=0;i<this._cachedRoles.roles.length;i++) {
+      description = description.toLowerCase();
+      Role role = this._cachedRoles.roles[i];
+      if(role.description.toLowerCase().indexOf(description) >= 0) {
+        filteredList.add(role);
+      }
+    }
+
+    return filteredList;
+  }
+ 
 }
 
 class RoleResponse {
@@ -153,7 +198,7 @@ class ListRolesResponse {
 
   ListRolesResponse.fromJson(Map<String, dynamic> jsonMap) {
     this.status = jsonMap['status'];
-    List<Map<String, dynamic>> rolesList = jsonMap['roles'];
+    List<dynamic> rolesList = jsonMap['roles'];
     rolesList.forEach((element) {
       var role = Role.fromJson(element);
       this.roles.add(role);

@@ -80,7 +80,8 @@ Map<String, Map<String, String>> languages = {
                    "add_role_failed" : "Unable to add the role",
                    "update_role_failed": "Unable to update the role",
                    "update_role_success": "Role update was successful!",
-                   "add_role_success": "Role was successfully added"
+                   "add_role_success": "Role was successfully added",
+                   "id"              : "ID",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -135,8 +136,8 @@ Map<String, Map<String, String>> languages = {
                    "add_role_failed" : "Unable to add the role",
                    "update_role_failed": "Unable to update the role",
                    "update_role_success": "Role update was successful!",
-                   "add_role_success": "Role was successfully added"
-
+                   "add_role_success": "Role was successfully added",
+                   "id"              : "ID",
                    } 
 };
 

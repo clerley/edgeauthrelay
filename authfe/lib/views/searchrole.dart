@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'package:authfe/model/rolesmodel.dart';
+import 'package:authfe/views/roles.dart';
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../appbar/menudrawer.dart';
@@ -65,8 +67,23 @@ class _SearchRoleBody extends StatefulWidget {
 
 class _SearchBodyView extends State<_SearchRoleBody> {
   final String _language;
+  TextEditingController _searchText;
 
   _SearchBodyView(this._language);
+
+  @override
+  void initState() {
+    _searchText = TextEditingController();
+    RolesProvider provider = RolesProvider();
+    if (!provider.isCached()) {
+      provider.listRoles(0, 1000);
+    }
+
+    _rows = new List<DataRow>();
+    super.initState();
+
+    _getDataRows();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,14 +108,17 @@ class _SearchBodyView extends State<_SearchRoleBody> {
                 ),
                 Container(
                   child: TextField(
-                      style: Theme.of(context).primaryTextTheme.bodyText2),
+                      style: Theme.of(context).primaryTextTheme.bodyText2,
+                      controller: _searchText,),
                 ),
                 Center(
                   child: Container(
                       padding: EdgeInsets.all(5.0),
                       child: OutlineButton(
                         textColor: Colors.white,
-                        onPressed: () {},
+                        onPressed: () {
+                          filterRows();
+                        },
                         child: Text(
                           getText("search", this._language),
                           style: Theme.of(context).primaryTextTheme.button,
@@ -110,32 +130,91 @@ class _SearchBodyView extends State<_SearchRoleBody> {
                 ),
                 Center(
                   child: Container(
-                    child: DataTable(
-                      columns: [
-                        DataColumn(
-                          label: Text(getText("description", this._language)),
-                        ),
-                        DataColumn(
-                            label: Text(getText("role", this._language))),
-                      ],
-                      rows: _getDataRows(),
-                    ),
-                  ),
+                      child: DataTable(
+                    columns: [
+                      DataColumn(
+                        label: Text(getText("id", this._language)),
+                      ),
+                      DataColumn(
+                          label: Text(getText("description", this._language))),
+                    ],
+                    rows: _rows,
+                  )),
                 ),
               ])),
     );
   }
 
-  _getDataRows() {
-    var drs = [
-      DataRow(
-        cells: <DataCell>[
-          DataCell(Text("...")),
-          DataCell(Text('...')),
-        ],
-      )
-    ];
+  List<DataRow> _rows;
+  _getDataRows() async {
+    List<DataRow> tempRows = new List<DataRow>();
 
-    return drs;
+    var provider = RolesProvider();
+    ListRolesResponse listRolesResponse =  await provider.listRoles(0, 1000);
+
+    if(listRolesResponse.status != "Success") {
+      print("The response was not successful!");
+      return tempRows; 
+    }
+
+    if(listRolesResponse.roles == null || listRolesResponse.roles.length == 0) {
+      print("The roles have not been retrieve!");
+      return tempRows;
+    }
+
+    List<Role> roles = listRolesResponse.roles;
+
+    for (var i = 0; i < roles.length; i++) {
+      var role = roles[i];
+      var dataRow = DataRow(
+        onSelectChanged: (value) => rowSelected(role, value),
+        cells: <DataCell>[
+          DataCell(Text(role.id)),
+          DataCell(Text(role.description)),
+        ],
+      );
+      tempRows.add(dataRow);
+    }
+
+    setState(() {
+      this._rows = tempRows;  
+    });
+    return _rows;
+  }
+
+  filterRows() async {
+
+    var searchText = _searchText.text;
+    if(searchText == null || searchText.isEmpty) {
+      _getDataRows();
+      return;
+    }
+
+    RolesProvider rolesProvider = RolesProvider();
+    List<Role> roles = rolesProvider.filterByDescription(searchText);
+    List<DataRow> tempRows = List<DataRow>();
+
+    for (var i = 0; i < roles.length; i++) {
+      var role = roles[i];
+      var dataRow = DataRow(
+        onSelectChanged: (value) => rowSelected(role, value),
+        cells: <DataCell>[
+          DataCell(Text(role.id)),
+          DataCell(Text(role.description)),
+        ],
+      );
+      tempRows.add(dataRow);
+    }
+
+    setState(() {
+      this._rows = tempRows;  
+    });
+
+  }
+
+  rowSelected(Role role, bool selected) {
+    if(selected) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RolesView.withRole(this._language, role),));
+    }
   }
 }

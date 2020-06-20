@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'i18n/language.dart';
 import 'model/companymodel.dart';
+import 'model/rolesmodel.dart';
 import 'views/loginwidget.dart';
 import 'model/user.dart';
 import 'model/permissionmodel.dart';
@@ -37,6 +38,7 @@ void main() => runApp(MultiProvider(
                             ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider(),),
                             ChangeNotifierProvider<CompanyProvider>(create: (_) => CompanyProvider(),),
                             ChangeNotifierProvider<PermissionProvider>(create: (_) => PermissionProvider(),),
+                            ChangeNotifierProvider<RolesProvider>(create: (_) => RolesProvider(),),
                           ],
                           child: MyApp()));
 

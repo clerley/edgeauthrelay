@@ -33,17 +33,21 @@ import 'searchrole.dart';
 
 class RolesView extends StatefulWidget {
   final String _language;
+  final Role _role;
 
-  RolesView(this._language);
+  RolesView(this._language): this._role = null;
+
+  RolesView.withRole(this._language, this._role);
 
   @override
-  State<StatefulWidget> createState() => _RolesState(this._language);
+  State<StatefulWidget> createState() => _RolesState(this._language, this._role);
 }
 
 class _RolesState extends State<RolesView> {
   final String _language;
+  Role _role;
 
-  _RolesState(this._language);
+  _RolesState(this._language, this._role);
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +56,7 @@ class _RolesState extends State<RolesView> {
         title: Text(getText("title", this._language)),
       ),
       body: SingleChildScrollView(
-        child: _RoleBody(this._language),
+        child: _RoleBody(this._language, this._role),
       ),
       drawer: DistAuthDrawer(this._language),
     );
@@ -61,11 +65,12 @@ class _RolesState extends State<RolesView> {
 
 class _RoleBody extends StatefulWidget {
   final String _language;
+  final Role _role;
 
-  _RoleBody(this._language);
+  _RoleBody(this._language, this._role);
 
   @override
-  State<StatefulWidget> createState() => _RoleBodyState(this._language);
+  State<StatefulWidget> createState() => _RoleBodyState.withRole(this._role, this._language);
 }
 
 class _RoleBodyState extends State<_RoleBody> {
@@ -78,7 +83,11 @@ class _RoleBodyState extends State<_RoleBody> {
     this.role = Role();
   }
 
-  _RoleBodyState.withRole(this.role, this._language);
+  _RoleBodyState.withRole(this.role, this._language) {
+    if(this.role == null) {
+      this.role = Role();
+    }
+  }
 
   @override
   void initState() {
