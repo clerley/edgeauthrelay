@@ -532,7 +532,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 type roleObj struct {
 	ID          string             `json:"id"`          //
-	Description string             `json:"name"`        //Role description
+	Description string             `json:"description"` //Role description
 	Permissions []model.Permission `json:"permissions"` //List of permissions for the role
 }
 
