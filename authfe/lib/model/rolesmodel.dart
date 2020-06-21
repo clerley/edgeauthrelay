@@ -257,6 +257,7 @@ class Role {
 
   void removePermission(Permission perm) {
     if (!this.hasPermission(perm)) {
+      print("The role does not have the permission: ${perm.description}. It cannot be removed!");
       return;
     }
 

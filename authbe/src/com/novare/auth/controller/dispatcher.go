@@ -577,7 +577,7 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var rq usrObj
+	var rq roleObj
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&rq)
 	if err != nil {
@@ -586,7 +586,7 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rp := updateUserBL(roleID, usr.CompanyID, &rq)
+	rp := updateRoleBL(roleID, usr.CompanyID, &rq)
 	if rp == nil || rp.Status == StatusFailure {
 		w.WriteHeader(http.StatusBadRequest)
 		return
