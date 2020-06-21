@@ -261,19 +261,19 @@ class Role {
       return;
     }
 
-    Permission tempPerm;
+    int idx = -1;
     for (var i = 0; i < permissions.length; i++) {
       var permission = permissions[i];
 
       if (permission.id == perm.id) {
-        tempPerm = perm;
+        idx = i;
         break;
       }
     }
 
-    if (tempPerm != null) {
-      this.permissions.remove(tempPerm);
-      log("Removed the permission with ID:${tempPerm.id}");
+    if (idx >= 0) {
+      this.permissions.removeAt(idx);
+      log("Removed the permission with ID:$idx");
     }
   }
 
