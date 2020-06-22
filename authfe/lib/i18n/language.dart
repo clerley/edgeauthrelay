@@ -82,6 +82,7 @@ Map<String, Map<String, String>> languages = {
                    "update_role_success": "Role update was successful!",
                    "add_role_success": "Role was successfully added",
                    "id"              : "ID",
+                   "edit"            : "Edit",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -138,6 +139,7 @@ Map<String, Map<String, String>> languages = {
                    "update_role_success": "Role update was successful!",
                    "add_role_success": "Role was successfully added",
                    "id"              : "ID",
+                   "edit"            : "Edit",
                    } 
 };
 

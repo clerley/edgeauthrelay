@@ -57,7 +57,8 @@ class UserProvider extends ChangeNotifier {
       if(response.statusCode == 200) {
         login = Login.fromJson(json.decode(response.body));
         if(login.status == "Success") {
-          login.user.loggedIn = true;    
+          login.user.loggedIn = true;  
+          login.loginRequest = loginRequest;  
         } else {
           print("The user was not successfully logged in");
           login.user.loggedIn = false;

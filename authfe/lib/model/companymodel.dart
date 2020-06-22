@@ -27,6 +27,7 @@ import 'dart:core';
 import 'dart:developer';
 
 import 'package:authfe/model/settings.dart';
+import 'package:authfe/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
@@ -79,6 +80,79 @@ class CompanyProvider extends ChangeNotifier {
     }
     notifyListeners();
     return result;
+  }
+
+  Future<GetCompanyResponse> getCompany(String uniqueID) async {
+    GetCompanyResponse companyResponse = GetCompanyResponse();
+    companyResponse.status = "Failure";
+
+    try {
+      GlobalSettings settings = GlobalSettings();
+      UserProvider userProvider = UserProvider();
+
+      if(!userProvider.login.isLoggedIn()) {
+        return null;
+      }
+
+      var fullPath = settings.url + "/jwt/company/$uniqueID";
+       var httpHeader = {
+        "Authorization": "bearer ${userProvider.login.sessionToken}"
+      };
+
+      var response = await http.get(fullPath, headers:  httpHeader);
+      if(response.statusCode != 200) {
+        print("The statusCode was not expected: ${response.statusCode}");
+        return companyResponse;
+      }
+
+      var jsn = json.decode(response.body);
+      companyResponse = GetCompanyResponse.fromJson(jsn);
+
+    } catch (e, stackTrace) {
+      print(stackTrace);
+      print(e);
+    }
+
+
+    return companyResponse;
+  }
+
+}
+
+class GetCompanyResponse {
+  String status;
+  String uniqueID;
+  String name;
+  String address1;
+  String address2;
+  String city;
+  String state;
+  String zip;
+
+  GetCompanyResponse();
+
+  GetCompanyResponse.fromJson(Map<String, dynamic> jsnMap) {
+    this.status = jsnMap["status"];
+    this.uniqueID = jsnMap["uniqueID"];
+    this.name = jsnMap["name"];
+    this.address1 = jsnMap["address1"];
+    this.address2 = jsnMap["address2"];
+    this.city = jsnMap["city"];
+    this.state = jsnMap["state"];
+    this.zip = jsnMap["zip"];
+  }
+
+  toJson() {
+    Map<String, dynamic> map = Map();
+    map['status'] = this.status;
+    map['uniqueID'] = this.uniqueID;
+    map['name'] = this.name;
+    map['address1'] = this.address1;
+    map['address2'] = this.address2;
+    map['city'] = this.city;
+    map['state'] = this.state;
+    map['zip'] = this.zip;
+    return map;
   }
 
 }
