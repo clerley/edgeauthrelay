@@ -51,6 +51,8 @@ class CompanyProvider extends ChangeNotifier {
     return _theInstance;
   }
 
+  GetCompanyResponse editCompanyResponse;
+
   Future<bool> addCompany(Company company) async {
     var result = false; 
     try {
@@ -80,6 +82,36 @@ class CompanyProvider extends ChangeNotifier {
     }
     notifyListeners();
     return result;
+  }
+
+  Future<UpdateCompanyResponse> updateCompany(Company company) async {
+    UpdateCompanyResponse ucr = UpdateCompanyResponse();
+    ucr.status = "Failure"; 
+    try {
+      var url = "/jwt/company/${company.uniqueID}";
+      var globalSettings = GlobalSettings();
+       UserProvider userProvider = UserProvider();
+      var fullURL = globalSettings.url + url;
+      var jsonMap = company.toJson();
+      var encodedJson = json.encode(jsonMap);
+      Map<String, String> headers = new Map<String, String>();
+      headers["Content-Type"] = "application/json";
+      headers["Authorization"] = "bearer ${userProvider.login.sessionToken}";
+      var response = await http.post(fullURL, headers: headers,  body: encodedJson);
+      if (response.statusCode == 200) {
+        UpdateCompanyResponse updtCompanyResponse = UpdateCompanyResponse.fromJson(json.decode(response.body));
+        if (updtCompanyResponse.status == "Success") {
+          ucr = updtCompanyResponse;
+        } 
+      } else {
+        log("The following error code was returned: [${response.statusCode}]");
+      }
+    } catch (e/*, stack*/) {
+      //print(stack.toString());
+      print(e.toString());
+    }
+    notifyListeners();
+    return ucr;
   }
 
   Future<GetCompanyResponse> getCompany(String uniqueID) async {
@@ -119,39 +151,33 @@ class CompanyProvider extends ChangeNotifier {
 
 }
 
+class UpdateCompanyResponse {
+  String status;
+
+  UpdateCompanyResponse.fromJson(Map<String, dynamic> jsonObj) {
+    this.status = jsonObj['status'];
+  }
+
+  UpdateCompanyResponse();
+
+}
+
 class GetCompanyResponse {
   String status;
-  String uniqueID;
-  String name;
-  String address1;
-  String address2;
-  String city;
-  String state;
-  String zip;
+  Company company;
 
-  GetCompanyResponse();
+  GetCompanyResponse() {
+    company = new Company();
+  }
 
   GetCompanyResponse.fromJson(Map<String, dynamic> jsnMap) {
     this.status = jsnMap["status"];
-    this.uniqueID = jsnMap["uniqueID"];
-    this.name = jsnMap["name"];
-    this.address1 = jsnMap["address1"];
-    this.address2 = jsnMap["address2"];
-    this.city = jsnMap["city"];
-    this.state = jsnMap["state"];
-    this.zip = jsnMap["zip"];
+    this.company = Company.fromJson(jsnMap);
   }
 
   toJson() {
-    Map<String, dynamic> map = Map();
+    Map<String, dynamic> map = this.company.toJson();
     map['status'] = this.status;
-    map['uniqueID'] = this.uniqueID;
-    map['name'] = this.name;
-    map['address1'] = this.address1;
-    map['address2'] = this.address2;
-    map['city'] = this.city;
-    map['state'] = this.state;
-    map['zip'] = this.zip;
     return map;
   }
 
@@ -191,23 +217,32 @@ class Company {
     passwordUnit = "Minute";
   }
 
-  Company.fromJson(Map<String, dynamic> jsonObj) 
-      : this.uniqueID = jsonObj['uniqueID'],
-        this.companyID = jsonObj['companyID'],
-        this.name = jsonObj['name'],
-        this.address1 = jsonObj['address1'],
-        this.address2 = jsonObj['address2'],
-        this.authRelay = jsonObj['authRelay'],
-        this.city = jsonObj['city'],
-        this.jwtDuration = jsonObj['settings']['jwtDuration'],
-        this.isLocation = jsonObj['isInLocation'],
-        this.passwordExpiration = jsonObj['settings']['passExpiration'],
-        this.passwordUnit = jsonObj['settings']['passUnit'],
-        this.remotelyManaged = jsonObj['remotelyManaged'],
-        this.groupOwnerID = jsonObj['groupOwnerID'],
-        this.memberOfGroups = jsonObj['memberOfGroups'],
-        this.state = jsonObj['state'],
+  Company.fromJson(Map<String, dynamic> jsonObj) {
+       this.uniqueID = jsonObj['uniqueID'];
+        this.companyID = jsonObj['companyID'];
+        this.name = jsonObj['name'];
+        this.address1 = jsonObj['address1'];
+        this.address2 = jsonObj['address2'];
+        this.authRelay = jsonObj['authRelay'];
+        this.city = jsonObj['city'];
+        this.jwtDuration = jsonObj['settings']['jwtDuration'];
+        if(jsonObj['isInLocation'] is bool) {
+          this.isLocation = jsonObj['isInLocation'];
+        } else {
+          this.isLocation = jsonObj['isInLocation'] == "true" ? true : false;
+        }
+        this.passwordExpiration = jsonObj['settings']['passExpiration'];
+        this.passwordUnit = jsonObj['settings']['passUnit'];
+        if(jsonObj['remotelyManaged'] is bool) {
+          this.remotelyManaged = jsonObj['remotelyManaged'];
+        } else {
+          this.remotelyManaged = jsonObj['remotelyManaged'] == "true" ? true : false;
+        }
+        this.groupOwnerID = jsonObj['groupOwnerID'];
+        this.memberOfGroups = jsonObj['memberOfGroups'];
+        this.state = jsonObj['state'];
         this.zip = jsonObj['zip'];
+  }
 
   Map<String, dynamic> toJson() {
     var jsonObj = Map<String, dynamic>();
@@ -235,4 +270,14 @@ class Company {
     }
     return jsonObj;
   }
+
+  bool isInsertable() {
+
+    if(this.companyID == null || this.companyID.length == 0) {
+      return true;
+    }
+
+    return false;
+  }
+
 }

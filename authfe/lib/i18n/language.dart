@@ -83,6 +83,11 @@ Map<String, Map<String, String>> languages = {
                    "add_role_success": "Role was successfully added",
                    "id"              : "ID",
                    "edit"            : "Edit",
+                   "error_upt_cmp"   : "Error updating company",
+                   "cmp_updt_failed" : "The company update failed",
+                   "company_updated" : "The company has been updated",
+                   "not_editable"    : "An issue occurred while attempting to edit the company",
+                   "list_mgr_company": "Subsidiaries",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -140,6 +145,11 @@ Map<String, Map<String, String>> languages = {
                    "add_role_success": "Role was successfully added",
                    "id"              : "ID",
                    "edit"            : "Edit",
+                   "error_upt_cmp"   : "Error updating company",
+                   "cmp_updt_failed" : "The company update failed",
+                   "company_updated" : "The company has been updated",
+                   "not_editable"    : "The company is no editable",
+                   "list_mgr_company": "Subsidiaries",
                    } 
 };
 

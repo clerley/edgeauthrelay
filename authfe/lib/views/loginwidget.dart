@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'package:authfe/model/companymodel.dart';
 import 'package:authfe/model/user.dart';
 import 'package:authfe/views/company.dart';
 import 'package:authfe/views/viewhelper.dart';
@@ -157,6 +158,8 @@ class _LoginState extends State<LoginWidget> {
                       child: OutlineButton(
                         textColor: Colors.white,
                         onPressed: () {
+                          CompanyProvider cp = CompanyProvider();
+                          cp.editCompanyResponse = null;
                           Navigator.push(context,MaterialPageRoute(builder: (context) => CompanyWidget(this._language)),);
                         },
                         child: Text(this._newCompany, style: Theme.of(context).primaryTextTheme.button,),

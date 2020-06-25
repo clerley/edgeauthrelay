@@ -26,10 +26,13 @@ import 'package:authfe/appbar/menudrawer.dart';
 import 'package:authfe/i18n/language.dart';
 import 'package:authfe/model/companymodel.dart';
 import 'package:authfe/model/user.dart';
+import 'package:authfe/views/companysubsidiaries.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'company.dart';
 import 'mainmenu.dart';
 
 class CompanyViewOnly extends StatefulWidget {
@@ -55,12 +58,7 @@ class _CompanyViewState extends State<CompanyViewOnly> {
         body: SingleChildScrollView(
           child: _CompanyViewBody(this._language),
         ),
-        drawer: DistAuthDrawer(this._language),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red,
-          onPressed: () => print("Test"),
-          child: Icon(Icons.add),
-        ));
+        drawer: DistAuthDrawer(this._language));
   }
 }
 
@@ -120,18 +118,21 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
   _getCompanyResponseCallback(GetCompanyResponse companyResponse) {
     if (companyResponse.status == "Success") {
       print("Received the company response!");
+      companyProvider.editCompanyResponse = companyResponse;
 
       setState(() {
-        if (companyResponse.uniqueID != null) {
-          _uniqueID.text = companyResponse.uniqueID;
+        if (companyResponse.company.uniqueID != null) {
+          _uniqueID.text = companyResponse.company.uniqueID;
         }
-        _name.text = companyResponse.name;
-        _address1.text = companyResponse.address1;
-        _address2.text = companyResponse.address2;
-        _state.text = companyResponse.state;
-        _city.text = companyResponse.city;
-        _zip.text = companyResponse.zip;
+        _name.text = companyResponse.company.name;
+        _address1.text = companyResponse.company.address1;
+        _address2.text = companyResponse.company.address2;
+        _state.text = companyResponse.company.state;
+        _city.text = companyResponse.company.city;
+        _zip.text = companyResponse.company.zip;
       });
+    } else {
+      companyProvider.editCompanyResponse = null;
     }
   }
 
@@ -276,7 +277,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
                           onPressed: () {
-                            
+                            _editCompany();
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
@@ -288,11 +289,29 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
                           onPressed: () {
+                            companyProvider.editCompanyResponse = null;
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         MainMenu(this._language)));
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          )),
+                      OutlineButton(
+                          textColor: Colors.white,
+                          child: Text(
+                            getText("list_mgr_company", this._language),
+                            style: Theme.of(context).primaryTextTheme.button,
+                          ),
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      CompanySubsidiariesView(this._language),
+                                ));
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
@@ -306,5 +325,19 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
         ),
       ),
     );
+  }
+
+  _editCompany() {
+    var companyProvider = CompanyProvider();
+    if (companyProvider.editCompanyResponse != null) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CompanyWidget(this._language)));
+    } else {
+      DialogHelper dh = DialogHelper();
+      dh.showMessageDialog(
+          getText("", this._language), context, this._language);
+    }
   }
 }

@@ -24,7 +24,9 @@ SOFTWARE.
 
 import 'dart:developer';
 
+import 'package:authfe/appbar/menudrawer.dart';
 import 'package:authfe/model/companymodel.dart';
+import 'package:authfe/views/companyview.dart';
 import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -48,13 +50,27 @@ class _CompanyWidgetState extends State<CompanyWidget> {
 
   @override
   Widget build(BuildContext context) {
+    CompanyProvider companyProvider = CompanyProvider();
+
+    if (companyProvider.editCompanyResponse == null) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(this._title),
+          ),
+          body: SingleChildScrollView(
+            child: CompanyBody(this.widget._language),
+          ));
+    }
+
     return Scaffold(
-        appBar: AppBar(
-          title: Text(this._title),
-        ),
-        body: SingleChildScrollView(
-          child: CompanyBody(this.widget._language),
-        ));
+      appBar: AppBar(
+        title: Text(this._title),
+      ),
+      body: SingleChildScrollView(
+        child: CompanyBody(this.widget._language),
+      ),
+      drawer: DistAuthDrawer(this._language),
+    );
   }
 }
 
@@ -124,6 +140,15 @@ class _CompanyState extends State<CompanyBody> {
     _confirmPasswordTec = TextEditingController();
 
     company = Company();
+
+    //Here we will check if we are editting the company
+    var companyProvider = CompanyProvider();
+    if (companyProvider.editCompanyResponse != null) {
+      company = companyProvider.editCompanyResponse.company;
+      companyProvider.editCompanyResponse = null;
+      //print(company.toJson());
+      print('Using the editable company response!');
+    }
   }
 
   _CompanyState.withCompany(this._language, this._company);
@@ -153,7 +178,13 @@ class _CompanyState extends State<CompanyBody> {
     super.initState();
     if (company == null) {
       log("The company object is null, creating a new company now!");
-      company = Company();
+      if (companyProvider.editCompanyResponse != null &&
+          companyProvider.editCompanyResponse.company != null) {
+        company = companyProvider.editCompanyResponse.company;
+        companyProvider.editCompanyResponse = null;
+      } else {
+        company = Company();
+      }
     }
     _uniqueIDTec.text = company.uniqueID;
     _nameTec.text = company.name;
@@ -165,6 +196,11 @@ class _CompanyState extends State<CompanyBody> {
     _jwtDurationTec.text = company.jwtDuration.toString();
     _passExpTec.text = company.passwordExpiration.toString();
     _address1Tec.text = company.address2;
+
+    _isLocation = company.isLocation;
+    _remoteAuth = company.remotelyManaged;
+
+    _unit = company.passwordUnit;
   }
 
   CompanyProvider companyProvider;
@@ -446,7 +482,15 @@ class _CompanyState extends State<CompanyBody> {
                         style: Theme.of(context).primaryTextTheme.button,
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        if (company.isInsertable()) {
+                          Navigator.pop(context);
+                        } else {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CompanyViewOnly(this._language)));
+                        }
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
@@ -474,19 +518,36 @@ class _CompanyState extends State<CompanyBody> {
     company.state = _stateTec.text;
     company.uniqueID = _uniqueIDTec.text;
     company.zip = _zipTec.text;
-    company.passwordHandler.password = _passwordTec.text;
-    company.passwordHandler.confirmPassword = _confirmPasswordTec.text;
+
+    //We don't need the password if we are not inserting the company
+    if (company.isInsertable()) {
+      company.passwordHandler.password = _passwordTec.text;
+      company.passwordHandler.confirmPassword = _confirmPasswordTec.text;
+    }
 
     if (company.companyID == null || company.companyID.length == 0) {
       var rsp = await companyProvider.addCompany(company);
       DialogHelper pdh = DialogHelper();
       if (!rsp) {
         log("An error occured while adding a new company");
-        pdh.showMessageDialog(getText("error_add_cmp", this._language), context, this._language);
+        pdh.showMessageDialog(
+            getText("error_add_cmp", this._language), context, this._language);
       } else {
-        pdh.showMessageDialog(getText("new_cmp_create", this._language), context, this._language);
+        pdh.showMessageDialog(
+            getText("new_cmp_create", this._language), context, this._language);
+      }
+    } else {
+      var rsp = await companyProvider.updateCompany(company);
+
+      DialogHelper pdh = DialogHelper();
+      if (rsp.status != "Success") {
+        log("An error occured while adding a new company");
+        pdh.showMessageDialog(
+            getText("error_upt_cmp", this._language), context, this._language);
+      } else {
+        pdh.showMessageDialog(getText("company_updated", this._language),
+            context, this._language);
       }
     }
   }
-
 }
