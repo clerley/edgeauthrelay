@@ -109,6 +109,7 @@ type updateCompanyReq struct {
 	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
 	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
 	UniqueID        string                `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
+	APIKey          string                `json:"apiKey"`                    //APIKey
 	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
 }
 
@@ -135,14 +136,20 @@ func UpdateCompany(w http.ResponseWriter, r *http.Request) {
 }
 
 type getCompanyResponse struct {
-	Status   string `json:"status"`
-	UniqueID string `json:"uniqueID"`
-	Name     string `json:"name"`
-	Address1 string `json:"address1"`
-	Address2 string `json:"address2"`
-	City     string `json:"city"`
-	State    string `json:"state"`
-	Zip      string `json:"zip"`
+	Status          string                `json:"status"`
+	CompanyID       string                `json:"companyID"`
+	UniqueID        string                `json:"uniqueID"`
+	Name            string                `json:"name"`
+	Address1        string                `json:"address1"`
+	Address2        string                `json:"address2"`
+	City            string                `json:"city"`
+	State           string                `json:"state"`
+	Zip             string                `json:"zip"`
+	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
+	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
+	APIKey          string                `json:"apiKey"`                    //APIKey
+	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
 }
 
 //GetCompanyByUniqueID - The company uniquer ID is specified in the request

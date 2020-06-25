@@ -208,6 +208,12 @@ func getCompanyByUniqueIDOL(uniqueID string) *getCompanyResponse {
 	rsp.State = company.State
 	rsp.UniqueID = company.UniqueID
 	rsp.Zip = company.Zip
+	rsp.IsInLocation = strconv.FormatBool(company.IsInLocation)
+	rsp.RemotelyManaged = strconv.FormatBool(company.RemotelyManaged)
+	rsp.AuthRelay = company.AuthRelay
+	rsp.APIKey = company.APIKey
+	rsp.Settings = company.Settings
+	rsp.CompanyID = company.ID.Hex()
 
 	//Set the status
 	rsp.Status = StatusSuccess
