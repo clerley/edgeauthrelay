@@ -195,3 +195,15 @@ func ListCompanies() ([]Company, error) {
 	err := mDBCompany.List(&companies, bson.M{})
 	return companies, err
 }
+
+//ListCompaniesByGroupID ...
+func ListCompaniesByGroupID(groupOwnerID string) ([]Company, error) {
+
+	var companies []Company
+	err := mDBCompany.List(&companies, bson.M{"groupownerid": groupOwnerID})
+	if err != nil {
+		return nil, err
+	}
+
+	return companies, nil
+}

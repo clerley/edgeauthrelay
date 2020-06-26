@@ -88,3 +88,67 @@ func TestCompanyFunctions(t *testing.T) {
 		t.Errorf("Removing the company with ID: %s", company.ID.Hex())
 	}
 }
+
+func TestAddingCompanyToGroup(t *testing.T) {
+
+	company := NewCompany()
+	company.UniqueID = "SOMEUNIQUEID"
+	company.APIKey = "123456789"
+	company.Address1 = "ADDR1"
+	company.Address2 = "ADDR2"
+	company.City = "CITY"
+	company.State = "STATE"
+	company.Zip = "12345"
+	company.IsInLocation = false
+	company.Name = "TESTCOMPANY"
+	company.RemotelyManaged = false
+	company.Settings.JWTDuration = 50
+	company.Settings.PassExpiration = 12
+	company.Settings.PassUnit = "Month"
+
+	err := InsertCompany(company)
+	if err != nil {
+		t.Errorf("Unable to insert the company with ID: [%s]", company.ID.Hex())
+		return
+	}
+
+	comp1 := NewCompany()
+	comp1.UniqueID = "SOMEUNIQUEID-123456"
+	comp1.APIKey = "123456789"
+	comp1.Address1 = "ADDR1"
+	comp1.Address2 = "ADDR2"
+	comp1.City = "CITY"
+	comp1.State = "STATE"
+	comp1.Zip = "12345"
+	comp1.IsInLocation = false
+	comp1.Name = "TESTCOMPANY"
+	comp1.RemotelyManaged = false
+	comp1.Settings.JWTDuration = 50
+	comp1.Settings.PassExpiration = 12
+	comp1.Settings.PassUnit = "Month"
+	comp1.GroupOwnerID = company.ID.Hex()
+	err = InsertCompany(comp1)
+	if err != nil {
+		RemoveCompanyByID(company.ID.Hex())
+		t.Errorf("Error: [%s]", err)
+		return
+	}
+
+	companies, err := ListCompaniesByGroupID(company.ID.Hex())
+	if err != nil {
+		t.Errorf("The following error occurred: [%s]", err)
+		return
+	}
+
+	if len(companies) != 1 {
+		t.Error("The number of companies retrieved is not 1")
+	}
+
+	if companies[0].ID.Hex() != comp1.ID.Hex() {
+		t.Errorf("The company IDs do not match:[%s] != [%s]", companies[0].ID.Hex(), comp1.ID.Hex())
+	}
+
+	RemoveCompanyByID(company.ID.Hex())
+	RemoveCompanyByID(comp1.ID.Hex())
+
+}

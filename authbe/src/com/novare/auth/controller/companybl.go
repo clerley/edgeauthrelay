@@ -322,3 +322,12 @@ func remoteCompanyInsertBL(apiKey string, groupOwnerID string, req createCompany
 
 	return rspPtr
 }
+
+func getCompaniesForGroupID(groupIDOwner string) respCompanyByGroupOwner {
+
+	rsp := new(respCompanyByGroupOwner)
+	rsp.Status = "Failure"
+
+	companies, err := model.ListCompaniesByGroupID(groupIDOwner)
+
+}

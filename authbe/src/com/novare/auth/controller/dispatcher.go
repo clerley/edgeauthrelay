@@ -701,3 +701,36 @@ func LoginBySecret(w http.ResponseWriter, r *http.Request) {
 	writeResponse(rsp, w)
 
 }
+
+type companyInfo struct {
+	CompanyID       string                `json:"companyID"`
+	UniqueID        string                `json:"uniqueID"`
+	Name            string                `json:"name"`
+	Address1        string                `json:"address1"`
+	Address2        string                `json:"address2"`
+	City            string                `json:"city"`
+	State           string                `json:"state"`
+	Zip             string                `json:"zip"`
+	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
+	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
+
+}
+
+type respCompanyByGroupOwner struct {
+	Status    string        `json:"status"`
+	Companies []companyInfo `json:"companies,omitempty"`
+}
+
+//GetCompanyByGroupOwnerID ...
+func GetCompanyByGroupOwnerID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	groupOwnerID, ok := vars["grouponwerid"]
+	if !ok {
+		log.Printf("The group onwer ID was not found! Cannot retrieve companies!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := 
+}
