@@ -724,6 +724,7 @@ type respCompanyByGroupOwner struct {
 
 //GetCompanyByGroupOwnerID ...
 func GetCompanyByGroupOwnerID(w http.ResponseWriter, r *http.Request) {
+	usr := r.Context().Value(CtxUser).(*model.User)
 	vars := mux.Vars(r)
 	groupOwnerID, ok := vars["grouponwerid"]
 	if !ok {
@@ -732,5 +733,7 @@ func GetCompanyByGroupOwnerID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rsp := 
+	rsp := getCompaniesForGroupID(groupOwnerID, usr)
+
+	writeResponse(rsp, w)
 }

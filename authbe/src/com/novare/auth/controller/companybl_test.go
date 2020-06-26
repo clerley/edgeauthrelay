@@ -260,3 +260,75 @@ func TestUpdateCompanBL(t *testing.T) {
 	performCompanyCleanup(company.ID.Hex(), t)
 
 }
+
+func TestListCompanBL(t *testing.T) {
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISUNIQUEID"
+	req.Password = "@123ABC789"
+	req.ConfirmPassword = req.Password
+
+	rsp := createCompanyBL(req)
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The company should have been created but it did not!")
+		return
+	}
+
+	var ureq createCompanyReq
+	ureq.Address1 = req.Address1
+	ureq.Address2 = req.Address2
+	ureq.AuthRelay = req.AuthRelay
+	ureq.City = req.City
+	ureq.IsInLocation = req.IsInLocation
+	ureq.Name = req.Name
+	ureq.RemotelyManaged = req.RemotelyManaged
+	ureq.Settings = req.Settings
+	ureq.State = req.State
+	ureq.UniqueID = req.UniqueID
+	ureq.Zip = req.Zip
+	ureq.UniqueID = "THISISUNIQUEID1"
+	ureq.Password = "@123ABC789"
+	ureq.ConfirmPassword = req.Password
+	ureq.GroupOwnerID = rsp.CompanyID
+
+	ureq.Address1 = "300 Nowhere St."
+	ureq.City = "NowhereCity"
+	ursp := createCompanyBL(ureq)
+
+	if ursp.Status != StatusSuccess {
+		t.Errorf("The response to the request to update the company was not successful!")
+	}
+
+	user := model.NewUser()
+	user.CompanyID = rsp.CompanyID
+	cfgi := getCompaniesForGroupID(rsp.CompanyID, user)
+	if cfgi.Status != StatusSuccess {
+		t.Errorf("The response to retrieve the company for the group owner:[%s] was a failure", rsp.CompanyID)
+	}
+
+	if len(cfgi.Companies) != 1 {
+		t.Error("The companies should have one company")
+	}
+
+	company, err := model.FindCompanyByID(rsp.CompanyID)
+	if err != nil {
+		t.Errorf("There was an error retrieving the company with ID: [%s]", err)
+	}
+
+	performCompanyCleanup(company.ID.Hex(), t)
+
+	company, err = model.FindCompanyByID(ursp.CompanyID)
+	if err != nil {
+		t.Errorf("There has been error retrieving the company with ID:[%s]", err)
+	}
+	performCompanyCleanup(company.ID.Hex(), t)
+
+}

@@ -131,6 +131,8 @@ func createCompanyBL(req createCompanyReq) *createCompanyResp {
 	company.City = req.City
 	company.State = req.State
 	company.Zip = req.Zip
+	company.GroupOwnerID = req.GroupOwnerID
+	company.APIKey = req.APIKey
 	b, err := strconv.ParseBool(req.IsInLocation)
 	if err == nil {
 		company.IsInLocation = b
@@ -323,11 +325,41 @@ func remoteCompanyInsertBL(apiKey string, groupOwnerID string, req createCompany
 	return rspPtr
 }
 
-func getCompaniesForGroupID(groupIDOwner string) respCompanyByGroupOwner {
+func getCompaniesForGroupID(groupIDOwner string, user *model.User) *respCompanyByGroupOwner {
 
 	rsp := new(respCompanyByGroupOwner)
-	rsp.Status = "Failure"
+	rsp.Status = StatusFailure
+
+	if user.CompanyID != groupIDOwner {
+		log.Printf("The user is not authorized to access information for this Company")
+		return rsp
+	}
 
 	companies, err := model.ListCompaniesByGroupID(groupIDOwner)
+	if err != nil {
+		log.Printf("The application failed to retrieve the companies for Group ID:[%s] with Error:[%s]", groupIDOwner, err)
+		return rsp
+	}
 
+	for i := range companies {
+		c := companies[i]
+		var ci companyInfo
+		ci.Address1 = c.Address1
+		ci.Address2 = c.Address2
+		ci.City = c.City
+		ci.CompanyID = c.ID.Hex()
+		ci.IsInLocation = strconv.FormatBool(c.IsInLocation)
+		ci.Name = c.Name
+		ci.RemotelyManaged = strconv.FormatBool(c.RemotelyManaged)
+		ci.Settings.JWTDuration = c.Settings.JWTDuration
+		ci.Settings.PassExpiration = c.Settings.PassExpiration
+		ci.Settings.PassUnit = c.Settings.PassUnit
+		ci.State = c.State
+		ci.UniqueID = c.UniqueID
+		ci.Zip = c.Zip
+		rsp.Companies = append(rsp.Companies, ci)
+	}
+
+	rsp.Status = StatusSuccess
+	return rsp
 }
