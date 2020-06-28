@@ -24,9 +24,12 @@ SOFTWARE.
 
 import 'package:authfe/appbar/menudrawer.dart';
 import 'package:authfe/i18n/language.dart';
+import 'package:authfe/model/companymodel.dart';
+import 'package:authfe/views/companyview.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
 
-import 'mainmenu.dart';
+import 'company.dart';
 
 class CompanySubsidiariesView extends StatefulWidget {
   final String _language;
@@ -55,8 +58,33 @@ class _CompanySubsidiariesViewState extends State<CompanySubsidiariesView> {
         drawer: DistAuthDrawer(this._language),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.red,
-          onPressed: () => print("Test"),
+          onPressed: () => _addCompanyToGroup(),
           child: Icon(Icons.add),
+        ));
+  }
+
+  _addCompanyToGroup() {
+    CompanyProvider companyProvider = CompanyProvider();
+
+    if (companyProvider.companyID == null ||
+        companyProvider.companyID.isEmpty) {
+      DialogHelper dh = DialogHelper();
+      dh.showMessageDialog(
+          getText("group_not_found", this._language), context, this._language);
+      return;
+    }
+
+    //We need to wipe the editCompanyResponse so that we can
+    //then add a new company but. We will wipe the editCompanyResponse
+    //out.
+    if (companyProvider.editCompanyResponse != null) {
+      companyProvider.editCompanyResponse = null;
+    }
+
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CompanyWidget(this._language),
         ));
   }
 }
@@ -74,8 +102,15 @@ class _CompanySubsidiariesBody extends StatefulWidget {
 class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
   final String _language;
   List<DataRow> _rows = [];
+  TextEditingController _searchText = TextEditingController();
 
   _CompanySubsidiariesBodyState(this._language);
+
+  @override
+  void initState() {
+    _loadSubsidiaries();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +140,9 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
                       getText("search", this._language),
                       style: Theme.of(context).primaryTextTheme.button,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      _doSearch();
+                    },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     )),
@@ -113,34 +150,30 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
             ),
             TextField(
               style: Theme.of(context).primaryTextTheme.bodyText2,
-            ),
-            DataTable(
-              columns: [
-                DataColumn(
-                  label: Text(getText("uniqueID", this._language)),
-                ),
-                DataColumn(
-                  label: Text(getText("name", this._language)),
-                ),
-                DataColumn(
-                  label: Text(getText("address", this._language)),
-                ),
-              ],
-              rows: _rows,
+              controller: _searchText,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                OutlineButton(
-                    textColor: Colors.white,
-                    child: Text(
-                      getText("edit", this._language),
-                      style: Theme.of(context).primaryTextTheme.button,
+                DataTable(
+                  columns: [
+                    DataColumn(
+                      label: Text(getText("uniqueID", this._language)),
                     ),
-                    onPressed: () {},
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    )),
+                    DataColumn(
+                      label: Text(getText("name", this._language)),
+                    ),
+                    DataColumn(
+                      label: Text(getText("address", this._language)),
+                    ),
+                  ],
+                  rows: _rows,
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 OutlineButton(
                     textColor: Colors.white,
                     child: Text(
@@ -151,7 +184,8 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MainMenu(this._language)));
+                              builder: (context) =>
+                                  CompanyViewOnly(this._language)));
                     },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -162,5 +196,80 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
         ),
       ),
     );
+  }
+
+  GetGroupResponse _cachedResponse;
+  _loadSubsidiaries() async {
+    var companyProvider = CompanyProvider();
+
+    if (companyProvider.editCompanyResponse == null) {
+      DialogHelper dh = DialogHelper();
+      dh.showMessageDialog("group_not_found", context, this._language);
+      return;
+    }
+
+    var group = await companyProvider.getGroupForCompanyID(
+        companyProvider.editCompanyResponse.company.companyID);
+    _cachedResponse = group;
+    if (group.status != "Success") {
+      DialogHelper dh = DialogHelper();
+      dh.showMessageDialog(
+          getText("error_ret_group", this._language), context, this._language);
+      return;
+    }
+
+    _populateDataRow(group.companies);
+
+  }
+
+  _populateDataRow(List<Company> companies) {
+
+
+    List<DataRow> dataRows = [];
+    for (var i = 0; i < companies.length; i++) {
+      var company = companies[i];
+      DataRow dr = new DataRow(
+        cells: [],
+        onSelectChanged: (value) => companySelected(company),
+      );
+      DataCell dc = DataCell(Text(company.companyID));
+      dr.cells.add(dc);
+      dc = DataCell(Text(company.name));
+      dr.cells.add(dc);
+      dc = DataCell(Text(
+        company.getFullAddress(),
+        style: TextStyle(fontSize: 8),
+      ));
+      dr.cells.add(dc);
+      dataRows.add(dr);
+    }
+
+    setState(() {
+      this._rows = dataRows;
+    });
+
+  }
+
+  companySelected(Company company) {
+    DialogHelper dh = DialogHelper();
+    dh.showCompanyInfo(company, context, this._language);
+  }
+
+  _doSearch() {
+    List<Company> filteredCompanies = [];
+    
+    if(_cachedResponse == null || _cachedResponse.companies == null || _cachedResponse.companies.isEmpty) {
+      return;
+    }
+    String search = _searchText.text;
+    search = search.toLowerCase();
+
+    for(var i=0;i<_cachedResponse.companies.length;i++) {
+      if(_cachedResponse.companies[i].name.toLowerCase().indexOf(search) >= 0) {
+        filteredCompanies.add(_cachedResponse.companies[i]);
+      }
+    }
+
+    _populateDataRow(filteredCompanies);
   }
 }

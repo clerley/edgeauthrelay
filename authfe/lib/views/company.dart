@@ -126,6 +126,7 @@ class _CompanyState extends State<CompanyBody> {
     this._unit = "Minute";
     this._unitsMenuItems = _getUnitMenuItems();
 
+    company = Company();
     _uniqueIDTec = TextEditingController();
     _nameTec = TextEditingController();
     _addressTec = TextEditingController();
@@ -139,7 +140,6 @@ class _CompanyState extends State<CompanyBody> {
     _passwordTec = TextEditingController();
     _confirmPasswordTec = TextEditingController();
 
-    company = Company();
 
     //Here we will check if we are editting the company
     var companyProvider = CompanyProvider();
@@ -518,14 +518,16 @@ class _CompanyState extends State<CompanyBody> {
     company.state = _stateTec.text;
     company.uniqueID = _uniqueIDTec.text;
     company.zip = _zipTec.text;
+    if (companyProvider.companyID != null &&
+        companyProvider.companyID.isNotEmpty) {
+      company.groupOwnerID = companyProvider.companyID;
+    }
 
     //We don't need the password if we are not inserting the company
+
     if (company.isInsertable()) {
       company.passwordHandler.password = _passwordTec.text;
       company.passwordHandler.confirmPassword = _confirmPasswordTec.text;
-    }
-
-    if (company.companyID == null || company.companyID.length == 0) {
       var rsp = await companyProvider.addCompany(company);
       DialogHelper pdh = DialogHelper();
       if (!rsp) {
@@ -536,6 +538,8 @@ class _CompanyState extends State<CompanyBody> {
         pdh.showMessageDialog(
             getText("new_cmp_create", this._language), context, this._language);
       }
+      //Ready to insert another company.
+      _clearFieldsForInsert();
     } else {
       var rsp = await companyProvider.updateCompany(company);
 
@@ -549,5 +553,24 @@ class _CompanyState extends State<CompanyBody> {
             context, this._language);
       }
     }
+  }
+
+  _clearFieldsForInsert() {
+    company = Company();
+    
+    setState(() {
+      _uniqueIDTec.text = "";
+      _nameTec.text = "";
+      _addressTec.text = "";
+      _cityTec.text = "";
+      _stateTec.text = "";
+      _zipTec.text = "";
+      _authRelayTec.text = "";
+      _jwtDurationTec.text = "30";
+      _passExpTec.text = "";
+      _address1Tec.text = "";
+      _passwordTec.text = "";
+      _confirmPasswordTec.text = "";
+    });
   }
 }

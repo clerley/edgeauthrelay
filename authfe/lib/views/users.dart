@@ -21,11 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import 'package:authfe/model/usermodel.dart';
+import 'package:authfe/views/mainmenu.dart';
 import 'package:flutter/material.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
 import 'searchuser.dart';
-import '../main.dart';
 
 class UsersView extends StatefulWidget {
   final String _language;
@@ -66,6 +67,7 @@ class _UserBody extends StatefulWidget {
 
 class _UserBodyState extends State<_UserBody> {
   final String _language;
+  User user = User("");
 
   _UserBodyState(this._language);
 
@@ -106,11 +108,9 @@ class _UserBodyState extends State<_UserBody> {
                 child: TextField(
                     style: Theme.of(context).primaryTextTheme.bodyText2),
               ),
-
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               ),
-
               Row(children: [
                 Container(
                     child: Checkbox(onChanged: (bool value) {}, value: true)),
@@ -118,7 +118,24 @@ class _UserBodyState extends State<_UserBody> {
                   child: Text(getText("isthing", this._language)),
                 ),
               ]),
-
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
+                child: Text(getText("password", this._language)),
+              ),
+              Container(
+                child: TextField(
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    obscureText: true,),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
+                child: Text(getText("confirmPassword", this._language)),
+              ),
+              Container(
+                child: TextField(
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    obscureText: true,),
+              ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
                 child: Text(getText("secret", this._language)),
@@ -127,7 +144,6 @@ class _UserBodyState extends State<_UserBody> {
                 child: TextField(
                     style: Theme.of(context).primaryTextTheme.bodyText2),
               ),
-
               Center(
                 child: DataTable(
                   columns: [
@@ -192,10 +208,10 @@ class _UserBodyState extends State<_UserBody> {
                         child: OutlineButton(
                           textColor: Colors.white,
                           onPressed: () {
-                             Navigator.pushReplacement(
-                               context,
-                               MaterialPageRoute(
-                                 builder: (context) => MyHomePage(title: getText("title", this._language))));
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MainMenu(this._language)));
                           },
                           child: Text(
                             getText("cancel", this._language),

@@ -56,6 +56,9 @@ class GlobalSettings {
     this.companyUniqueID = prefs.getString('companyUniqueID');
     this.companyID = prefs.getString('companyID');
     this._loaded = true;
+    if(this.url == null || this.url.isEmpty) {
+      this.url = "http://127.0.0.1:9119";
+    }
   }
 
 }

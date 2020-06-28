@@ -25,7 +25,7 @@ SOFTWARE.
 import 'package:authfe/appbar/menudrawer.dart';
 import 'package:authfe/i18n/language.dart';
 import 'package:authfe/model/companymodel.dart';
-import 'package:authfe/model/user.dart';
+import 'package:authfe/model/usermodel.dart';
 import 'package:authfe/views/companysubsidiaries.dart';
 import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/cupertino.dart';
@@ -306,12 +306,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
                           onPressed: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      CompanySubsidiariesView(this._language),
-                                ));
+                            _showSubsidiaries();
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
@@ -339,5 +334,22 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
       dh.showMessageDialog(
           getText("", this._language), context, this._language);
     }
+  }
+
+  _showSubsidiaries() {
+    var companyProvider = CompanyProvider();
+    if (companyProvider.editCompanyResponse != null) {
+      companyProvider.companyID = companyProvider.editCompanyResponse.company.companyID;
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CompanySubsidiariesView(this._language),
+          ));
+      return;
+    }
+
+    DialogHelper dialogHelper = DialogHelper();
+    dialogHelper.showMessageDialog(getText("group_not_found", this._language), context, this._language);
+
   }
 }

@@ -26,8 +26,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:authfe/model/permissionmodel.dart';
-import 'package:authfe/model/settings.dart';
-import 'package:authfe/model/user.dart';
+import 'package:authfe/model/settingsmodel.dart';
+import 'package:authfe/model/usermodel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';

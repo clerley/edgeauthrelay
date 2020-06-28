@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 import 'package:authfe/i18n/language.dart';
-import 'package:authfe/model/settings.dart';
+import 'package:authfe/model/settingsmodel.dart';
 import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
 

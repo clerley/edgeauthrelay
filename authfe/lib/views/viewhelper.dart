@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 import 'package:authfe/i18n/language.dart';
+import 'package:authfe/model/companymodel.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -34,28 +35,26 @@ class DialogHelper {
   factory DialogHelper() {
     return _theInstance;
   }
-  
+
   ProgressDialog createProgressDialog(String msg, var context) {
     var pr = new ProgressDialog(context);
     pr.style(
-            message: msg,
-            borderRadius: 10.0,
-            backgroundColor: Colors.white,
-            progressWidget: CircularProgressIndicator(),
-            elevation: 10.0,
-            insetAnimCurve: Curves.easeInOut,
-            progress: 0.0,
-            maxProgress: 100.0,
-            progressTextStyle: TextStyle(
-              color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
-            messageTextStyle: TextStyle(
-              color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600)
-          );
+        message: msg,
+        borderRadius: 10.0,
+        backgroundColor: Colors.white,
+        progressWidget: CircularProgressIndicator(),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
     return pr;
-  }   
+  }
 
-
-    void showMessageDialog(String msg, BuildContext context, String language) {
+  void showMessageDialog(String msg, BuildContext context, String language) {
     // flutter defined function
     showDialog(
       context: context,
@@ -83,5 +82,96 @@ class DialogHelper {
     );
   }
 
-
+  void showCompanyInfo(Company company, BuildContext context, String language) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(
+            getText("company", language),
+            style: TextStyle(color: Colors.red),
+          ),
+          content: Column(
+            children: [
+              Row(
+                children: [
+                  new Text(
+                    getText('uniqueID', language),
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(company.companyID),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    getText('name', language),
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(company.name),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    getText('address', language),
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(company.address1),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(company.address2),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(company.city),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(company.state),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(company.zip),
+                ],
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            OutlineButton(
+                textColor: Colors.white,
+                child: Text(
+                  getText("close", language),
+                  style: Theme.of(context).primaryTextTheme.button,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                )),
+          ],
+        );
+      },
+    );
+  }
 }

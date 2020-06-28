@@ -29,7 +29,7 @@ import 'i18n/language.dart';
 import 'model/companymodel.dart';
 import 'model/rolesmodel.dart';
 import 'views/loginwidget.dart';
-import 'model/user.dart';
+import 'model/usermodel.dart';
 import 'model/permissionmodel.dart';
 
 

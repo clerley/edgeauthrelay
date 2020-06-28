@@ -23,7 +23,7 @@ SOFTWARE.
 */
 
 import 'package:authfe/model/companymodel.dart';
-import 'package:authfe/model/user.dart';
+import 'package:authfe/model/usermodel.dart';
 import 'package:authfe/views/company.dart';
 import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';

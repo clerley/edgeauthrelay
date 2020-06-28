@@ -26,8 +26,8 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:developer';
 
-import 'package:authfe/model/settings.dart';
-import 'package:authfe/model/user.dart';
+import 'package:authfe/model/settingsmodel.dart';
+import 'package:authfe/model/usermodel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
@@ -51,6 +51,7 @@ class CompanyProvider extends ChangeNotifier {
     return _theInstance;
   }
 
+  String companyID = "";
   GetCompanyResponse editCompanyResponse;
 
   Future<bool> addCompany(Company company) async {
@@ -149,6 +150,41 @@ class CompanyProvider extends ChangeNotifier {
     return companyResponse;
   }
 
+ Future<GetGroupResponse> getGroupForCompanyID(String companyID) async {
+    GetGroupResponse groupResponse = GetGroupResponse();
+    groupResponse.status = "Failure";
+
+    try {
+      GlobalSettings settings = GlobalSettings();
+      UserProvider userProvider = UserProvider();
+
+      if(!userProvider.login.isLoggedIn()) {
+        return null;
+      }
+
+      var fullPath = settings.url + "/companies/$companyID";
+       var httpHeader = {
+        "Authorization": "bearer ${userProvider.login.sessionToken}"
+      };
+
+      var response = await http.get(fullPath, headers:  httpHeader);
+      if(response.statusCode != 200) {
+        print("The statusCode was not expected: ${response.statusCode}");
+        return groupResponse;
+      }
+
+      var jsn = json.decode(response.body);
+      groupResponse = GetGroupResponse.fromJson(jsn);
+
+    } catch (e, stackTrace) {
+      print(stackTrace);
+      print(e);
+    }
+
+
+    return groupResponse;
+  }
+
 }
 
 class UpdateCompanyResponse {
@@ -181,6 +217,22 @@ class GetCompanyResponse {
     return map;
   }
 
+}
+
+class GetGroupResponse {
+  String status;
+  List<Company> companies = [];
+
+  GetGroupResponse();
+
+  GetGroupResponse.fromJson(Map<String, dynamic> jsonObj) {
+    this.status = jsonObj['status'];
+    List<dynamic> allCompanies = jsonObj['companies'];
+    for(var i=0;i<allCompanies.length;i++) {
+      var c = Company.fromJson(allCompanies[i]);
+      companies.add(c);
+    }
+  }
 }
 
 class PasswordHandler {
@@ -278,6 +330,31 @@ class Company {
     }
 
     return false;
+  }
+
+  String getFullAddress() {
+    String fullAddr = "";
+    if(this.address1 != null && this.address1.isNotEmpty) {
+      fullAddr = this.address1;
+    }
+
+    if(this.address2 != null && this.address2.isNotEmpty) {
+      fullAddr = fullAddr + "\n" + this.address2;
+    }
+
+    if(this.city != null && this.city.isNotEmpty) {
+      fullAddr = fullAddr + "\n" + this.city;
+    }
+
+    if(this.state != null && this.state.isNotEmpty) {
+      fullAddr = fullAddr + " " + this.state;
+    }
+
+    if(this.zip != null && this.zip.isNotEmpty) {
+      fullAddr = fullAddr + " " + this.zip;
+    }
+
+    return fullAddr;
   }
 
 }

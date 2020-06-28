@@ -88,6 +88,8 @@ Map<String, Map<String, String>> languages = {
                    "company_updated" : "The company has been updated",
                    "not_editable"    : "An issue occurred while attempting to edit the company",
                    "list_mgr_company": "Subsidiaries",
+                   "group_not_found" : "The parent group owner company was not found",
+                   "error_ret_group" : "Error retrieving information about the group",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -150,6 +152,8 @@ Map<String, Map<String, String>> languages = {
                    "company_updated" : "The company has been updated",
                    "not_editable"    : "The company is no editable",
                    "list_mgr_company": "Subsidiaries",
+                   "group_not_found" : "The parent group owner company was not found",
+                   "error_ret_group" : "Error retrieving information about the group",
                    } 
 };
 
