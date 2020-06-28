@@ -77,10 +77,10 @@ func main() {
 	//-------------------------------------------------------------------------
 	//Users
 	//-------------------------------------------------------------------------
-	mux.Handle("/jwt/user", controller.CheckAuthorizedMW(http.HandlerFunc(controller.InsertRole), "ADD_USER")).Methods("PUT")
-	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateRole), "UPDATE_USER")).Methods("POST")
-	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.RemoveRole), "REMOVE_USER")).Methods("DELETE")
-	mux.Handle("/jwt/role/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListRoles), "GET_USER")).Methods("GET")
+	mux.Handle("/jwt/user", controller.CheckAuthorizedMW(http.HandlerFunc(controller.InsertUser), "ADD_USER")).Methods("PUT")
+	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateUser), "UPDATE_USER")).Methods("POST")
+	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.RemoveUser), "REMOVE_USER")).Methods("DELETE")
+	mux.Handle("/jwt/users/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListUsers), "GET_USER")).Methods("GET")
 
 	//-------------------------------------------------------------------------
 	//Company
