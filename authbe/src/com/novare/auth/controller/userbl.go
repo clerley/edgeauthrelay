@@ -225,6 +225,7 @@ func listUsersBL(startAt int64, endAt int64, companyID string) listUserResp {
 
 	//Lat check if there is no elements.
 	if startAt > endAt {
+		log.Printf("The value of startAt:[%d] is greater than endAt:[%d]", startAt, endAt)
 		return users
 	}
 
@@ -243,7 +244,9 @@ func listUsersBL(startAt int64, endAt int64, companyID string) listUserResp {
 
 		rsp.Permissions = ur.Permissions
 		rsp.Roles = ur.Roles
+		users.Users = append(users.Users, rsp)
 	}
 
+	users.Status = StatusSuccess
 	return users
 }
