@@ -518,8 +518,8 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type listUserResp struct {
-	Status string `json:"status"`
-	Users  []usrObj
+	Status string   `json:"status"`
+	Users  []usrObj `json:"users"`
 }
 
 //ListUsers ...
