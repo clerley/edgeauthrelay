@@ -425,7 +425,7 @@ func ListPermissions(w http.ResponseWriter, r *http.Request) {
 //Users
 
 type usrObj struct {
-	ID              string             `json:"id,omitempty,omitempty"`
+	ID              string             `json:"id,omitempty"`
 	Username        string             `json:"username,omitempty"`    //Username
 	Name            string             `json:"name,omitempty"`        //The user's name/full name
 	Permissions     []model.Permission `json:"permissions,omitempty"` //All the permissions assigned to the user. Note that permissions can go cross companies
