@@ -90,6 +90,8 @@ Map<String, Map<String, String>> languages = {
                    "list_mgr_company": "Subsidiaries",
                    "group_not_found" : "The parent group owner company was not found",
                    "error_ret_group" : "Error retrieving information about the group",
+                   "add_user_failed" : "Failed to add the user!",
+                   "updt_user_failed" : "Failed to update the user!",
                    }
   ,
     LANG_SPANISH: {"hello"           : "Hola!",
@@ -154,6 +156,8 @@ Map<String, Map<String, String>> languages = {
                    "list_mgr_company": "Subsidiaries",
                    "group_not_found" : "The parent group owner company was not found",
                    "error_ret_group" : "Error retrieving information about the group",
+                   "add_user_failed" : "Failed to add the user!",
+                   "updt_user_failed" : "Failed to update the user!",
                    } 
 };
 

@@ -21,9 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import 'package:authfe/model/permissionmodel.dart';
+import 'package:authfe/model/rolesmodel.dart';
 import 'package:authfe/model/usermodel.dart';
 import 'package:authfe/views/mainmenu.dart';
+import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../appbar/menudrawer.dart';
 import '../i18n/language.dart';
 import 'searchuser.dart';
@@ -67,9 +71,100 @@ class _UserBody extends StatefulWidget {
 
 class _UserBodyState extends State<_UserBody> {
   final String _language;
-  User user = User("");
+  User _user = User("");
+  TextEditingController _username = TextEditingController();
+  TextEditingController _name = TextEditingController();
+  TextEditingController _password = TextEditingController();
+  TextEditingController _confirmPassword = TextEditingController();
+  TextEditingController _secret = TextEditingController();
+  bool _isThing = false;
+  List<DropdownMenuItem<String>> _roles = [];
+  String _roleSelected = "";
+  List<Permission> _permissions = [];
+  List<DataRow> _rows = [];
 
   _UserBodyState(this._language);
+
+  Future<List<DropdownMenuItem<String>>> _loadRolesDropDown() async {
+    List<DropdownMenuItem<String>> lst = new List<DropdownMenuItem<String>>();
+    RolesProvider rolesProvider = RolesProvider();
+    if (!rolesProvider.isCached()) {
+      await rolesProvider.listRoles(0, 5000);
+    }
+    List<Role> roles = rolesProvider.getCached();
+    if (roles == null) {
+      return lst;
+    }
+
+    DropdownMenuItem<String> item =
+        new DropdownMenuItem<String>(child: Text(""), value: _roleSelected);
+    lst.add(item);
+
+    for (var i = 0; i < roles.length; i++) {
+      var role = roles[i];
+      item = new DropdownMenuItem<String>(
+          child: Text(role.description), value: role.id);
+      lst.add(item);
+    }
+
+    setState(() {
+      this._roles = lst;
+    });
+
+    return lst;
+  }
+
+  _loadPermissions() async {
+    PermissionProvider permProvider = PermissionProvider();
+    await permProvider.listPermissions(0, 1000);
+
+    if (!permProvider.isCached()) {
+      return;
+    }
+
+    List<DataRow> tmpLst = [];
+    this._permissions = permProvider.getCachedPermissions();
+    for (var i = 0; i < _permissions.length; i++) {
+      var perm = _permissions[i];
+      DataRow dw = DataRow(
+        cells: [],
+        onSelectChanged: (value) => _addPermission(perm),
+        selected: _isPermission(perm),
+      );
+      DataCell dc = DataCell(
+        Text(perm.permission),
+      );
+      dw.cells.add(dc);
+      dc = DataCell(
+        Text(perm.description),
+      );
+      dw.cells.add(dc);
+      tmpLst.add(dw);
+    }
+
+    setState(() {
+      this._rows = tmpLst;
+    });
+  }
+
+  @override
+  void initState() {
+    UserProvider usersProv = UserProvider();
+    if (usersProv.edittingUser != null) {
+      this._user = usersProv.edittingUser;
+      usersProv.edittingUser = null;
+      _username.text = _user.username;
+      _name.text = _user.name;
+      _secret.text = _user.secret;
+      _isThing = _user.isThing;
+      if (_user.roles.length > 0) {
+        //_roleSelected = _user.roles[0];
+      }
+    }
+    super.initState();
+    _loadRolesDropDown();
+    _loadPermissions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +193,9 @@ class _UserBodyState extends State<_UserBody> {
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2),
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  controller: _username,
+                ),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
@@ -106,26 +203,85 @@ class _UserBodyState extends State<_UserBody> {
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2),
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    controller: _name),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               ),
               Row(children: [
                 Container(
-                    child: Checkbox(onChanged: (bool value) {}, value: true)),
+                    child: Checkbox(
+                        onChanged: (bool value) {
+                          setState(() {
+                            this._isThing = value;
+                          });
+                        },
+                        value: _isThing)),
                 Container(
                   child: Text(getText("isthing", this._language)),
                 ),
               ]),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
+                child: Text(getText("roles", this._language)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: 500,
+                    child: DropdownButton<String>(
+                      value: _roleSelected,
+                      items: _roles,
+                      onChanged: (String newValue) {
+                        setState(() {
+                          _roleSelected = newValue;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
+                child: Text(getText("permissions", this._language)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Consumer<UserProvider>(
+                    builder: (context, userProvider, child) {
+                      return DataTable(
+                        columns: [
+                          DataColumn(
+                            label: Text(
+                              getText("permission", this._language),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              getText("description", this._language),
+                            ),
+                          ),
+                        ],
+                        rows: _rows,
+                      );
+                    },
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
                 child: Text(getText("password", this._language)),
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2,
-                    obscureText: true,),
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  obscureText: true,
+                  controller: _password,
+                ),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
@@ -133,8 +289,10 @@ class _UserBodyState extends State<_UserBody> {
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2,
-                    obscureText: true,),
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  obscureText: true,
+                  controller: _confirmPassword,
+                ),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 5.0),
@@ -142,16 +300,8 @@ class _UserBodyState extends State<_UserBody> {
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2),
-              ),
-              Center(
-                child: DataTable(
-                  columns: [
-                    DataColumn(label: Text("")),
-                    DataColumn(label: Text(getText("name", this._language)))
-                  ],
-                  rows: _getDataSource(),
-                ),
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    controller: _secret),
               ),
               Center(
                 child: Row(
@@ -165,7 +315,9 @@ class _UserBodyState extends State<_UserBody> {
                             getText("add", this._language),
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            _addUser();
+                          },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           )),
@@ -178,7 +330,9 @@ class _UserBodyState extends State<_UserBody> {
                             getText("save", this._language),
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            _saveUser();
+                          },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           )),
@@ -211,7 +365,8 @@ class _UserBodyState extends State<_UserBody> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MainMenu(this._language)));
+                                    builder: (context) =>
+                                        MainMenu(this._language)));
                           },
                           child: Text(
                             getText("cancel", this._language),
@@ -229,21 +384,80 @@ class _UserBodyState extends State<_UserBody> {
     );
   }
 
-  bool _test1Checked = false;
-  List<DataRow> _getDataSource() {
-    var dataRows = List<DataRow>();
-    var row = DataRow(cells: []);
-    DataCell cell = new DataCell(Checkbox(
-        onChanged: (bool value) {
-          setState(() {
-            this._test1Checked = value;
-          });
-        },
-        value: this._test1Checked));
-    row.cells.add(cell);
-    cell = new DataCell(Text('Testing 1'));
-    row.cells.add(cell);
-    dataRows.add(row);
-    return dataRows;
+  _clearFieldsForNewAddition() {
+    this._isThing = false;
+    this._name.text = "";
+    this._username.text = "";
+    this._secret.text = "";
+    this._password.text = "";
+    this._confirmPassword.text = "";
+    this._user = User("");
+  }
+
+  //This excludes the username/password/confirmPassword.
+  //Those fields only make sense on inserts
+  _readGenericUserInfo() {
+    _user.isThing = _isThing;
+    _user.name = _name.text;
+    _user.roles.add(_roleSelected);
+    _user.secret = _secret.text;
+  }
+
+  _addUser() async {
+    if (_user == null) {
+      _user = User("");
+    }
+    _readGenericUserInfo();
+    _user.username = _username.text;
+    _user.password = _password.text;
+    _user.confirmPassword = _confirmPassword.text;
+    if (_user.isInsertable) {
+      UserProvider userProvider = UserProvider();
+      var rsp = await userProvider.insertUser(_user);
+      if (rsp.status == "Success") {
+        _clearFieldsForNewAddition();
+        return;
+      }
+    }
+
+    DialogHelper dh = DialogHelper();
+    dh.showMessageDialog(
+        getText("add_user_failed", this._language), context, this._language);
+  }
+
+  _saveUser() async {
+    if (_user == null) {
+      _user = User("");
+    }
+    _readGenericUserInfo();
+    if (_user.isUpdatable) {
+      UserProvider userProvider = UserProvider();
+      var rsp = await userProvider.updateUser(_user);
+      if (rsp.status == "Success") {
+        return;
+      }
+    }
+
+    DialogHelper dh = DialogHelper();
+    dh.showMessageDialog(
+        getText("updt_user_failed", this._language), context, this._language);
+  }
+
+  _addPermission(Permission perm) {
+    if (_user.hasPermission(perm)) {
+      _user.removePermission(perm);
+    } else {
+      _user.addPermission(perm);
+    }
+
+    _loadPermissions();
+  }
+
+  bool _isPermission(Permission perm) {
+    if (_user == null) {
+      return false;
+    }
+
+    return _user.hasPermission(perm);
   }
 }

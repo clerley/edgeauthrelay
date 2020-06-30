@@ -35,11 +35,16 @@ import 'package:http/http.dart';
 class UserProvider extends ChangeNotifier {
   static final UserProvider _theInstance = UserProvider._privateConstructor();
   UsersList _cachedUserList = UsersList();
+  User edittingUser;
 
   UserProvider._privateConstructor();
 
   factory UserProvider() {
     return _theInstance;
+  }
+
+  doNotification() {
+    notifyListeners();
   }
 
   var login = Login("Failure", "---");
@@ -70,13 +75,13 @@ class UserProvider extends ChangeNotifier {
 
       notifyListeners();
     } on SocketException {
-      print('The socket threw a SocketException');
+      debugPrint('The socket threw a SocketException');
     } on ClientException {
-      print('The socket threw a ClientException');
+      debugPrint('The socket threw a ClientException');
     } catch (e, stackTrace) {
-      print(
+      debugPrint(
           "An error occurred while processing the login request ${stackTrace.toString()}");
-      print(e.toString());
+      debugPrint(e.toString());
     }
     return login;
   }
@@ -94,14 +99,24 @@ class UserProvider extends ChangeNotifier {
       var fullUrl = settings.url + "/jwt/users/$startAt/$endAt";
       rawResp = await http.get(fullUrl, headers: httpHeader);
       if (rawResp.statusCode == 200) {
+        debugPrint(
+            'Received the response from the server, the response code is 200');
         resp = UsersList.fromJson(json.decode(rawResp.body));
+        if (resp.status != "Success") {
+          debugPrint(
+              'The response did not contain a successful response: ${resp.status}');
+        }
+      } else {
+        debugPrint(
+            'The response code was not successful! The following response was received ${rawResp.statusCode}');
       }
       this._cachedUserList = resp;
 
       notifyListeners();
     } catch (e, stacktrace) {
       print(stacktrace.toString());
-      print("Error: ${e.toString()}");
+      debugPrint("Error: ${e.toString()}");
+      debugPrint('AN EXCEPTION OCCURRED WHEN RETRIEVING THE USERS');
     }
 
     return resp;
@@ -199,9 +214,14 @@ class UsersList {
   UsersList.fromJson(Map<String, dynamic> jsonObj) {
     this.status = jsonObj['status'];
     List<dynamic> allUsers = jsonObj['users'];
-    for (var i = 0; i < allUsers.length; i++) {
-      var user = User.fromJson(allUsers[i]);
-      this.users.add(user);
+    if (allUsers != null) {
+      debugPrint('The list of users from the JSON object is empty.');
+      for (var i = 0; i < allUsers.length; i++) {
+        var user = User.fromJson(allUsers[i]);
+        this.users.add(user);
+      }
+    } else {
+      debugPrint('The list of users is not valid!');
     }
   }
 }
@@ -258,9 +278,9 @@ class Login {
  * We will make user immutable.
  */
 class User {
-  String id;
-  String username;
-  String name;
+  String id = "";
+  String username = "";
+  String name = "";
   bool isThing;
   String secret;
   bool loggedIn;
@@ -269,17 +289,89 @@ class User {
   String password;
   String confirmPassword;
 
+  bool hasPermission(Permission perm) {
+    for (var i = 0; i < permissions.length; i++) {
+      if (permissions[i].id == perm.id) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  addPermission(Permission perm) {
+    if (hasPermission(perm)) {
+      debugPrint('THe permission is already part of the user!');
+      return;
+    }
+
+    permissions.add(perm);
+  }
+
+  removePermission(Permission perm) {
+    var idx = -1;
+    if (hasPermission(perm) == false) {
+      debugPrint('The User has not permission: ${perm.permission}');
+      return;
+    }
+
+    for (var i = 0; i < permissions.length; i++) {
+      if (permissions[i].id == perm.id) {
+        idx = i;
+        break;
+      }
+    }
+
+    if (idx >= 0) {
+      permissions.removeAt(idx);
+    }
+  }
+
+  bool get isInsertable {
+    if (this.username == null || this.username.isEmpty) {
+      debugPrint('Username is not valid, the user object is not insertable');
+      return false;
+    }
+
+    return (this.id == null || this.id.isEmpty);
+  }
+
+  bool get isUpdatable {
+    if (this.username == null || this.username.isEmpty) {
+      debugPrint('Username is not valid, the user object is not updatable');
+      return false;
+    }
+
+    return !isInsertable;
+  }
+
   User(this.username);
 
   User.fromJson(Map<String, dynamic> json) {
     if (json['name'] != null) {
       this.name = json['name'];
+    } else {
+      this.name = "";
     }
 
-    name = json['fullName'];
-    username = json['userName'];
+    if (json['fullName'] != null) {
+      name = json['fullName'];
+    }
+
+    if (json['userName'] != null) {
+      username = json['userName'];
+    } else if (json['username'] != null) {
+      username = json['username'];
+    } else {
+      username = "";
+    }
+
     secret = json['secret'];
-    isThing = json['isThing'];
+    if (json['isThing'] is bool) {
+      isThing = json['isThing'];
+    } else if (json['isThing'] is String) {
+      isThing = json['isThing'].toLowerCase() == "true";
+    }
 
     if (json['id'] != null) {
       id = json['id'];
@@ -312,7 +404,7 @@ class User {
       jsonObj['id'] = this.id;
     }
 
-    jsonObj['isThing'] = isThing;
+    jsonObj['isThing'] = isThing.toString();
 
     if (this.name != null && this.name.isNotEmpty) {
       jsonObj['name'] = this.name;

@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import 'package:authfe/model/usermodel.dart';
+import 'package:authfe/views/users.dart';
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../appbar/menudrawer.dart';
@@ -32,8 +34,7 @@ class SearchUsers extends StatefulWidget {
   SearchUsers(this._language);
 
   @override
-  State<StatefulWidget> createState() =>
-      _SearchUsersState(this._language);
+  State<StatefulWidget> createState() => _SearchUsersState(this._language);
 }
 
 class _SearchUsersState extends State<SearchUsers> {
@@ -66,8 +67,17 @@ class _SearchUserBody extends StatefulWidget {
 
 class _SearchBodyView extends State<_SearchUserBody> {
   final String _language;
+  List<DataRow> _rows = [];
+  TextEditingController _searchText = TextEditingController();
 
   _SearchBodyView(this._language);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _getDataRows();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,14 +102,18 @@ class _SearchBodyView extends State<_SearchUserBody> {
                 ),
                 Container(
                   child: TextField(
-                      style: Theme.of(context).primaryTextTheme.bodyText2),
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    controller: _searchText,
+                  ),
                 ),
                 Center(
                   child: Container(
                       padding: EdgeInsets.all(5.0),
                       child: OutlineButton(
                         textColor: Colors.white,
-                        onPressed: () {},
+                        onPressed: () {
+                          _searchUser();
+                        },
                         child: Text(
                           getText("search", this._language),
                           style: Theme.of(context).primaryTextTheme.button,
@@ -111,14 +125,15 @@ class _SearchBodyView extends State<_SearchUserBody> {
                 ),
                 Center(
                   child: Container(
-                    child: DataTable(columns: [
-                      DataColumn(
-                        label: Text(getText("username", this._language)),
-                      ),
-                      DataColumn(
-                          label: Text(getText("name", this._language))),
-                    ], 
-                    rows: _getDataRows(),
+                    child: DataTable(
+                      columns: [
+                        DataColumn(
+                          label: Text(getText("username", this._language)),
+                        ),
+                        DataColumn(
+                            label: Text(getText("name", this._language))),
+                      ],
+                      rows: _rows,
                     ),
                   ),
                 ),
@@ -126,6 +141,82 @@ class _SearchBodyView extends State<_SearchUserBody> {
     );
   }
 
+  handleSelected(User user) {
+    UserProvider().edittingUser = user;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UsersView(this._language),
+      ),
+    );
+  }
+
+  _searchUser() {
+    String searchText = _searchText.text;
+    searchText = searchText.toLowerCase();
+    List<User> filtered = [];
+    List<User> userList = UserProvider().getCachedListOfUsers();
+    if (userList != null) {
+      for (var i = 0; i < userList.length; i++) {
+        var user = userList[i];
+        if (user.name != null &&
+            user.name.toLowerCase().indexOf(searchText) >= 0) {
+          filtered.add(user);
+        } else if (user.username != null &&
+            user.username.toLowerCase().indexOf(searchText) >= 0) {
+          filtered.add(user);
+        }
+      }
+    }
+
+    _populateUserList(filtered);
+  }
+
+  _populateUserList(List<User> usersList) {
+    List<DataRow> tempRows = [];
+    if (usersList != null) {
+      for (var i = 0; i < usersList.length; i++) {
+        User user = usersList[i];
+        DataRow row = DataRow(
+          cells: [],
+          onSelectChanged: (value) => handleSelected(user),
+        );
+        DataCell cell = DataCell(
+          Text(user.username),
+        );
+        row.cells.add(cell);
+
+        cell = DataCell(
+          Text(user.name),
+        );
+        row.cells.add(cell);
+        tempRows.add(row);
+      }
+
+      setState(() {
+        this._rows = tempRows;
+      });
+    }
+  }
+
   _getDataRows() async {
+    debugPrint(
+        'Initiating getDataRows. For some reason this method does not seem to return');
+    UserProvider usersProvider = UserProvider();
+    //For now we will just keep at 1000. Eventually we will have to
+    //implement pagination but. I want to keep it simple.
+    List<User> usersList = usersProvider.getCachedListOfUsers();
+    if (usersList != null && usersList.length == 0) {
+      UsersList rsp = await usersProvider.listUsers(0, 1000);
+      if (rsp.status == "Success") {
+        debugPrint('Users from 0 through 1000 have been retrieved!');
+        usersList = usersProvider.getCachedListOfUsers();
+      } else {
+        debugPrint('No users have been returned, the status is ${rsp.status}');
+        return;
+      }
+    }
+
+    _populateUserList(usersList);
   }
 }
