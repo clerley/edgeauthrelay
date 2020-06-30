@@ -285,9 +285,58 @@ class User {
   String secret;
   bool loggedIn;
   List<Permission> permissions = [];
-  List<String> roles = [];
+  List<String> _roles = [];
   String password;
   String confirmPassword;
+
+  bool hasRole(String roleID) {
+    for (var i = 0; i < _roles.length; i++) {
+      if (_roles[i] == roleID) {
+        return true;
+      }
+    }
+
+    debugPrint('The was not found! It can be added');
+    return false;
+  }
+
+  List<String> listRoles() {
+    List<String> roles = [];
+    for (var i = 0; i < _roles.length; i++) {
+      roles.add(_roles[i]);
+    }
+    return roles;
+  }
+
+  addRole(String roleID) {
+    if (this.hasRole(roleID)) {
+      debugPrint('The role is already part of the user!');
+      return;
+    }
+
+    this._roles.add(roleID);
+  }
+
+  removeRole(String roleID) {
+    if (!this.hasRole(roleID)) {
+      debugPrint(
+          'The role ID:$roleID is not in the user, it cannot be removed');
+      return;
+    }
+
+    var idx = -1;
+    for (var i = 0; i < this._roles.length; i++) {
+      if (this._roles[i] == roleID) {
+        idx = i;
+        break;
+      }
+    }
+
+    if (idx >= 0) {
+      debugPrint('The index is greater than zero. $idx');
+      this._roles.removeAt(idx);
+    }
+  }
 
   bool hasPermission(Permission perm) {
     for (var i = 0; i < permissions.length; i++) {
@@ -389,7 +438,7 @@ class User {
     if (allRoles != null) {
       for (var i = 0; i < allRoles.length; i++) {
         var roleID = allRoles[i];
-        this.roles.add(roleID);
+        this._roles.add(roleID);
       }
     }
   }
@@ -429,8 +478,8 @@ class User {
       jsonObj['permissions'] = jsonPermissions;
     }
 
-    if (this.roles != null) {
-      jsonObj['roles'] = this.roles;
+    if (this._roles != null) {
+      jsonObj['roles'] = this._roles;
     }
 
     return jsonObj;

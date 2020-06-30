@@ -205,16 +205,15 @@ class _SearchBodyView extends State<_SearchUserBody> {
     UserProvider usersProvider = UserProvider();
     //For now we will just keep at 1000. Eventually we will have to
     //implement pagination but. I want to keep it simple.
-    List<User> usersList = usersProvider.getCachedListOfUsers();
-    if (usersList != null && usersList.length == 0) {
-      UsersList rsp = await usersProvider.listUsers(0, 1000);
-      if (rsp.status == "Success") {
-        debugPrint('Users from 0 through 1000 have been retrieved!');
-        usersList = usersProvider.getCachedListOfUsers();
-      } else {
-        debugPrint('No users have been returned, the status is ${rsp.status}');
-        return;
-      }
+
+    List<User> usersList = [];
+    UsersList rsp = await usersProvider.listUsers(0, 1000);
+    if (rsp.status == "Success") {
+      debugPrint('Users from 0 through 1000 have been retrieved!');
+      usersList = usersProvider.getCachedListOfUsers();
+    } else {
+      debugPrint('No users have been returned, the status is ${rsp.status}');
+      return;
     }
 
     _populateUserList(usersList);

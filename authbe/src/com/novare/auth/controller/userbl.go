@@ -244,6 +244,7 @@ func listUsersBL(startAt int64, endAt int64, companyID string) listUserResp {
 
 		rsp.Permissions = ur.Permissions
 		rsp.Roles = ur.Roles
+		rsp.ID = ur.ID.Hex()
 		users.Users = append(users.Users, rsp)
 	}
 

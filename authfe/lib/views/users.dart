@@ -97,7 +97,7 @@ class _UserBodyState extends State<_UserBody> {
     }
 
     DropdownMenuItem<String> item =
-        new DropdownMenuItem<String>(child: Text(""), value: _roleSelected);
+        new DropdownMenuItem<String>(child: Text(""), value: "");
     lst.add(item);
 
     for (var i = 0; i < roles.length; i++) {
@@ -105,6 +105,9 @@ class _UserBodyState extends State<_UserBody> {
       item = new DropdownMenuItem<String>(
           child: Text(role.description), value: role.id);
       lst.add(item);
+      if (_user.hasRole(role.id)) {
+        _roleSelected = role.id;
+      }
     }
 
     setState(() {
@@ -157,8 +160,9 @@ class _UserBodyState extends State<_UserBody> {
       _name.text = _user.name;
       _secret.text = _user.secret;
       _isThing = _user.isThing;
-      if (_user.roles.length > 0) {
-        //_roleSelected = _user.roles[0];
+      var rolesList = _user.listRoles();
+      if (rolesList.length > 0) {
+        _roleSelected = rolesList[0];
       }
     }
     super.initState();
@@ -399,7 +403,7 @@ class _UserBodyState extends State<_UserBody> {
   _readGenericUserInfo() {
     _user.isThing = _isThing;
     _user.name = _name.text;
-    _user.roles.add(_roleSelected);
+    _user.addRole(_roleSelected);
     _user.secret = _secret.text;
   }
 
@@ -427,20 +431,22 @@ class _UserBodyState extends State<_UserBody> {
 
   _saveUser() async {
     if (_user == null) {
-      _user = User("");
+      debugPrint('The user cannot be saved because it has not been defined');
+      return;
     }
+
+    String msg = getText("updt_user_success", this._language);
     _readGenericUserInfo();
     if (_user.isUpdatable) {
       UserProvider userProvider = UserProvider();
       var rsp = await userProvider.updateUser(_user);
-      if (rsp.status == "Success") {
-        return;
+      if (rsp.status != "Success") {
+        msg = getText("updt_user_failed", this._language);
       }
     }
 
     DialogHelper dh = DialogHelper();
-    dh.showMessageDialog(
-        getText("updt_user_failed", this._language), context, this._language);
+    dh.showMessageDialog(msg, context, this._language);
   }
 
   _addPermission(Permission perm) {
