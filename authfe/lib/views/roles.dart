@@ -35,12 +35,13 @@ class RolesView extends StatefulWidget {
   final String _language;
   final Role _role;
 
-  RolesView(this._language): this._role = null;
+  RolesView(this._language) : this._role = null;
 
   RolesView.withRole(this._language, this._role);
 
   @override
-  State<StatefulWidget> createState() => _RolesState(this._language, this._role);
+  State<StatefulWidget> createState() =>
+      _RolesState(this._language, this._role);
 }
 
 class _RolesState extends State<RolesView> {
@@ -70,7 +71,8 @@ class _RoleBody extends StatefulWidget {
   _RoleBody(this._language, this._role);
 
   @override
-  State<StatefulWidget> createState() => _RoleBodyState.withRole(this._role, this._language);
+  State<StatefulWidget> createState() =>
+      _RoleBodyState.withRole(this._role, this._language);
 }
 
 class _RoleBodyState extends State<_RoleBody> {
@@ -84,7 +86,7 @@ class _RoleBodyState extends State<_RoleBody> {
   }
 
   _RoleBodyState.withRole(this.role, this._language) {
-    if(this.role == null) {
+    if (this.role == null) {
       this.role = Role();
     }
   }
@@ -124,12 +126,14 @@ class _RoleBodyState extends State<_RoleBody> {
                 ),
               ),
               Container(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                 child: Text(getText("description", this._language)),
               ),
               Container(
                 child: TextField(
-                    style: Theme.of(context).primaryTextTheme.bodyText2,
-                    controller: _description,),
+                  style: Theme.of(context).primaryTextTheme.bodyText2,
+                  controller: _description,
+                ),
               ),
               Center(
                 child: Consumer<PermissionProvider>(
@@ -290,20 +294,21 @@ class _RoleBodyState extends State<_RoleBody> {
     bool success = false;
     role.description = _description.text;
     RolesProvider rolesProvider = RolesProvider();
-    
+
     var response;
-    if (this.role != null && updateType != "update" && this.role.isInsertable()) {
-        response = await rolesProvider.insertRole(role);
-
-    } else if(this.role != null && updateType == "update" && !this.role.isInsertable()) {
-        response = await rolesProvider.saveRole(role);
-
+    if (this.role != null &&
+        updateType != "update" &&
+        this.role.isInsertable()) {
+      response = await rolesProvider.insertRole(role);
+    } else if (this.role != null &&
+        updateType == "update" &&
+        !this.role.isInsertable()) {
+      response = await rolesProvider.saveRole(role);
     }
 
     if (response != null && response.status == "Success") {
       success = true;
     }
-
 
     String msg;
     DialogHelper dialogHelper = DialogHelper();
@@ -322,17 +327,16 @@ class _RoleBodyState extends State<_RoleBody> {
     dialogHelper.showMessageDialog(msg, context, this._language);
   }
 
-
   allRolesSelected(bool isSelected) {
-    if(this.role == null) {
+    if (this.role == null) {
       return;
     }
 
     PermissionProvider permissionsProvider = PermissionProvider();
     var cachedPermissions = permissionsProvider.getCachedPermissions();
-    if(cachedPermissions != null) {
-      for(var i=0;i<cachedPermissions.length;i++) {
-        if(isSelected) {
+    if (cachedPermissions != null) {
+      for (var i = 0; i < cachedPermissions.length; i++) {
+        if (isSelected) {
           this.role.addPermission(cachedPermissions[i]);
         } else {
           this.role.removePermission(cachedPermissions[i]);
@@ -341,6 +345,5 @@ class _RoleBodyState extends State<_RoleBody> {
     }
 
     permissionsProvider.doNotification();
-
   }
 }

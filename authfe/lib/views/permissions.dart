@@ -128,6 +128,7 @@ class _PermissionBodyState extends State<_PermissionBody> {
                 ),
               ),
               Container(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                 child: Text(getText("permission", this._language)),
               ),
               Container(
@@ -137,7 +138,7 @@ class _PermissionBodyState extends State<_PermissionBody> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                 child: Text(
                   getText("description", this._language),
                 ),
@@ -210,7 +211,8 @@ class _PermissionBodyState extends State<_PermissionBody> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MainMenu(this._language)));
+                                    builder: (context) =>
+                                        MainMenu(this._language)));
                           },
                           child: Text(
                             getText("cancel", this._language),
@@ -229,18 +231,20 @@ class _PermissionBodyState extends State<_PermissionBody> {
   }
 
   savePermission() async {
-    if(this._perm != null) {
+    if (this._perm != null) {
       this._perm.description = _descrController.text;
       this._perm.permission = _permController.text;
-      PermissionProvider permProvider = Provider.of<PermissionProvider>(context);
-      InsertPermissionResponse resp = await permProvider.updatePermission(this._perm);
+      PermissionProvider permProvider =
+          Provider.of<PermissionProvider>(context);
+      InsertPermissionResponse resp =
+          await permProvider.updatePermission(this._perm);
       var pdh = DialogHelper();
-      if(resp.status == "Success") {
-        pdh.showMessageDialog(
-          getText("perm_upd_success", this._language), context, this._language);
+      if (resp.status == "Success") {
+        pdh.showMessageDialog(getText("perm_upd_success", this._language),
+            context, this._language);
       } else {
         pdh.showMessageDialog(
-          getText("perm_upd_error", this._language), context, this._language);
+            getText("perm_upd_error", this._language), context, this._language);
       }
     }
   }

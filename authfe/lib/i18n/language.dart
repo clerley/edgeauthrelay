@@ -96,6 +96,7 @@ Map<String, Map<String, String>> languages = {
     "add_user_failed": "Failed to add the user!",
     "updt_user_failed": "Failed to update the user!",
     "updt_user_success": "The user has been updated",
+    "change-password": "Change Password",
   },
   LANG_SPANISH: {
     "hello": "Hola!",
@@ -165,6 +166,7 @@ Map<String, Map<String, String>> languages = {
     "add_user_failed": "Failed to add the user!",
     "updt_user_failed": "Failed to update the user!",
     "updt_user_success": "The user has been updated",
+    "change-password": "Change Password",
   }
 };
 

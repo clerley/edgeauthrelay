@@ -180,6 +180,31 @@ class UserProvider extends ChangeNotifier {
     return resp;
   }
 
+  /// updateUser - Inserting the user */
+  Future<void> logout() async {
+    try {
+      GlobalSettings settings = GlobalSettings();
+      if (!login.isLoggedIn()) {
+        return;
+      }
+      var httpHeader = {"Authorization": "bearer ${login.sessionToken}"};
+      Response rawResp;
+      var fullUrl = settings.url + "/jwt/company/logout";
+      rawResp = await http.post(fullUrl, headers: httpHeader);
+      if (rawResp.statusCode == 200) {
+        debugPrint(
+            'The StatusCode is 200. The user was successfully logged out');
+      }
+
+      notifyListeners();
+    } catch (e, stackTrace) {
+      print(stackTrace);
+      print(e);
+    }
+
+    return;
+  }
+
   List<User> getCachedListOfUsers() {
     if (this._cachedUserList == null) {
       return [];

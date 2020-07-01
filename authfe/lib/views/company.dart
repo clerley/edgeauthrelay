@@ -140,7 +140,6 @@ class _CompanyState extends State<CompanyBody> {
     _passwordTec = TextEditingController();
     _confirmPasswordTec = TextEditingController();
 
-
     //Here we will check if we are editting the company
     var companyProvider = CompanyProvider();
     if (companyProvider.editCompanyResponse != null) {
@@ -228,6 +227,7 @@ class _CompanyState extends State<CompanyBody> {
               ),
             ),
             Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
               child: Text(getText("uniqueID", this._language)),
             ),
             Container(
@@ -237,7 +237,7 @@ class _CompanyState extends State<CompanyBody> {
               ),
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               child: Text(
                 this._nameText,
               ),
@@ -255,13 +255,13 @@ class _CompanyState extends State<CompanyBody> {
               ),
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               child: TextField(
                   style: Theme.of(context).primaryTextTheme.bodyText2,
                   controller: _addressTec),
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               child: TextField(
                 style: Theme.of(context).primaryTextTheme.bodyText2,
                 controller: _address1Tec,
@@ -272,6 +272,7 @@ class _CompanyState extends State<CompanyBody> {
                 Expanded(
                   flex: 24,
                   child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                     child: Text(
                       this._cityText,
                     ),
@@ -281,6 +282,7 @@ class _CompanyState extends State<CompanyBody> {
                 Expanded(
                   flex: 12,
                   child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                     child: Text(
                       this._stateText,
                     ),
@@ -290,6 +292,7 @@ class _CompanyState extends State<CompanyBody> {
                 Expanded(
                   flex: 24,
                   child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                     child: Text(this._zipText),
                   ),
                 ),
@@ -331,6 +334,7 @@ class _CompanyState extends State<CompanyBody> {
               ],
             ),
             Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
               child: Row(
                 children: <Widget>[
                   Checkbox(
@@ -355,6 +359,7 @@ class _CompanyState extends State<CompanyBody> {
               ),
             ),
             Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
               child: Text(
                 getText("authrelay", this._language),
               ),
@@ -378,17 +383,27 @@ class _CompanyState extends State<CompanyBody> {
                       children: <Widget>[
                         Expanded(
                           flex: 24,
-                          child: Text(getText("jwtDuration", this._language)),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                            child: Text(getText("jwtDuration", this._language)),
+                          ),
                         ),
                         Spacer(),
                         Expanded(
                           flex: 24,
-                          child: Text(getText("passwordExp", this._language)),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                            child: Text(getText("passwordExp", this._language)),
+                          ),
                         ),
                         Spacer(),
                         Expanded(
                           flex: 24,
-                          child: Text(getText("passwordUnit", this._language)),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                            child:
+                                Text(getText("passwordUnit", this._language)),
+                          ),
                         )
                       ],
                     ),
@@ -433,7 +448,7 @@ class _CompanyState extends State<CompanyBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                   child: Text(
                     getText('password', this._language),
                   ),
@@ -444,7 +459,7 @@ class _CompanyState extends State<CompanyBody> {
                   obscureText: true,
                 ),
                 Container(
-                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                     child: Text(
                       getText('confirmPassword', this._language),
                     )),
@@ -557,7 +572,7 @@ class _CompanyState extends State<CompanyBody> {
 
   _clearFieldsForInsert() {
     company = Company();
-    
+
     setState(() {
       _uniqueIDTec.text = "";
       _nameTec.text = "";

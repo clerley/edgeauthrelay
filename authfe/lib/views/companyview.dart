@@ -152,13 +152,14 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               child: Text(
                 getText("company", this._language),
                 style: Theme.of(context).primaryTextTheme.bodyText1,
               ),
             ),
             Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
               child: Text(getText("uniqueID", this._language)),
             ),
             Container(
@@ -168,7 +169,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
               ),
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               child: Text(
                 getText("name", this._language),
               ),
@@ -180,7 +181,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
               ),
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
               child: Text(
                 getText("address", this._language),
               ),
@@ -203,6 +204,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                 Expanded(
                   flex: 24,
                   child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                     child: Text(
                       getText("city", this._language),
                     ),
@@ -212,6 +214,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                 Expanded(
                   flex: 12,
                   child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                     child: Text(
                       getText("state", this._language),
                     ),
@@ -221,6 +224,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                 Expanded(
                   flex: 24,
                   child: Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                     child: Text(
                       getText("zip", this._language),
                     ),
@@ -267,53 +271,53 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(5.0),
-                  child: Row(
-                    children: [
-                      OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("edit", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            _editCompany();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
-                      OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("cancel", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            companyProvider.editCompanyResponse = null;
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        MainMenu(this._language)));
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
-                      OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("list_mgr_company", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            _showSubsidiaries();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
-                    ],
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 12.0, 0.0),
+                  child: OutlineButton(
+                    textColor: Colors.white,
+                    child: Text(
+                      getText("edit", this._language),
+                      style: Theme.of(context).primaryTextTheme.button,
+                    ),
+                    onPressed: () {
+                      _editCompany();
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
                   ),
                 ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 12.0, 0.0),
+                  child: OutlineButton(
+                    textColor: Colors.white,
+                    child: Text(
+                      getText("cancel", this._language),
+                      style: Theme.of(context).primaryTextTheme.button,
+                    ),
+                    onPressed: () {
+                      companyProvider.editCompanyResponse = null;
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MainMenu(this._language)));
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
+                ),
+                OutlineButton(
+                    textColor: Colors.white,
+                    child: Text(
+                      getText("list_mgr_company", this._language),
+                      style: Theme.of(context).primaryTextTheme.button,
+                    ),
+                    onPressed: () {
+                      _showSubsidiaries();
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    )),
               ],
             ),
           ],
@@ -339,7 +343,8 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
   _showSubsidiaries() {
     var companyProvider = CompanyProvider();
     if (companyProvider.editCompanyResponse != null) {
-      companyProvider.companyID = companyProvider.editCompanyResponse.company.companyID;
+      companyProvider.companyID =
+          companyProvider.editCompanyResponse.company.companyID;
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -349,7 +354,7 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
     }
 
     DialogHelper dialogHelper = DialogHelper();
-    dialogHelper.showMessageDialog(getText("group_not_found", this._language), context, this._language);
-
+    dialogHelper.showMessageDialog(
+        getText("group_not_found", this._language), context, this._language);
   }
 }
