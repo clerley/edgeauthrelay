@@ -216,6 +216,83 @@ class UserProvider extends ChangeNotifier {
 
     return this._cachedUserList.users;
   }
+
+  /// updateUser - Inserting the user */
+  Future<bool> updatePassword(UpdatePasswordRequest req) async {
+    bool resp = false;
+    try {
+      GlobalSettings settings = GlobalSettings();
+      if (!login.isLoggedIn()) {
+        return resp;
+      }
+      var httpHeader = {
+        "Authorization": "bearer ${login.sessionToken}",
+        "Content-Type": "application/json"
+      };
+      Response rawResp;
+      var fullUrl = settings.url + "/jwt/password";
+      if (!req.isValid()) {
+        debugPrint('The requests password change object is not valid');
+        return resp;
+      }
+
+      var jsonEncoded = json.encode(req.toJson());
+      rawResp =
+          await http.post(fullUrl, headers: httpHeader, body: jsonEncoded);
+      if (rawResp.statusCode == 200) {
+        var jsonDecoded = json.decode(rawResp.body);
+        var status = "Failure";
+        if (jsonDecoded['status'] is String) {
+          status = jsonDecoded['status'];
+        }
+        if (status == "Success") {
+          resp = true;
+        }
+      }
+
+      notifyListeners();
+    } catch (e, stackTrace) {
+      print(stackTrace);
+      print(e);
+    }
+
+    return resp;
+  }
+}
+
+class UpdatePasswordRequest {
+  String currentPassword;
+  String newPassword;
+  String confirmPassword;
+  String username;
+
+  isValid() {
+    return (currentPassword != null &&
+        newPassword != null &&
+        confirmPassword != null &&
+        username != null);
+  }
+
+  toJson() {
+    Map<String, dynamic> jsonObj = {};
+
+    if (!isValid()) {
+      debugPrint(
+          'The current object is not valid! one or several fields are null');
+    }
+
+    /*	Username        string `json:"username"`
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
+	ConfirmPassword string `json:"confirmPassword"`*/
+
+    jsonObj['currentPassword'] = currentPassword;
+    jsonObj['newPassword'] = newPassword;
+    jsonObj['confirmPassword'] = confirmPassword;
+    jsonObj['username'] = username;
+
+    return jsonObj;
+  }
 }
 
 class UserUpdateResponse {

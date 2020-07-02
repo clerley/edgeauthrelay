@@ -24,6 +24,7 @@ SOFTWARE.
 
 import 'package:authfe/model/usermodel.dart';
 import 'package:authfe/views/companyview.dart';
+import 'package:authfe/views/updatepassword.dart';
 import 'package:flutter/material.dart';
 import '../i18n/language.dart';
 import '../views/permissions.dart';
@@ -85,7 +86,13 @@ class DistAuthDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text(getText("change-password", this._language)),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UpdatePasswordView(this._language)),
+              );
+            },
           ),
           ListTile(
             title: Text(getText("company", this._language)),
