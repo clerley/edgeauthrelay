@@ -23,7 +23,6 @@ SOFTWARE.
 */
 import 'package:authfe/i18n/language.dart';
 import 'package:authfe/model/settingsmodel.dart';
-import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
@@ -64,10 +63,6 @@ class _SettingsViewBodyState extends State<_SettingsViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    var pr = DialogHelper()
-        .createProgressDialog(getText("please_wait", LANG_ENGLISH), context);
-
-
     return Center(
       child: Container(
         margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
@@ -109,11 +104,9 @@ class _SettingsViewBodyState extends State<_SettingsViewBody> {
                             style: Theme.of(context).primaryTextTheme.button,
                           ),
                           onPressed: () async {
-                            pr.show();
                             var gset = GlobalSettings();
                             gset.url = _urlController.text;
                             await gset.save();
-                            pr.hide();
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(

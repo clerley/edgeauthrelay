@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:io';
 
 class GlobalSettings {
-
   static final GlobalSettings _theInstance = GlobalSettings._internal();
   String url;
   String companyUniqueID; //This is the ID provided by the user
@@ -35,31 +35,70 @@ class GlobalSettings {
   GlobalSettings._internal();
 
   factory GlobalSettings() {
-    if(!_theInstance._loaded) {
+    if (!_theInstance._loaded) {
       _theInstance.load();
     }
     return _theInstance;
   }
 
   Future<void> save() async {
-    
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('url', url);
-    await prefs.setString('companyUniqueID', companyUniqueID);
-    await prefs.setString('companyID', companyID);
-
+    //Directory appDocDir = await getApplicationDocumentsDirectory();
+    //String appDocPath = appDocDir.path;
+    String edgeAuth = "config.json";
+    File file = File(edgeAuth);
+    _Settings settings = _Settings();
+    settings.url = url;
+    settings.companyID = companyID;
+    settings.companyUniqueID = companyUniqueID;
+    file.writeAsStringSync(json.encode(settings.toJson()));
+    /*await _prefs.setString('url', url);
+    await _prefs.setString('companyUniqueID', companyUniqueID);
+    await _prefs.setString('companyID', companyID);*/
   }
 
   Future<void> load() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    this.url = prefs.getString('url');
-    this.companyUniqueID = prefs.getString('companyUniqueID');
-    this.companyID = prefs.getString('companyID');
-    this._loaded = true;
-    if(this.url == null || this.url.isEmpty) {
+    //Directory appDocDir = await getApplicationDocumentsDirectory();
+    //String appDocPath = appDocDir.path;
+    String edgeAuth = "config.json";
+    File file = File(edgeAuth);
+    String encodedJson = file.readAsStringSync();
+    var jsonObj = json.decode(encodedJson);
+    _Settings settings = _Settings.fromJson(jsonObj);
+    this.url = settings.url;
+    this.companyID = settings.companyID;
+    this.companyUniqueID = settings.companyUniqueID;
+
+    //If this work I will remove the fields from the GlobalSettings object
+    ///and just create a reference to settings.
+
+    /*this.url = _prefs.getString('url');
+    this.companyUniqueID = _prefs.getString('companyUniqueID');
+    this.companyID = _prefs.getString('companyID');
+    this._loaded = true;*/
+    if (this.url == null || this.url.isEmpty) {
       this.url = "http://127.0.0.1:9119";
     }
   }
-
 }
 
+class _Settings {
+  String url = "http://127.0.0.1:9119";
+  String companyUniqueID = "";
+  String companyID = "";
+
+  toJson() {
+    Map<String, dynamic> jsonObj = {};
+    jsonObj['url'] = url;
+    jsonObj['companyUniqueID'] = companyUniqueID;
+    jsonObj['companyID'] = companyID;
+    return jsonObj;
+  }
+
+  _Settings();
+
+  _Settings.fromJson(Map<String, dynamic> jsonObj) {
+    this.url = jsonObj['url'];
+    this.companyID = jsonObj['companyID'];
+    this.companyUniqueID = jsonObj['companyUniqueID'];
+  }
+}
