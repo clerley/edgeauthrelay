@@ -737,3 +737,34 @@ func GetCompanyByGroupOwnerID(w http.ResponseWriter, r *http.Request) {
 
 	writeResponse(rsp, w)
 }
+
+type passReq struct {
+	Username        string `json:"username"`
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
+	ConfirmPassword string `json:"confirmPassword"`
+}
+
+type passResp struct {
+	Status string `json:"status"`
+}
+
+//UpdatePassword - Used to update a user's password
+func UpdatePassword(w http.ResponseWriter, r *http.Request) {
+
+	user := r.Context().Value(CtxUser).(*model.User)
+
+	req := new(passReq)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(req)
+	if err != nil {
+		log.Printf("Error when updating the user's password:[%s]", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := updatePasswordBL(user, req)
+
+	writeResponse(rsp, w)
+
+}

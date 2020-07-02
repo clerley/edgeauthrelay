@@ -107,6 +107,11 @@ func (user *User) IsGranted(permission string) bool {
 		return true
 	}
 
+	if permission == "UPDATE_PASSWORD" {
+		log.Printf("Everybody is allowed to update his/hers password! The controller will decide if the update is valid")
+		return true
+	}
+
 	for i := range user.Permissions {
 		if user.Permissions[i].Permission == permission {
 			return true

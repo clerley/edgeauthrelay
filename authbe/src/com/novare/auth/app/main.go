@@ -81,6 +81,7 @@ func main() {
 	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateUser), "UPDATE_USER")).Methods("POST")
 	mux.Handle("/jwt/user/{username}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.RemoveUser), "REMOVE_USER")).Methods("DELETE")
 	mux.Handle("/jwt/users/{startat}/{endat}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.ListUsers), "GET_USER")).Methods("GET")
+	mux.Handle("/jwt/password", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdatePassword), "UPDATE_PASSWORD")).Methods("POST")
 
 	//-------------------------------------------------------------------------
 	//Company

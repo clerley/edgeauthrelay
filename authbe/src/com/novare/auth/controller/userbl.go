@@ -251,3 +251,49 @@ func listUsersBL(startAt int64, endAt int64, companyID string) listUserResp {
 	users.Status = StatusSuccess
 	return users
 }
+
+func updatePasswordBL(user *model.User, pass *passReq) *passResp {
+	rsp := new(passResp)
+	rsp.Status = StatusFailure
+
+	//Check if the user is the same user
+	if user.Username != pass.Username && user.Username != "superuser" {
+		log.Printf("The user is not trying to update itself. The user is trying to update somebody's else account but, it is not logged in as superuser")
+		return rsp
+	}
+
+	//Check if the password match
+	if !user.IsPasswordMatch(pass.CurrentPassword) {
+		log.Printf("The user did not enter a valid password!")
+		return rsp
+	}
+
+	//Check if the password entered and confirmed are the same
+	if pass.NewPassword != pass.ConfirmPassword {
+		log.Printf("The password entered and the confirmation password do not match")
+		return rsp
+	}
+
+	//Find hte user using hte Username and Company ID
+	changeUser, err := model.FindUserByUsernameCompanyID(pass.Username, user.CompanyID)
+	if err != nil {
+		log.Printf("It seems like the user was not found!")
+	}
+
+	//If it passed all the checks
+	err = changeUser.SetPassword(pass.NewPassword)
+	if err != nil {
+		log.Printf("There was an error setting the new password:ERR: [%s]", err)
+		return rsp
+	}
+
+	//Save the user
+	err = model.SaveUser(changeUser)
+	if err != nil {
+		log.Printf("Updating the user password failedw ith ERR:[%s]", err)
+		return rsp
+	}
+
+	rsp.Status = StatusSuccess
+	return rsp
+}

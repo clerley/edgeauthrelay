@@ -31,6 +31,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -901,5 +902,90 @@ func TestUpdateCompany(t *testing.T) {
 		t.Error("The status should have been OK but it is not.")
 	}
 
+	performCompanyCleanup(rsp.CompanyID, t)
+}
+
+func TestUpdatingUserPassword(t *testing.T) {
+
+	var req createCompanyReq
+	req.Address1 = "My Address"
+	req.Address2 = "My Address line 2"
+	req.AuthRelay = ""
+	req.City = "Palm Harbor"
+	req.IsInLocation = "true"
+	req.Name = "TEST"
+	req.RemotelyManaged = "false"
+	req.State = "FL"
+	req.Zip = "33445"
+	req.UniqueID = "THISISUNIQUEID"
+	req.Password = "@123ABC789"
+	req.ConfirmPassword = req.Password
+
+	rsp := createCompanyBL(req)
+	if rsp.Status != StatusSuccess {
+		t.Errorf("The company should have been created but it did not!")
+		return
+	}
+
+	user := model.NewUser()
+	user.CompanyID = rsp.CompanyID
+	user.IsThing = false
+	user.Name = "This is the username"
+	user.Secret = "THISISTHESECRETHIDDEN"
+	user.Username = "testuser"
+	user.SetPassword("A#12345678")
+	err := model.InsertUser(user)
+	if err != nil {
+		t.Errorf("There is an error inserting the user ERR:[%s]", err)
+	}
+
+	preq := new(passReq)
+	preq.Username = "testuser"
+	preq.CurrentPassword = "A#12345678"
+	preq.NewPassword = "ABCD#1234"
+	preq.ConfirmPassword = "ABCD#1234"
+	buf, err := json.Marshal(preq)
+	if err != nil {
+		t.Errorf("There was an error marshalling the object:[%s]", err)
+		model.RemoveUserByID(user.ID.Hex())
+		performCompanyCleanup(rsp.CompanyID, t)
+		return
+	}
+
+	r, err := http.NewRequest("POST", "/jwt/password", bytes.NewBuffer(buf))
+	if err != nil {
+		t.Errorf("The request was not created:ERR[%s]", err)
+	}
+	ctx := context.WithValue(r.Context(), CtxUser, user)
+	r = r.WithContext(ctx)
+	w := httptest.NewRecorder()
+	h := http.HandlerFunc(UpdatePassword)
+	h.ServeHTTP(w, r)
+
+	if code := w.Code; code != http.StatusOK {
+		log.Printf("There is an error in code:[%d]", code)
+	}
+
+	prsp := new(passResp)
+	decoder := json.NewDecoder(w.Body)
+	err = decoder.Decode(prsp)
+	if err != nil {
+		t.Errorf("The decoder failed to parse the JSON object:[%s]", err)
+	}
+
+	if prsp.Status != StatusSuccess {
+		t.Errorf("The password update failed")
+	}
+
+	userTemp, err := model.FindUserByID(user.ID.Hex())
+	if err != nil {
+		t.Errorf("An error has occurred finding the user with ID:[%s] ERR:[%s]", userTemp.ID.Hex(), err)
+	}
+
+	if !userTemp.IsPasswordMatch(preq.NewPassword) {
+		t.Errorf("The password is not matching!")
+	}
+
+	model.RemoveUserByID(user.ID.Hex())
 	performCompanyCleanup(rsp.CompanyID, t)
 }
