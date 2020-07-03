@@ -87,6 +87,9 @@ class DistAuthDrawer extends StatelessWidget {
           ListTile(
             title: Text(getText("change-password", this._language)),
             onTap: () {
+              //If we come through the menu, we will change
+              //the current user not the editting user.
+              UserProvider().edittingUser = null;
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

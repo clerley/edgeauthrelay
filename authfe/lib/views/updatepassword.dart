@@ -72,10 +72,22 @@ class _UpdatePasswordViewBodyState extends State<_UpdatePasswordViewBody> {
   TextEditingController _currentPassword = TextEditingController();
   TextEditingController _newPassword = TextEditingController();
   TextEditingController _confirmPassword = TextEditingController();
+  String _username;
 
   String _language;
 
   _UpdatePasswordViewBodyState(this._language);
+
+  @override
+  void initState() {
+    UserProvider usersProvider = new UserProvider();
+    if (usersProvider.edittingUser != null) {
+      this._username = '(${usersProvider.edittingUser.username})';
+    } else {
+      this._username = "";
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +103,22 @@ class _UpdatePasswordViewBodyState extends State<_UpdatePasswordViewBody> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                child: Text(
-                  getText("change-password", this._language),
-                  style: Theme.of(context).primaryTextTheme.bodyText1,
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                    child: Text(
+                      getText("change-password", this._language),
+                      style: Theme.of(context).primaryTextTheme.bodyText1,
+                    ),
+                  ),
+                  Container(
+                      padding: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 10.0),
+                      child: Text(
+                        _username,
+                        style: Theme.of(context).primaryTextTheme.bodyText1,
+                      )),
+                ],
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
@@ -188,7 +210,11 @@ class _UpdatePasswordViewBodyState extends State<_UpdatePasswordViewBody> {
     //Get the provider....
     UserProvider userProvider = UserProvider();
     try {
-      req.username = userProvider.login.user.username;
+      if (userProvider.edittingUser == null) {
+        req.username = userProvider.login.user.username;
+      } else {
+        req.username = userProvider.edittingUser.username;
+      }
       var resp = await userProvider.updatePassword(req);
       if (!resp) {
         debugPrint('The password has not changed, please try again');

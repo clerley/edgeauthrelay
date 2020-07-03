@@ -25,6 +25,7 @@ import 'package:authfe/model/permissionmodel.dart';
 import 'package:authfe/model/rolesmodel.dart';
 import 'package:authfe/model/usermodel.dart';
 import 'package:authfe/views/mainmenu.dart';
+import 'package:authfe/views/updatepassword.dart';
 import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -195,11 +196,31 @@ class _UserBodyState extends State<_UserBody> {
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                 child: Text(getText("username", this._language)),
               ),
-              Container(
-                child: TextField(
-                  style: Theme.of(context).primaryTextTheme.bodyText2,
-                  controller: _username,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      child: TextField(
+                        style: Theme.of(context).primaryTextTheme.bodyText2,
+                        controller: _username,
+                      ),
+                    ),
+                  ),
+                  OutlineButton(
+                    textColor: Colors.white,
+                    child: Stack(
+                      children: <Widget>[
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.security)),
+                      ],
+                    ),
+                    onPressed: () {
+                      _changeOtherUserPassword();
+                    },
+                    shape: CircleBorder(),
+                  ),
+                ],
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
@@ -386,6 +407,24 @@ class _UserBodyState extends State<_UserBody> {
             ]),
       ),
     );
+  }
+
+  _changeOtherUserPassword() {
+    if (this._user.isInsertable) {
+      debugPrint('The user is insertable, the password cannot be changed!');
+      return;
+    }
+
+    UserProvider provider = UserProvider();
+    if (provider.edittingUser == null) {
+      provider.edittingUser = this._user;
+    }
+
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UpdatePasswordView(this._language),
+        ));
   }
 
   _clearFieldsForNewAddition() {

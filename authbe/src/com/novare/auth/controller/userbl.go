@@ -262,22 +262,26 @@ func updatePasswordBL(user *model.User, pass *passReq) *passResp {
 		return rsp
 	}
 
-	//Check if the password match
-	if !user.IsPasswordMatch(pass.CurrentPassword) {
-		log.Printf("The user did not enter a valid password!")
+	changeUser, err := model.FindUserByUsernameCompanyID(pass.Username, user.CompanyID)
+	if err != nil {
+		log.Printf("There is an error retrieving the user: %s", pass.Username)
 		return rsp
+	}
+
+	if user.Username != "superuser" || pass.Username == "superuser" {
+		//Check if the password match
+		if !changeUser.IsPasswordMatch(pass.CurrentPassword) {
+			log.Printf("The user did not enter a valid password!")
+			return rsp
+		}
+	} else {
+		log.Printf("The user is the superuser and the current password will not be verified")
 	}
 
 	//Check if the password entered and confirmed are the same
 	if pass.NewPassword != pass.ConfirmPassword {
 		log.Printf("The password entered and the confirmation password do not match")
 		return rsp
-	}
-
-	//Find hte user using hte Username and Company ID
-	changeUser, err := model.FindUserByUsernameCompanyID(pass.Username, user.CompanyID)
-	if err != nil {
-		log.Printf("It seems like the user was not found!")
 	}
 
 	//If it passed all the checks
