@@ -97,6 +97,17 @@ type Company struct {
 	GroupOwnerID    string          `json:"groupOwnerID"`    //Group Owner ID
 	MemberOfGroups  []string        `json:"memberOfGroups"`  //Groups this Company Belongs to
 	Settings        CompanySettings `json:"settings"`        //Settings
+	registered      bool
+}
+
+//SetClientRegistered ...
+func (company *Company) SetClientRegistered(registered bool) {
+	company.registered = registered
+}
+
+//IsClientRegistered ...
+func (company *Company) IsClientRegistered() bool {
+	return company.registered
 }
 
 /*

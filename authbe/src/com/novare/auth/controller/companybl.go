@@ -308,21 +308,35 @@ func remoteCompanyInsertBL(apiKey string, groupOwnerID string, req createCompany
 		return &rsp
 	}
 
-	if groupOwner.APIKey != apiKey {
+	ownedCompany, err := model.FindCompanyByUniqueID(req.UniqueID)
+	if err != nil {
+		log.Printf("The company owned by GROUPOWNER: %s and UniqueID %s does not exist", groupOwnerID, req.UniqueID)
+		return &rsp
+	}
+
+	if ownedCompany.GroupOwnerID != groupOwner.ID.Hex() {
+		log.Printf("The group owner ID is not valid, aborting it now!")
+		return &rsp
+	}
+
+	if ownedCompany.APIKey != apiKey {
 		log.Printf("The APIKey and the group owner API Key do not match")
 		return &rsp
 	}
 
-	if isCompanyUniqueIDTaken(req.UniqueID) {
-		log.Printf("The UniqueID specified is already taken")
+	if ownedCompany.IsClientRegistered() {
+		log.Printf("The client has already been registered!")
 		return &rsp
 	}
 
-	req.GroupOwnerID = groupOwnerID
-	req.APIKey = apiKey
-	rspPtr := createCompanyBL(req)
+	ownedCompany.SetClientRegistered(true)
+	err = model.SaveCompany(ownedCompany)
 
-	return rspPtr
+	var r createCompanyResp
+	r.Status = StatusSuccess
+	r.CompanyID = ownedCompany.ID.Hex()
+
+	return &r
 }
 
 func getCompaniesForGroupID(groupIDOwner string, user *model.User) *respCompanyByGroupOwner {

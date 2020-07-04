@@ -111,6 +111,7 @@ class _CompanyState extends State<CompanyBody> {
   TextEditingController _address1Tec;
   TextEditingController _passwordTec;
   TextEditingController _confirmPasswordTec;
+  TextEditingController _groupOwnerText;
 
   _CompanyState(this._language) {
     this._company = getText("company", _language);
@@ -139,6 +140,7 @@ class _CompanyState extends State<CompanyBody> {
     _address1Tec = TextEditingController();
     _passwordTec = TextEditingController();
     _confirmPasswordTec = TextEditingController();
+    _groupOwnerText = TextEditingController();
 
     //Here we will check if we are editting the company
     var companyProvider = CompanyProvider();
@@ -195,6 +197,7 @@ class _CompanyState extends State<CompanyBody> {
     _jwtDurationTec.text = company.jwtDuration.toString();
     _passExpTec.text = company.passwordExpiration.toString();
     _address1Tec.text = company.address2;
+    _groupOwnerText.text = company.groupOwnerID;
 
     _isLocation = company.isLocation;
     _remoteAuth = company.remotelyManaged;
@@ -469,6 +472,31 @@ class _CompanyState extends State<CompanyBody> {
                   obscureText: true,
                 ),
               ],
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              padding: EdgeInsets.all(10.0),
+              width: 900.0,
+              decoration: BoxDecoration(
+                color: Theme.of(context).backgroundColor,
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                border: Border.all(color: Theme.of(context).accentColor),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                    child: Text(
+                      getText('group-owner-id', this._language),
+                    ),
+                  ),
+                  Container(
+                    child: TextField(
+                      controller: _groupOwnerText,
+                    ),
+                  ),
+                ],
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

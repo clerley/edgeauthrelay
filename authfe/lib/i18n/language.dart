@@ -99,7 +99,9 @@ Map<String, Map<String, String>> languages = {
     "change-password": "Change Password",
     "new-password": "New password",
     "password-changed": "The password was successfully changed",
-    "pwd-update-failed": "The password update failed"
+    "pwd-update-failed": "The password update failed",
+    "group-owner-id": "Group owner ID",
+    "group-apikey": "Group API Key",
   },
   LANG_SPANISH: {
     "hello": "Hola!",
@@ -172,7 +174,9 @@ Map<String, Map<String, String>> languages = {
     "change-password": "Change Password",
     "new-password": "New password",
     "password-changed": "The password was successfully changed",
-    "pwd-update-failed": "The password update failed"
+    "pwd-update-failed": "The password update failed",
+    "group-owner-id": "Group owner ID",
+    "group-apikey": "Group API Key",
   }
 };
 
