@@ -331,6 +331,10 @@ func remoteCompanyInsertBL(apiKey string, groupOwnerID string, req createCompany
 
 	ownedCompany.SetClientRegistered(true)
 	err = model.SaveCompany(ownedCompany)
+	if err != nil {
+		log.Printf("An error occurred while attempting to save the owned company")
+		return &rsp
+	}
 
 	var r createCompanyResp
 	r.Status = StatusSuccess
