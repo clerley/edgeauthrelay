@@ -88,7 +88,7 @@ func main() {
 	//-------------------------------------------------------------------------
 	mux.Handle("/jwt/company/{uniqueid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.UpdateCompany), "UPDATE_COMPANY")).Methods("POST")
 	mux.Handle("/companies/{grouponwerid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.GetCompanyByGroupOwnerID), "LIST_GROUP")).Methods("GET")
-
+	mux.Handle("/company/registration/{companyid}", controller.CheckAuthorizedMW(http.HandlerFunc(controller.EnableRegistration), "ENABLE_REGISTATION")).Methods("GET")
 	//-------------------------------------------------------------------------
 	//Server Sent Events
 	//-------------------------------------------------------------------------

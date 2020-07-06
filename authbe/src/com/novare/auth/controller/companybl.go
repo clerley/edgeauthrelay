@@ -314,18 +314,28 @@ func remoteCompanyInsertBL(apiKey string, groupOwnerID string, req createCompany
 		return &rsp
 	}
 
+	//Does the company belong to the group owner.
 	if ownedCompany.GroupOwnerID != groupOwner.ID.Hex() {
 		log.Printf("The group owner ID is not valid, aborting it now!")
 		return &rsp
 	}
 
+	//The APIKey must match
 	if ownedCompany.APIKey != apiKey {
 		log.Printf("The APIKey and the group owner API Key do not match")
 		return &rsp
 	}
 
+	//The client must not be registered
 	if ownedCompany.IsClientRegistered() {
 		log.Printf("The client has already been registered!")
+		return &rsp
+	}
+
+	//The registration code must match
+	regisCode, err := strconv.ParseInt(req.RegisCode, 10, 32)
+	if ownedCompany.GetRegistrationCode() != int(regisCode) {
+		log.Printf("The registration code stored and the registration code provided don't match!")
 		return &rsp
 	}
 
@@ -379,5 +389,35 @@ func getCompaniesForGroupID(groupIDOwner string, user *model.User) *respCompanyB
 	}
 
 	rsp.Status = StatusSuccess
+	return rsp
+}
+
+func enableRegistrationBL(user *model.User, companyID string) *regResp {
+	rsp := new(regResp)
+	rsp.Status = StatusFailure
+
+	//Find the company
+	company, err := model.FindCompanyByID(companyID)
+	if err != nil {
+		log.Printf("The company with ID: %s was not found!", companyID)
+		return rsp
+	}
+
+	//Both worked!
+	if company.GroupOwnerID != user.CompanyID {
+		log.Printf("The group owner and the user's company ID don't match")
+		return rsp
+	}
+
+	company.SetClientRegistered(false)
+	err = model.SaveCompany(company)
+	if err != nil {
+		log.Printf("The company:[%s] could not be saved, the following error occurred:[%s]", companyID, err)
+		return rsp
+	}
+
+	rsp.Status = StatusSuccess
+	rsp.RegisCode = fmt.Sprintf("%06d", company.GetRegistrationCode())
+
 	return rsp
 }

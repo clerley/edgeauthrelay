@@ -51,9 +51,10 @@ type createCompanyReq struct {
 	ConfirmPassword string                `json:"confirmPassword"`           //Confirm the password when creating the account
 	UniqueID        string                `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
 	APIKey          string                `json:"apiKey"`                    //APIKey
-	GroupOwnerID    string                `json:"groupOwnerID"`              //Group Owner ID
-	MemberOfGroups  []string              `json:"memberOfGroups"`            //Groups this Company Belongs to
+	GroupOwnerID    string                `json:"groupOwnerID,omitempty"`    //Group Owner ID
+	MemberOfGroups  []string              `json:"memberOfGroups,omitempty"`  //Groups this Company Belongs to
 	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
+	RegisCode       string                `json:"regisCode,omitempty"`       //The registration code only required for remote account creation request
 }
 
 //And to create the response
@@ -130,6 +131,30 @@ func UpdateCompany(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rsp := updateCompanyBL(&req)
+
+	writeResponse(rsp, w)
+
+}
+
+type regResp struct {
+	Status    string `json:"status"`
+	RegisCode string `json:"regisCode"`
+}
+
+//EnableRegistration ...
+func EnableRegistration(w http.ResponseWriter, r *http.Request) {
+
+	user := r.Context().Value(CtxUser).(*model.User)
+	vars := mux.Vars(r)
+	companyID, ok := vars["companyid"]
+
+	if !ok {
+		log.Printf("There is no companyid in the path")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	rsp := enableRegistrationBL(user, companyID)
 
 	writeResponse(rsp, w)
 

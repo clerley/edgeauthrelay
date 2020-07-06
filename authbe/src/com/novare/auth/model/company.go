@@ -28,6 +28,7 @@ import (
 	"com/novare/dbs"
 	"errors"
 	"log"
+	"math/rand"
 	"time"
 	"unicode/utf8"
 
@@ -97,17 +98,30 @@ type Company struct {
 	GroupOwnerID    string          `json:"groupOwnerID"`    //Group Owner ID
 	MemberOfGroups  []string        `json:"memberOfGroups"`  //Groups this Company Belongs to
 	Settings        CompanySettings `json:"settings"`        //Settings
-	registered      bool
+	Registered      bool            `json:"registered"`      // We need to save this information to the database
+	RegisCode       int             `json:"regisCode"`       //Registration code is
 }
 
 //SetClientRegistered ...
 func (company *Company) SetClientRegistered(registered bool) {
-	company.registered = registered
+	company.Registered = registered
+	if !registered {
+		//We want it to be 6 digits
+		company.RegisCode = rand.Int() % 9999999
+		if company.RegisCode < 100000 {
+			company.RegisCode += 100000
+		}
+	}
+}
+
+//GetRegistrationCode ...
+func (company *Company) GetRegistrationCode() int {
+	return company.RegisCode
 }
 
 //IsClientRegistered ...
 func (company *Company) IsClientRegistered() bool {
-	return company.registered
+	return company.Registered
 }
 
 /*
