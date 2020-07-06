@@ -26,6 +26,7 @@ SOFTWARE.
 
 import (
 	"com/novare/auth/model"
+	"com/novare/auth/sse"
 	"errors"
 	"log"
 	"strings"
@@ -127,6 +128,8 @@ func insertUserBL(companyID string, req *usrObj) *usrResp {
 	rsp.UserObj.Password = ""
 	rsp.UserObj.ConfirmPassword = ""
 
+	publishEvent(sse.EventUserUpdate, "Insert")
+
 	return &rsp
 }
 
@@ -161,6 +164,8 @@ func updateUserBL(username string, companyID string, req *usrObj) *usrResp {
 	rsp.UserObj.Password = ""
 	rsp.UserObj.ConfirmPassword = ""
 
+	publishEvent(sse.EventUserUpdate, "Update")
+
 	return &rsp
 }
 
@@ -186,6 +191,8 @@ func removeUserBL(username string, companyID string) *usrResp {
 	}
 
 	rsp.Status = StatusSuccess
+
+	publishEvent(sse.EventUserUpdate, "Remove")
 
 	return &rsp
 }
@@ -299,5 +306,8 @@ func updatePasswordBL(user *model.User, pass *passReq) *passResp {
 	}
 
 	rsp.Status = StatusSuccess
+
+	publishEvent(sse.EventUserUpdate, "Update")
+
 	return rsp
 }

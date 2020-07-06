@@ -27,6 +27,7 @@ package controller
 import (
 	"bytes"
 	"com/novare/auth/model"
+	"com/novare/auth/sse"
 	"com/novare/utils"
 	"encoding/json"
 	"errors"
@@ -190,6 +191,9 @@ func createCompanyBL(req createCompanyReq) *createCompanyResp {
 
 	r.CompanyID = company.ID.Hex()
 	r.Status = StatusSuccess
+
+	publishEvent(sse.EventCompanyUpdate, "Insert")
+
 	return &r
 }
 
@@ -219,6 +223,8 @@ func getCompanyByUniqueIDOL(uniqueID string) *getCompanyResponse {
 
 	//Set the status
 	rsp.Status = StatusSuccess
+
+	publishEvent(sse.EventCompanyUpdate, "Update")
 
 	return &rsp
 }
@@ -294,6 +300,8 @@ func updateCompanyBL(req *updateCompanyReq) *updateCompanyResponse {
 
 	rsp.Status = StatusSuccess
 	rsp.UpdateCompanyReq = *req
+
+	publishEvent(sse.EventCompanyUpdate, "Update")
 
 	return &rsp
 }

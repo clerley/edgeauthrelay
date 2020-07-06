@@ -25,6 +25,7 @@ package main
 
 import (
 	"com/novare/auth/controller"
+	"com/novare/auth/sse"
 	"log"
 	"net/http"
 
@@ -36,6 +37,9 @@ import (
 This may become a microservice
 */
 func main() {
+	log.Printf("Initializing the MessageBroker. Server Sent Events Publish/Subscribe")
+	sse.MessageBroker.Run()
+
 	log.Printf("Initiating the Authorization Service")
 
 	mux := mux.NewRouter().StrictSlash(true)

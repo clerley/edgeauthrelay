@@ -68,6 +68,12 @@ func NewSubscriber(ID string) *Subscriber {
 func (subscriber *Subscriber) IsListeningForEvent(event Event) bool {
 
 	for i := range subscriber.EventIDs {
+
+		if subscriber.EventIDs[i] == EventAll {
+			log.Printf("the subscriber with ID:[%s] is subscribed to all events", subscriber.ID)
+			return true
+		}
+
 		if subscriber.EventIDs[i] == event.EventID {
 			return true
 		}

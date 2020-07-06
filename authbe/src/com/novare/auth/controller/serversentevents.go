@@ -30,6 +30,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 type eventsReq struct {
@@ -95,4 +96,11 @@ func ServerSentEvents(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+}
+
+//We need to specialize this a little better but, just for
+//a proof of concept, it should work.
+func publishEvent(eventID string, additionalData interface{}) {
+	event := sse.NewEvent(eventID, time.Now(), additionalData)
+	sse.MessageBroker.Publish(event)
 }

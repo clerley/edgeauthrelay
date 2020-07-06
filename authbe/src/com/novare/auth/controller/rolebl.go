@@ -26,6 +26,7 @@ package controller
 
 import (
 	"com/novare/auth/model"
+	"com/novare/auth/sse"
 	"log"
 )
 
@@ -48,6 +49,8 @@ func insertRoleBL(companyID string, req *roleObj) *roleResp {
 	rsp.Role.ID = role.ID.Hex()
 	rsp.Role.Description = role.Description
 	rsp.Role.Permissions = role.Permissions
+
+	publishEvent(sse.EventRoleUpdate, "Insert")
 
 	return &rsp
 }
@@ -81,6 +84,8 @@ func updateRoleBL(roleID string, companyID string, req *roleObj) *roleResp {
 	rsp.Role.Description = role.Description
 	rsp.Role.Permissions = role.Permissions
 
+	publishEvent(sse.EventRoleUpdate, "Update")
+
 	return &rsp
 }
 
@@ -106,6 +111,8 @@ func removeRoleBL(roleID string, companyID string) *roleResp {
 	}
 
 	rsp.Status = StatusSuccess
+
+	publishEvent(sse.EventRoleUpdate, "Update")
 
 	return &rsp
 }

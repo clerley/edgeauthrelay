@@ -2,6 +2,7 @@ package controller
 
 import (
 	"com/novare/auth/model"
+	"com/novare/auth/sse"
 	"log"
 )
 
@@ -47,6 +48,8 @@ func insertPermissionBL(companyID string, req *permObj) *permResp {
 	rsp.Status = StatusSuccess
 	rsp.ID = perm.ID.Hex()
 
+	publishEvent(sse.EventPermissionUpdate, "Insert")
+
 	return &rsp
 }
 
@@ -77,6 +80,8 @@ func updatePermissionBL(permID string, companyID string, req *permObj) *permResp
 	rsp.Status = StatusSuccess
 	rsp.ID = perm.ID.Hex()
 
+	publishEvent(sse.EventPermissionUpdate, "Update")
+
 	return &rsp
 }
 
@@ -103,6 +108,8 @@ func removePermissionBL(permID string, companyID string) *permResp {
 
 	rsp.Status = StatusSuccess
 	rsp.ID = perm.ID.Hex()
+
+	publishEvent(sse.EventPermissionUpdate, "Update")
 
 	return &rsp
 }
