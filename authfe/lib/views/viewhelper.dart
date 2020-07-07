@@ -89,74 +89,111 @@ class DialogHelper {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text(
-            getText("company", language),
-            style: TextStyle(color: Colors.red),
+          title: Center(
+            child: new Text(
+              getText("company", language),
+              style: TextStyle(color: Colors.red),
+            ),
           ),
-          content: Column(
-            children: [
-              Row(
-                children: [
-                  new Text(
-                    getText('uniqueID', language),
-                    style: TextStyle(color: Colors.red),
+          content: Container(
+            height: 300,
+            width: 400,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 5.0, 8.0, 2.5),
+                  child: Row(
+                    children: [
+                      new Text(
+                        getText('uniqueID', language),
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(company.companyID),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    getText('name', language),
-                    style: TextStyle(color: Colors.red),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 2.5, 8.0, 2.5),
+                  child: Row(
+                    children: [
+                      Text(company.companyID),
+                      Text(' - '),
+                      Text(company.uniqueID),
+                    ],
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(company.name),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    getText('address', language),
-                    style: TextStyle(color: Colors.red),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 5.0, 8.0, 2.5),
+                  child: Row(
+                    children: [
+                      Text(
+                        getText('name', language),
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(company.address1),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(company.address2),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(company.city),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(company.state),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(company.zip),
-                ],
-              ),
-            ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 2.5, 8.0, 2.5),
+                  child: Row(
+                    children: [
+                      Text(company.name),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 5.0, 8.0, 2.5),
+                  child: Row(
+                    children: [
+                      Text(
+                        getText('address', language),
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 2.5, 8.0, 2.5),
+                  child: Row(
+                    children: [
+                      Text(company.getFullAddress()),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 2.5),
+                  child: Row(
+                    children: [
+                      Text(company.regisCode, style: TextStyle(fontSize: 22)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: <Widget>[
+            OutlineButton(
+                textColor: Colors.white,
+                child: Icon(Icons.lock_open),
+                onPressed: () {
+                  (Company company) async {
+                    var hd = createProgressDialog(
+                        getText('please-wait', language), context);
+                    await hd.show();
+                    CompanyProvider companyProvider = CompanyProvider();
+                    CompanyRegistrationResponse regResp =
+                        await companyProvider.enableRegistration(company);
+                    await hd.hide();
+                    if (regResp.status == "Success") {
+                      company.regisCode = regResp.regisCode;
+                      debugPrint(
+                          'The value of the registration code is:[${company.regisCode}]');
+                      Navigator.of(context).pop();
+                    }
+                  }(company);
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                )),
             OutlineButton(
                 textColor: Colors.white,
                 child: Text(

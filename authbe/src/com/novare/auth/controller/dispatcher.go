@@ -175,6 +175,8 @@ type getCompanyResponse struct {
 	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
 	APIKey          string                `json:"apiKey"`                    //APIKey
 	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
+	RegisCode       string                `json:"regisCode"`                 //The code used for a site to register
+	GroupOwnerID    string                `json:"groupOwnerID"`
 }
 
 //GetCompanyByUniqueID - The company uniquer ID is specified in the request
@@ -739,7 +741,7 @@ type companyInfo struct {
 	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
 	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
 	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
-
+	RegisCode       string                `json:"regisCode"`                 //Registration code
 }
 
 type respCompanyByGroupOwner struct {

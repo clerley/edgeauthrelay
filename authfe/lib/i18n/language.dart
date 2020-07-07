@@ -102,6 +102,8 @@ Map<String, Map<String, String>> languages = {
     "pwd-update-failed": "The password update failed",
     "group-owner-id": "Group owner ID",
     "group-apikey": "Group API Key",
+    "regis-code": "Registration Code",
+    "apikey": "API Key",
   },
   LANG_SPANISH: {
     "hello": "Hola!",
@@ -177,6 +179,8 @@ Map<String, Map<String, String>> languages = {
     "pwd-update-failed": "The password update failed",
     "group-owner-id": "Group owner ID",
     "group-apikey": "Group API Key",
+    "regis-code": "Registration Code",
+    "apikey": "API Key",
   }
 };
 

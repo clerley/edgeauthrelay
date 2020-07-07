@@ -32,17 +32,14 @@ import '../i18n/language.dart';
 import 'mainmenu.dart';
 
 class LoginWidget extends StatefulWidget {
-
   @override
   _LoginState createState() => _LoginState(LANG_ENGLISH);
-
 }
 
 class _LoginState extends State<LoginWidget> {
-
   String _language = LANG_ENGLISH;
   String _userNameText;
-  String _passwordText; 
+  String _passwordText;
   String _appName;
   String _loginText;
   String _uniqueCompanyID;
@@ -62,120 +59,132 @@ class _LoginState extends State<LoginWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var pr = DialogHelper().createProgressDialog(getText("please_wait", this._language), context);
+    var pr = DialogHelper()
+        .createProgressDialog(getText("please_wait", this._language), context);
     var userProvider = Provider.of<UserProvider>(context);
-    return 
-      Center(
+    return Center(
         child: Container(
-          margin: EdgeInsets.all(16.0),
-          padding:EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).backgroundColor,
-            borderRadius: BorderRadius.all(Radius.circular(10.0))
-            ),
-          width: 400.0,
-          height: 505.0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                child: Text(this._appName,
-                        style: TextStyle(fontSize: 26, color: Colors.white)),
-              ),
-              Container(
-                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                child: Text(this._uniqueCompanyID, style: Theme.of(context).primaryTextTheme.bodyText1),
-              ),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,
-                                controller: _uniqueIDController),
-              ),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                child: Text(this._userNameText,
-                  style: Theme.of(context).primaryTextTheme.bodyText1),
-              ),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                child: TextField(style: Theme.of(context).primaryTextTheme.bodyText2,
-                                controller: _usernameController),
-              ),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                child: Text(this._passwordText,
-                  style: Theme.of(context).primaryTextTheme.bodyText1),
-              ),
-
-              TextField(
-                obscureText: true,
-                  style: Theme.of(context).primaryTextTheme.bodyText2,
-                  controller: _passwordController,
-              ),
-
-              Divider(
-                color: Colors.white,
-                thickness: 1.0,
-              ),
-
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(this._loginText, style: Theme.of(context).primaryTextTheme.button,),
-                          onPressed: () async { 
-                            pr.show();
-                            debugPrint("Starting the onPressed request now");
-                            var login = await userProvider.requestLogin(_uniqueIDController.text, 
-                            _usernameController.text, _passwordController.text);
-                            if(pr.isShowing()) {
-                              pr.hide();
-                            }
-                            if (login.isLoggedIn()) {
-                              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MainMenu(this._language)),);
-                            } else {
-                              debugPrint("The user is not logged in now! ${_uniqueIDController.text}");
-                              DialogHelper pdh = DialogHelper();
-                              pdh.showMessageDialog(getText("user_not_logged", this._language), context, this._language);
-                            }
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),)
-                        ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                        textColor: Colors.white,
-                        onPressed: () {
-                          CompanyProvider cp = CompanyProvider();
-                          cp.editCompanyResponse = null;
-                          Navigator.push(context,MaterialPageRoute(builder: (context) => CompanyWidget(this._language)),);
-                        },
-                        child: Text(this._newCompany, style: Theme.of(context).primaryTextTheme.button,),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      )
-                    ),
-                  ],
-                ),
-              ),
-            ],
-
+      margin: EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+          color: Theme.of(context).backgroundColor,
+          borderRadius: BorderRadius.all(Radius.circular(10.0))),
+      width: 400.0,
+      height: 505.0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            child: Text(this._appName,
+                style: TextStyle(fontSize: 26, color: Colors.white)),
           ),
-        )
-      );
+          Container(
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            child: Text(this._uniqueCompanyID,
+                style: Theme.of(context).primaryTextTheme.bodyText1),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+            child: TextField(
+                style: Theme.of(context).primaryTextTheme.bodyText2,
+                controller: _uniqueIDController),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            child: Text(this._userNameText,
+                style: Theme.of(context).primaryTextTheme.bodyText1),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
+            child: TextField(
+                style: Theme.of(context).primaryTextTheme.bodyText2,
+                controller: _usernameController),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
+            child: Text(this._passwordText,
+                style: Theme.of(context).primaryTextTheme.bodyText1),
+          ),
+          TextField(
+            obscureText: true,
+            style: Theme.of(context).primaryTextTheme.bodyText2,
+            controller: _passwordController,
+          ),
+          Divider(
+            color: Colors.white,
+            thickness: 1.0,
+          ),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: OutlineButton(
+                      textColor: Colors.white,
+                      child: Text(
+                        this._loginText,
+                        style: Theme.of(context).primaryTextTheme.button,
+                      ),
+                      onPressed: () async {
+                        await pr.show();
+                        debugPrint("Starting the onPressed request now");
+                        var login = await userProvider.requestLogin(
+                            _uniqueIDController.text,
+                            _usernameController.text,
+                            _passwordController.text);
+                        if (pr.isShowing()) {
+                          await pr.hide();
+                        }
+                        if (login.isLoggedIn()) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainMenu(this._language)),
+                          );
+                        } else {
+                          debugPrint(
+                              "The user is not logged in now! ${_uniqueIDController.text}");
+                          DialogHelper pdh = DialogHelper();
+                          pdh.showMessageDialog(
+                              getText("user_not_logged", this._language),
+                              context,
+                              this._language);
+                        }
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      )),
+                ),
+                Container(
+                    padding: EdgeInsets.all(5.0),
+                    child: OutlineButton(
+                      textColor: Colors.white,
+                      onPressed: () {
+                        CompanyProvider cp = CompanyProvider();
+                        cp.editCompanyResponse = null;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CompanyWidget(this._language)),
+                        );
+                      },
+                      child: Text(
+                        this._newCompany,
+                        style: Theme.of(context).primaryTextTheme.button,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    )),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ));
   }
-
 }

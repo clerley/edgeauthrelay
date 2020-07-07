@@ -30,6 +30,8 @@ import 'package:authfe/views/companyview.dart';
 import 'package:authfe/views/viewhelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
 import '../i18n/language.dart';
 
 class CompanyWidget extends StatefulWidget {
@@ -96,7 +98,8 @@ class _CompanyState extends State<CompanyBody> {
   bool _remoteAuth;
   bool _isLocation;
   String _unit;
-  List<DropdownMenuItem<String>> _unitsMenuItems;
+  List<DropdownMenuItem<String>> _unitsMenuItems =
+      List<DropdownMenuItem<String>>();
   Company company;
 
   TextEditingController _uniqueIDTec;
@@ -112,6 +115,8 @@ class _CompanyState extends State<CompanyBody> {
   TextEditingController _passwordTec;
   TextEditingController _confirmPasswordTec;
   TextEditingController _groupOwnerText;
+  TextEditingController _regisCodeText;
+  TextEditingController _apiKeyText;
 
   _CompanyState(this._language) {
     this._company = getText("company", _language);
@@ -125,7 +130,6 @@ class _CompanyState extends State<CompanyBody> {
     this._remoteAuth = false;
     this._isLocation = false;
     this._unit = "Minute";
-    this._unitsMenuItems = _getUnitMenuItems();
 
     company = Company();
     _uniqueIDTec = TextEditingController();
@@ -141,6 +145,8 @@ class _CompanyState extends State<CompanyBody> {
     _passwordTec = TextEditingController();
     _confirmPasswordTec = TextEditingController();
     _groupOwnerText = TextEditingController();
+    _regisCodeText = TextEditingController();
+    _apiKeyText = TextEditingController();
 
     //Here we will check if we are editting the company
     var companyProvider = CompanyProvider();
@@ -171,12 +177,15 @@ class _CompanyState extends State<CompanyBody> {
 
     item = new DropdownMenuItem<String>(child: Text("Minute"), value: "Minute");
     lst.add(item);
+
+    debugPrint("The number of elements: ${lst.length}");
     return lst;
   }
 
   @override
   void initState() {
-    super.initState();
+    this._unitsMenuItems = _getUnitMenuItems();
+
     if (company == null) {
       log("The company object is null, creating a new company now!");
       if (companyProvider.editCompanyResponse != null &&
@@ -198,11 +207,19 @@ class _CompanyState extends State<CompanyBody> {
     _passExpTec.text = company.passwordExpiration.toString();
     _address1Tec.text = company.address2;
     _groupOwnerText.text = company.groupOwnerID;
+    _regisCodeText.text = company.regisCode;
+    _apiKeyText.text = company.apiKey;
 
     _isLocation = company.isLocation;
     _remoteAuth = company.remotelyManaged;
+    _apiKeyText.text = company.apiKey;
 
     _unit = company.passwordUnit;
+    if (_unit == null || _unit.isEmpty) {
+      _unit = "Month";
+    }
+
+    super.initState();
   }
 
   CompanyProvider companyProvider;
@@ -369,7 +386,38 @@ class _CompanyState extends State<CompanyBody> {
             ),
             Container(
               child: TextField(
-                  style: Theme.of(context).primaryTextTheme.bodyText2),
+                style: Theme.of(context).primaryTextTheme.bodyText2,
+                controller: _authRelayTec,
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+              child: Text(
+                getText("apikey", this._language),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    child: TextField(
+                      style: Theme.of(context).primaryTextTheme.bodyText2,
+                      controller: _apiKeyText,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: OutlineButton(
+                    textColor: Colors.white,
+                    child: Icon(Icons.autorenew),
+                    onPressed: () {
+                      _generateApiKey();
+                    },
+                    shape: CircleBorder(),
+                  ),
+                ),
+              ],
             ),
             Container(
                 margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
@@ -484,16 +532,51 @@ class _CompanyState extends State<CompanyBody> {
               ),
               child: Column(
                 children: [
-                  Container(
-                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                    child: Text(
-                      getText('group-owner-id', this._language),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                          child: Text(
+                            getText('group-owner-id', this._language),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                          child: Text(
+                            getText('regis-code', this._language),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    child: TextField(
-                      controller: _groupOwnerText,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(2.0, 1.0, 2.0, 1.0),
+                          alignment: Alignment.centerLeft,
+                          child: TextField(
+                            controller: _groupOwnerText,
+                            style: Theme.of(context).primaryTextTheme.bodyText2,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(2.0, 1.0, 2.0, 1.0),
+                          alignment: Alignment.centerLeft,
+                          child: TextField(
+                            controller: _regisCodeText,
+                            style: Theme.of(context).primaryTextTheme.bodyText2,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -519,25 +602,26 @@ class _CompanyState extends State<CompanyBody> {
                 Container(
                   padding: EdgeInsets.all(5.0),
                   child: OutlineButton(
-                      textColor: Colors.white,
-                      child: Text(
-                        getText("cancel", this._language),
-                        style: Theme.of(context).primaryTextTheme.button,
-                      ),
-                      onPressed: () {
-                        if (company.isInsertable()) {
-                          Navigator.pop(context);
-                        } else {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      CompanyViewOnly(this._language)));
-                        }
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      )),
+                    textColor: Colors.white,
+                    child: Text(
+                      getText("cancel", this._language),
+                      style: Theme.of(context).primaryTextTheme.button,
+                    ),
+                    onPressed: () {
+                      if (company.isInsertable() && Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CompanyViewOnly(this._language)));
+                      }
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -561,6 +645,7 @@ class _CompanyState extends State<CompanyBody> {
     company.state = _stateTec.text;
     company.uniqueID = _uniqueIDTec.text;
     company.zip = _zipTec.text;
+    company.apiKey = _apiKeyText.text;
     if (companyProvider.companyID != null &&
         companyProvider.companyID.isNotEmpty) {
       company.groupOwnerID = companyProvider.companyID;
@@ -614,6 +699,14 @@ class _CompanyState extends State<CompanyBody> {
       _address1Tec.text = "";
       _passwordTec.text = "";
       _confirmPasswordTec.text = "";
+      _regisCodeText.text = "";
+      _apiKeyText.text = "";
     });
+  }
+
+  _generateApiKey() {
+    var uuid = Uuid();
+    var v4Crypto = uuid.v4(options: {'rng': UuidUtil.cryptoRNG});
+    _apiKeyText.text = v4Crypto.toString();
   }
 }

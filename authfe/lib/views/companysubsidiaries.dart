@@ -166,6 +166,9 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
                     DataColumn(
                       label: Text(getText("address", this._language)),
                     ),
+                    DataColumn(
+                      label: Text(getText("regis-code", this._language)),
+                    ),
                   ],
                   rows: _rows,
                 ),
@@ -219,12 +222,9 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
     }
 
     _populateDataRow(group.companies);
-
   }
 
   _populateDataRow(List<Company> companies) {
-
-
     List<DataRow> dataRows = [];
     for (var i = 0; i < companies.length; i++) {
       var company = companies[i];
@@ -241,13 +241,17 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
         style: TextStyle(fontSize: 8),
       ));
       dr.cells.add(dc);
+      dc = DataCell(Text(
+        company.regisCode,
+        style: TextStyle(fontSize: 18),
+      ));
+      dr.cells.add(dc);
       dataRows.add(dr);
     }
 
     setState(() {
       this._rows = dataRows;
     });
-
   }
 
   companySelected(Company company) {
@@ -257,15 +261,18 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
 
   _doSearch() {
     List<Company> filteredCompanies = [];
-    
-    if(_cachedResponse == null || _cachedResponse.companies == null || _cachedResponse.companies.isEmpty) {
+
+    if (_cachedResponse == null ||
+        _cachedResponse.companies == null ||
+        _cachedResponse.companies.isEmpty) {
       return;
     }
     String search = _searchText.text;
     search = search.toLowerCase();
 
-    for(var i=0;i<_cachedResponse.companies.length;i++) {
-      if(_cachedResponse.companies[i].name.toLowerCase().indexOf(search) >= 0) {
+    for (var i = 0; i < _cachedResponse.companies.length; i++) {
+      if (_cachedResponse.companies[i].name.toLowerCase().indexOf(search) >=
+          0) {
         filteredCompanies.add(_cachedResponse.companies[i]);
       }
     }

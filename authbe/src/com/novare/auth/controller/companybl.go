@@ -220,6 +220,8 @@ func getCompanyByUniqueIDOL(uniqueID string) *getCompanyResponse {
 	rsp.APIKey = company.APIKey
 	rsp.Settings = company.Settings
 	rsp.CompanyID = company.ID.Hex()
+	rsp.RegisCode = fmt.Sprintf("%06d", company.RegisCode)
+	rsp.GroupOwnerID = company.GroupOwnerID
 
 	//Set the status
 	rsp.Status = StatusSuccess
@@ -393,6 +395,7 @@ func getCompaniesForGroupID(groupIDOwner string, user *model.User) *respCompanyB
 		ci.State = c.State
 		ci.UniqueID = c.UniqueID
 		ci.Zip = c.Zip
+		ci.RegisCode = fmt.Sprintf("%06d", c.RegisCode)
 		rsp.Companies = append(rsp.Companies, ci)
 	}
 

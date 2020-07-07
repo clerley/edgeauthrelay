@@ -35,10 +35,9 @@ class AddCompanyResponse {
   String status;
   String companyID; //DB ID.
 
-  AddCompanyResponse.fromJson(Map<String, dynamic> jsonObj):
-    this.status = jsonObj['status'],
-    this.companyID = jsonObj['companyID'];
-  
+  AddCompanyResponse.fromJson(Map<String, dynamic> jsonObj)
+      : this.status = jsonObj['status'],
+        this.companyID = jsonObj['companyID'];
 }
 
 class CompanyProvider extends ChangeNotifier {
@@ -55,7 +54,7 @@ class CompanyProvider extends ChangeNotifier {
   GetCompanyResponse editCompanyResponse;
 
   Future<bool> addCompany(Company company) async {
-    var result = false; 
+    var result = false;
     try {
       var url = "/jwt/company";
       var globalSettings = GlobalSettings();
@@ -64,9 +63,11 @@ class CompanyProvider extends ChangeNotifier {
       var encodedJson = json.encode(jsonMap);
       Map<String, String> headers = new Map<String, String>();
       headers["Content-Type"] = "application/json";
-      var response = await http.post(fullURL, headers: headers,  body: encodedJson);
+      var response =
+          await http.post(fullURL, headers: headers, body: encodedJson);
       if (response.statusCode == 200) {
-        AddCompanyResponse acr = AddCompanyResponse.fromJson(json.decode(response.body));
+        AddCompanyResponse acr =
+            AddCompanyResponse.fromJson(json.decode(response.body));
         if (acr.status == "Success") {
           result = true;
           company.companyID = acr.companyID;
@@ -77,7 +78,7 @@ class CompanyProvider extends ChangeNotifier {
       } else {
         log("The following error code was returned: [${response.statusCode}]");
       }
-    } catch (e/*, stack*/) {
+    } catch (e /*, stack*/) {
       //print(stack.toString());
       print(e.toString());
     }
@@ -87,27 +88,29 @@ class CompanyProvider extends ChangeNotifier {
 
   Future<UpdateCompanyResponse> updateCompany(Company company) async {
     UpdateCompanyResponse ucr = UpdateCompanyResponse();
-    ucr.status = "Failure"; 
+    ucr.status = "Failure";
     try {
       var url = "/jwt/company/${company.uniqueID}";
       var globalSettings = GlobalSettings();
-       UserProvider userProvider = UserProvider();
+      UserProvider userProvider = UserProvider();
       var fullURL = globalSettings.url + url;
       var jsonMap = company.toJson();
       var encodedJson = json.encode(jsonMap);
       Map<String, String> headers = new Map<String, String>();
       headers["Content-Type"] = "application/json";
       headers["Authorization"] = "bearer ${userProvider.login.sessionToken}";
-      var response = await http.post(fullURL, headers: headers,  body: encodedJson);
+      var response =
+          await http.post(fullURL, headers: headers, body: encodedJson);
       if (response.statusCode == 200) {
-        UpdateCompanyResponse updtCompanyResponse = UpdateCompanyResponse.fromJson(json.decode(response.body));
+        UpdateCompanyResponse updtCompanyResponse =
+            UpdateCompanyResponse.fromJson(json.decode(response.body));
         if (updtCompanyResponse.status == "Success") {
           ucr = updtCompanyResponse;
-        } 
+        }
       } else {
         log("The following error code was returned: [${response.statusCode}]");
       }
-    } catch (e/*, stack*/) {
+    } catch (e /*, stack*/) {
       //print(stack.toString());
       print(e.toString());
     }
@@ -123,34 +126,32 @@ class CompanyProvider extends ChangeNotifier {
       GlobalSettings settings = GlobalSettings();
       UserProvider userProvider = UserProvider();
 
-      if(!userProvider.login.isLoggedIn()) {
+      if (!userProvider.login.isLoggedIn()) {
         return null;
       }
 
       var fullPath = settings.url + "/jwt/company/$uniqueID";
-       var httpHeader = {
+      var httpHeader = {
         "Authorization": "bearer ${userProvider.login.sessionToken}"
       };
 
-      var response = await http.get(fullPath, headers:  httpHeader);
-      if(response.statusCode != 200) {
+      var response = await http.get(fullPath, headers: httpHeader);
+      if (response.statusCode != 200) {
         print("The statusCode was not expected: ${response.statusCode}");
         return companyResponse;
       }
 
       var jsn = json.decode(response.body);
       companyResponse = GetCompanyResponse.fromJson(jsn);
-
     } catch (e, stackTrace) {
       print(stackTrace);
       print(e);
     }
 
-
     return companyResponse;
   }
 
- Future<GetGroupResponse> getGroupForCompanyID(String companyID) async {
+  Future<GetGroupResponse> getGroupForCompanyID(String companyID) async {
     GetGroupResponse groupResponse = GetGroupResponse();
     groupResponse.status = "Failure";
 
@@ -158,33 +159,80 @@ class CompanyProvider extends ChangeNotifier {
       GlobalSettings settings = GlobalSettings();
       UserProvider userProvider = UserProvider();
 
-      if(!userProvider.login.isLoggedIn()) {
+      if (!userProvider.login.isLoggedIn()) {
         return null;
       }
 
       var fullPath = settings.url + "/companies/$companyID";
-       var httpHeader = {
+      var httpHeader = {
         "Authorization": "bearer ${userProvider.login.sessionToken}"
       };
 
-      var response = await http.get(fullPath, headers:  httpHeader);
-      if(response.statusCode != 200) {
+      var response = await http.get(fullPath, headers: httpHeader);
+      if (response.statusCode != 200) {
         print("The statusCode was not expected: ${response.statusCode}");
         return groupResponse;
       }
 
       var jsn = json.decode(response.body);
       groupResponse = GetGroupResponse.fromJson(jsn);
-
     } catch (e, stackTrace) {
       print(stackTrace);
       print(e);
     }
 
-
     return groupResponse;
   }
 
+  Future<CompanyRegistrationResponse> enableRegistration(
+      Company company) async {
+    CompanyRegistrationResponse ucr = CompanyRegistrationResponse();
+    ucr.status = "Failure";
+    try {
+      var url = "/company/registration/${company.companyID}";
+      var globalSettings = GlobalSettings();
+      UserProvider userProvider = UserProvider();
+      var fullURL = globalSettings.url + url;
+      debugPrint('Sending a request to URL:[$fullURL]');
+      Map<String, String> headers = new Map<String, String>();
+      headers["Content-Type"] = "application/json";
+      headers["Authorization"] = "bearer ${userProvider.login.sessionToken}";
+      var response = await http.post(fullURL, headers: headers);
+      if (response.statusCode == 200) {
+        CompanyRegistrationResponse regResp =
+            CompanyRegistrationResponse.fromJson(json.decode(response.body));
+        if (regResp.status == "Success") {
+          ucr = regResp;
+          company.regisCode = ucr.regisCode;
+        }
+      } else {
+        debugPrint(
+            "The following error code was returned: [${response.statusCode}]");
+      }
+    } catch (e /*, stack*/) {
+      //print(stack.toString());
+      print(e.toString());
+    }
+    notifyListeners();
+    return ucr;
+  }
+}
+
+class CompanyRegistrationResponse {
+  String status;
+  String regisCode;
+
+  CompanyRegistrationResponse();
+
+  CompanyRegistrationResponse.fromJson(Map<String, dynamic> jsonObj) {
+    this.status = jsonObj['status'];
+    if (jsonObj['regisCode'] != null) {
+      this.regisCode = jsonObj['regisCode'];
+    } else {
+      debugPrint("The response did not contain a valid registration code");
+      this.status = "Failure";
+    }
+  }
 }
 
 class UpdateCompanyResponse {
@@ -195,7 +243,6 @@ class UpdateCompanyResponse {
   }
 
   UpdateCompanyResponse();
-
 }
 
 class GetCompanyResponse {
@@ -216,7 +263,6 @@ class GetCompanyResponse {
     map['status'] = this.status;
     return map;
   }
-
 }
 
 class GetGroupResponse {
@@ -228,7 +274,7 @@ class GetGroupResponse {
   GetGroupResponse.fromJson(Map<String, dynamic> jsonObj) {
     this.status = jsonObj['status'];
     List<dynamic> allCompanies = jsonObj['companies'];
-    for(var i=0;i<allCompanies.length;i++) {
+    for (var i = 0; i < allCompanies.length; i++) {
       var c = Company.fromJson(allCompanies[i]);
       companies.add(c);
     }
@@ -239,7 +285,9 @@ class PasswordHandler {
   String password;
   String confirmPassword;
 
-  PasswordHandler(): password = "", confirmPassword = "";
+  PasswordHandler()
+      : password = "",
+        confirmPassword = "";
 }
 
 class Company {
@@ -260,6 +308,8 @@ class Company {
   String groupOwnerID = "";
   List<String> memberOfGroups;
   PasswordHandler passwordHandler;
+  String regisCode = "";
+  String apiKey = "";
 
   Company() {
     this.memberOfGroups = List<String>();
@@ -270,30 +320,37 @@ class Company {
   }
 
   Company.fromJson(Map<String, dynamic> jsonObj) {
-       this.uniqueID = jsonObj['uniqueID'];
-        this.companyID = jsonObj['companyID'];
-        this.name = jsonObj['name'];
-        this.address1 = jsonObj['address1'];
-        this.address2 = jsonObj['address2'];
-        this.authRelay = jsonObj['authRelay'];
-        this.city = jsonObj['city'];
-        this.jwtDuration = jsonObj['settings']['jwtDuration'];
-        if(jsonObj['isInLocation'] is bool) {
-          this.isLocation = jsonObj['isInLocation'];
-        } else {
-          this.isLocation = jsonObj['isInLocation'] == "true" ? true : false;
-        }
-        this.passwordExpiration = jsonObj['settings']['passExpiration'];
-        this.passwordUnit = jsonObj['settings']['passUnit'];
-        if(jsonObj['remotelyManaged'] is bool) {
-          this.remotelyManaged = jsonObj['remotelyManaged'];
-        } else {
-          this.remotelyManaged = jsonObj['remotelyManaged'] == "true" ? true : false;
-        }
-        this.groupOwnerID = jsonObj['groupOwnerID'];
-        this.memberOfGroups = jsonObj['memberOfGroups'];
-        this.state = jsonObj['state'];
-        this.zip = jsonObj['zip'];
+    this.uniqueID = jsonObj['uniqueID'];
+    this.companyID = jsonObj['companyID'];
+    this.name = jsonObj['name'];
+    this.address1 = jsonObj['address1'];
+    this.address2 = jsonObj['address2'];
+    this.authRelay = jsonObj['authRelay'];
+    this.city = jsonObj['city'];
+    this.jwtDuration = jsonObj['settings']['jwtDuration'];
+    if (jsonObj['isInLocation'] is bool) {
+      this.isLocation = jsonObj['isInLocation'];
+    } else {
+      this.isLocation = jsonObj['isInLocation'] == "true" ? true : false;
+    }
+    this.passwordExpiration = jsonObj['settings']['passExpiration'];
+    this.passwordUnit = jsonObj['settings']['passUnit'];
+    if (jsonObj['remotelyManaged'] is bool) {
+      this.remotelyManaged = jsonObj['remotelyManaged'];
+    } else {
+      this.remotelyManaged =
+          jsonObj['remotelyManaged'] == "true" ? true : false;
+    }
+    this.groupOwnerID = jsonObj['groupOwnerID'];
+    this.memberOfGroups = jsonObj['memberOfGroups'];
+    this.state = jsonObj['state'];
+    this.zip = jsonObj['zip'];
+    if (jsonObj['regisCode'] != null) {
+      this.regisCode = jsonObj['regisCode'];
+    }
+    if (jsonObj['apiKey'] != null) {
+      this.apiKey = jsonObj['apiKey'];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -314,7 +371,7 @@ class Company {
     jsonObj['state'] = this.state;
     jsonObj['zip'] = this.zip;
     jsonObj['isInLocation'] = this.isLocation.toString();
-    if(this.passwordHandler != null) {
+    if (this.passwordHandler != null) {
       jsonObj['password'] = this.passwordHandler.password;
       jsonObj['confirmPassword'] = this.passwordHandler.confirmPassword;
     } else {
@@ -324,8 +381,7 @@ class Company {
   }
 
   bool isInsertable() {
-
-    if(this.companyID == null || this.companyID.length == 0) {
+    if (this.companyID == null || this.companyID.length == 0) {
       return true;
     }
 
@@ -334,27 +390,26 @@ class Company {
 
   String getFullAddress() {
     String fullAddr = "";
-    if(this.address1 != null && this.address1.isNotEmpty) {
+    if (this.address1 != null && this.address1.isNotEmpty) {
       fullAddr = this.address1;
     }
 
-    if(this.address2 != null && this.address2.isNotEmpty) {
+    if (this.address2 != null && this.address2.isNotEmpty) {
       fullAddr = fullAddr + "\n" + this.address2;
     }
 
-    if(this.city != null && this.city.isNotEmpty) {
+    if (this.city != null && this.city.isNotEmpty) {
       fullAddr = fullAddr + "\n" + this.city;
     }
 
-    if(this.state != null && this.state.isNotEmpty) {
+    if (this.state != null && this.state.isNotEmpty) {
       fullAddr = fullAddr + " " + this.state;
     }
 
-    if(this.zip != null && this.zip.isNotEmpty) {
+    if (this.zip != null && this.zip.isNotEmpty) {
       fullAddr = fullAddr + " " + this.zip;
     }
 
     return fullAddr;
   }
-
 }
