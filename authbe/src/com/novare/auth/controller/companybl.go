@@ -293,6 +293,7 @@ func updateCompanyBL(req *updateCompanyReq) *updateCompanyResponse {
 	companyModel.Settings = req.Settings
 	companyModel.State = req.State
 	companyModel.Zip = req.Zip
+	companyModel.APIKey = req.APIKey
 
 	err = model.SaveCompany(companyModel)
 	if err != nil {

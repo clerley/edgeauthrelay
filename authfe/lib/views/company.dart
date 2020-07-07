@@ -652,12 +652,16 @@ class _CompanyState extends State<CompanyBody> {
     }
 
     //We don't need the password if we are not inserting the company
+    DialogHelper pdh = DialogHelper();
+    var pd = pdh.createProgressDialog(
+        getText('please_wait', this._language), context);
 
     if (company.isInsertable()) {
       company.passwordHandler.password = _passwordTec.text;
       company.passwordHandler.confirmPassword = _confirmPasswordTec.text;
+      await pd.show();
       var rsp = await companyProvider.addCompany(company);
-      DialogHelper pdh = DialogHelper();
+      await pd.hide();
       if (!rsp) {
         log("An error occured while adding a new company");
         pdh.showMessageDialog(
@@ -669,9 +673,9 @@ class _CompanyState extends State<CompanyBody> {
       //Ready to insert another company.
       _clearFieldsForInsert();
     } else {
+      await pd.show();
       var rsp = await companyProvider.updateCompany(company);
-
-      DialogHelper pdh = DialogHelper();
+      await pd.hide();
       if (rsp.status != "Success") {
         log("An error occured while adding a new company");
         pdh.showMessageDialog(

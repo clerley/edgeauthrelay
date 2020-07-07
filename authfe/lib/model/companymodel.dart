@@ -377,6 +377,9 @@ class Company {
     } else {
       log("The value of passwordHandler is not currently populated!");
     }
+    if (this.apiKey != null && this.apiKey.isNotEmpty) {
+      jsonObj['apiKey'] = this.apiKey;
+    }
     return jsonObj;
   }
 
