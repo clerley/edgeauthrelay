@@ -258,9 +258,10 @@ class _PermissionBodyState extends State<_PermissionBody> {
     var pdh = DialogHelper();
     var pd = pdh.createProgressDialog(
         getText("please_wait", this._language), context);
-    pd.show();
+    await pd.show();
     PermissionProvider permProvider = Provider.of<PermissionProvider>(context);
     var resp = await permProvider.insertPermission(perm);
+    await pd.hide();
     if (resp.status == "Success") {
       _permController.text = "";
       _descrController.text = "";
@@ -270,6 +271,5 @@ class _PermissionBodyState extends State<_PermissionBody> {
       pdh.showMessageDialog(
           getText("perm_ins_error", this._language), context, this._language);
     }
-    pd.hide();
   }
 }
