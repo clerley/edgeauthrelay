@@ -85,6 +85,7 @@ func setUserInfo(req *usrObj, companyID string, usr *model.User) (*model.User, e
 	}
 
 	usr.Username = req.Username
+	usr.Secret = req.Secret
 
 	return usr, nil
 }

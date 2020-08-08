@@ -460,6 +460,7 @@ type usrObj struct {
 	IsThing         string             `json:"isThing,omitempty"`     //This is a thing instead of a user
 	Password        string             `json:"password,omitempty"`
 	ConfirmPassword string             `json:"confirmPassword,omitempty"`
+	Secret          string             `json:"secret"` //A Secret used to login machines
 }
 
 type usrResp struct {
