@@ -270,8 +270,8 @@ func GrantRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr := r.Context().Value(CtxUser).(*model.User)
-	if usr == nil {
+	usr, err := model.FindUserByID(jwt.UserID)
+	if usr == nil || err != nil {
 		log.Printf("An error occurred while retrieving the company based on the JWT ID")
 		w.WriteHeader(http.StatusBadRequest)
 		return
