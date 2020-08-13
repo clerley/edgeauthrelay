@@ -38,7 +38,7 @@ func grantRequestBL(ucid string, jwtBearer *model.JWTToken, user *model.User) *a
 
 	company, err := model.FindCompanyByID(jwtBearer.CompanyID)
 	if err != nil {
-		log.Printf("An error occurred while retrieving the company based on the JWT ID")
+		log.Printf("Grant Request: An error occurred while retrieving the company based on the JWT ID")
 		return &atr
 	}
 
