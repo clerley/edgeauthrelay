@@ -122,6 +122,10 @@ func loginBySecretBL(req loginSecretReq) *loginResp {
 	}
 
 	r := getJWTToken(user, company, &resp)
+	r.Fullname = user.Name
+	r.Username = user.Username
+	r.IsThing = user.IsThing
+	r.Secret = user.Secret
 
 	return r
 }
