@@ -80,6 +80,7 @@ func writeResponse(rsp interface{}, w http.ResponseWriter) {
 //CreateCompany - Used to create a company
 func CreateCompany(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Initiating account creation!")
+	defer r.Body.Close()
 
 	var req createCompanyReq
 
@@ -121,6 +122,7 @@ type updateCompanyResponse struct {
 
 //UpdateCompany - Update the company information
 func UpdateCompany(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 
 	var req updateCompanyReq
 	decoder := json.NewDecoder(r.Body)
@@ -143,6 +145,7 @@ type regResp struct {
 
 //EnableRegistration ...
 func EnableRegistration(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 
 	user := r.Context().Value(CtxUser).(*model.User)
 	vars := mux.Vars(r)
@@ -182,6 +185,8 @@ type getCompanyResponse struct {
 //GetCompanyByUniqueID - The company uniquer ID is specified in the request
 //We will not expose the database ID
 func GetCompanyByUniqueID(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	uniqueID, ok := vars["uniqueid"]
 
@@ -214,6 +219,8 @@ type loginResp struct {
 //Login ...
 func Login(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	var lr loginReq
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&lr)
@@ -231,6 +238,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 //Logout ...
 func Logout(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
 
 	//Get the Authorization request
 	auth := r.Header.Get("Authorization")
@@ -258,6 +267,8 @@ type accessTokenResp struct {
 
 //GrantRequest - Let's check if a request can be granted
 func GrantRequest(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
 
 	var vars = mux.Vars(r)
 	ucid := vars["ucid"]
@@ -297,6 +308,8 @@ type checkSuggestIDResp struct {
 //It will verify if it is unique and If it already exists.
 func CheckAndSuggestUniqueID(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	uniqueID, ok := vars["uniqueid"]
 	if !ok {
@@ -322,6 +335,8 @@ type permResp struct {
 //InsertPermission ...
 func InsertPermission(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	usr := r.Context().Value(CtxUser).(*model.User)
 
 	var rq permObj
@@ -345,6 +360,9 @@ func InsertPermission(w http.ResponseWriter, r *http.Request) {
 
 //UpdatePermission ...
 func UpdatePermission(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	usr := r.Context().Value(CtxUser).(*model.User)
 
@@ -376,6 +394,8 @@ func UpdatePermission(w http.ResponseWriter, r *http.Request) {
 
 //RemovePermission ...
 func RemovePermission(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	usr := r.Context().Value(CtxUser).(*model.User)
 
@@ -402,6 +422,8 @@ type listPermResp struct {
 }
 
 func getStartEnd(w http.ResponseWriter, r *http.Request) (int64, int64, error) {
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	s, ok := vars["startat"]
 	if !ok {
@@ -436,6 +458,7 @@ func getStartEnd(w http.ResponseWriter, r *http.Request) (int64, int64, error) {
 
 //ListPermissions ...
 func ListPermissions(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 
 	startAt, endAt, err := getStartEnd(w, r)
 	if err != nil {
@@ -471,6 +494,8 @@ type usrResp struct {
 //InsertUser ...
 func InsertUser(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	usr := r.Context().Value(CtxUser).(*model.User)
 
 	var rq usrObj
@@ -494,6 +519,8 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 
 //UpdateUser ...
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	usr := r.Context().Value(CtxUser).(*model.User)
 
@@ -525,6 +552,8 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 //RemoveUser ...
 func RemoveUser(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	usr := r.Context().Value(CtxUser).(*model.User)
 
@@ -553,6 +582,8 @@ type listUserResp struct {
 //ListUsers ...
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	startAt, endAt, err := getStartEnd(w, r)
 	if err != nil {
 		return
@@ -579,6 +610,8 @@ type roleResp struct {
 //InsertRole ...
 func InsertRole(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	usr := r.Context().Value(CtxUser).(*model.User)
 
 	var rq roleObj
@@ -602,6 +635,9 @@ func InsertRole(w http.ResponseWriter, r *http.Request) {
 
 //UpdateRole ...
 func UpdateRole(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	usr := r.Context().Value(CtxUser).(*model.User)
 
@@ -633,6 +669,9 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 
 //RemoveRole ...
 func RemoveRole(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+
 	vars := mux.Vars(r)
 	usr := r.Context().Value(CtxUser).(*model.User)
 
@@ -661,6 +700,8 @@ type listRoleResp struct {
 //ListRoles ...
 func ListRoles(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	startAt, endAt, err := getStartEnd(w, r)
 	if err != nil {
 		return
@@ -675,6 +716,8 @@ func ListRoles(w http.ResponseWriter, r *http.Request) {
 
 //CreateCompanyRemote - Remote requests purposes.
 func CreateCompanyRemote(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
 
 	groupOwnerID := r.URL.Query().Get("group")
 	if utf8.RuneCountInString(groupOwnerID) == 0 {
@@ -715,6 +758,8 @@ type loginSecretReq struct {
 //LoginBySecret ...
 func LoginBySecret(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
+
 	var req loginSecretReq
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&req)
@@ -752,6 +797,8 @@ type respCompanyByGroupOwner struct {
 
 //GetCompanyByGroupOwnerID ...
 func GetCompanyByGroupOwnerID(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	usr := r.Context().Value(CtxUser).(*model.User)
 	vars := mux.Vars(r)
 	groupOwnerID, ok := vars["grouponwerid"]
@@ -780,6 +827,7 @@ type passResp struct {
 //UpdatePassword - Used to update a user's password
 func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
 	user := r.Context().Value(CtxUser).(*model.User)
 
 	req := new(passReq)

@@ -37,6 +37,9 @@ import (
 This may become a microservice
 */
 func main() {
+
+	http.DefaultClient.CloseIdleConnections()
+
 	log.Printf("Initializing the MessageBroker. Server Sent Events Publish/Subscribe")
 	sse.MessageBroker.Run()
 
