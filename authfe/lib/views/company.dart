@@ -98,8 +98,7 @@ class _CompanyState extends State<CompanyBody> {
   bool _remoteAuth;
   bool _isLocation;
   String _unit;
-  List<DropdownMenuItem<String>> _unitsMenuItems =
-      List<DropdownMenuItem<String>>();
+  List<DropdownMenuItem<String>> _unitsMenuItems = [];
   Company company;
 
   TextEditingController _uniqueIDTec;
@@ -158,10 +157,10 @@ class _CompanyState extends State<CompanyBody> {
     }
   }
 
-  _CompanyState.withCompany(this._language, this._company);
+  //_CompanyState.withCompany(this._language, this._company);
 
   List<DropdownMenuItem<String>> _getUnitMenuItems() {
-    List<DropdownMenuItem<String>> lst = new List<DropdownMenuItem<String>>();
+    List<DropdownMenuItem<String>> lst = [];
     DropdownMenuItem<String> item =
         new DropdownMenuItem<String>(child: Text("Hour"), value: "Hour");
     lst.add(item);

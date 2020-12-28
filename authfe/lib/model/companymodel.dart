@@ -312,7 +312,7 @@ class Company {
   String apiKey = "";
 
   Company() {
-    this.memberOfGroups = List<String>();
+    this.memberOfGroups = [];
     this.passwordHandler = PasswordHandler();
     jwtDuration = 30;
     passwordExpiration = 5;
