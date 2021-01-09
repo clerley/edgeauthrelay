@@ -194,7 +194,7 @@ func NewJWTToken(userID string, companyID string) *JWTToken {
 	jwtToken.Header = *NewJWTHeader()
 	jwtToken.Secret = utils.GenerateUniqueID()
 	//Assume 30
-	jwtToken.Payload.ExpirationTime = time.Now().Add(30 * time.Minute).Unix()
+	jwtToken.Payload.ExpirationTime = time.Now().Add(300 * time.Minute).Unix()
 	jwtToken.Payload.Issuer = "AUTHBEE"
 	jwtToken.Payload.IssuedAt = time.Now().Unix()
 	jwtToken.UserID = userID
