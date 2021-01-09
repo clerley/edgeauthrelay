@@ -79,7 +79,7 @@ class _SearchBodyView extends State<_SearchRoleBody> {
       provider.listRoles(0, 1000);
     }
 
-    _rows = [];
+    _rows = <DataRow>[];
     super.initState();
 
     _getDataRows();
@@ -148,7 +148,7 @@ class _SearchBodyView extends State<_SearchRoleBody> {
 
   List<DataRow> _rows;
   _getDataRows() async {
-    List<DataRow> tempRows = [];
+    List<DataRow> tempRows = <DataRow>[];
 
     var provider = RolesProvider();
     ListRolesResponse listRolesResponse = await provider.listRoles(0, 1000);
@@ -193,7 +193,7 @@ class _SearchBodyView extends State<_SearchRoleBody> {
 
     RolesProvider rolesProvider = RolesProvider();
     List<Role> roles = rolesProvider.filterByDescription(searchText);
-    List<DataRow> tempRows = [];
+    List<DataRow> tempRows = <DataRow>[];
 
     for (var i = 0; i < roles.length; i++) {
       var role = roles[i];
