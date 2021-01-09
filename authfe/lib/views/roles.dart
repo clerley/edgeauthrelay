@@ -239,7 +239,7 @@ class _RoleBodyState extends State<_RoleBody> {
 
     List<Permission> cachedPermissions =
         permissionsProvider.getCachedPermissions();
-    var dataRows = List<DataRow>();
+    var dataRows = [];
     if (cachedPermissions.length > 0) {
       for (var i = 0; i < cachedPermissions.length; i++) {
         var permission = cachedPermissions[i];

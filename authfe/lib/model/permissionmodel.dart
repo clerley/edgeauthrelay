@@ -45,16 +45,16 @@ class PermissionProvider extends ChangeNotifier {
   Permission findPermission(String description, String permission) {
     Permission perm;
 
-    if(_cachedPermissions == null) {
+    if (_cachedPermissions == null) {
       log('There is currently no cached permission');
       return perm;
     }
 
-    for(int i=0;i<_cachedPermissions.permissions.length;i++) {
-      if(_cachedPermissions.permissions[i].description == description
-            && _cachedPermissions.permissions[i].permission == permission) {
-              perm = _cachedPermissions.permissions[i];
-              break;
+    for (int i = 0; i < _cachedPermissions.permissions.length; i++) {
+      if (_cachedPermissions.permissions[i].description == description &&
+          _cachedPermissions.permissions[i].permission == permission) {
+        perm = _cachedPermissions.permissions[i];
+        break;
       }
     }
 
@@ -64,20 +64,19 @@ class PermissionProvider extends ChangeNotifier {
   Permission findPermissionById(String id) {
     Permission perm;
 
-    if(_cachedPermissions == null) {
+    if (_cachedPermissions == null) {
       log('There is currently no cached permission');
       return perm;
     }
 
-    for(int i=0;i<_cachedPermissions.permissions.length;i++) {
-      if(_cachedPermissions.permissions[i].id == id) {
-              perm = _cachedPermissions.permissions[i];
-              break;
+    for (int i = 0; i < _cachedPermissions.permissions.length; i++) {
+      if (_cachedPermissions.permissions[i].id == id) {
+        perm = _cachedPermissions.permissions[i];
+        break;
       }
     }
 
     return perm;
-
   }
 
   Future<ListPermissionResponse> listPermissions(int startAt, int endAt) async {
@@ -85,8 +84,9 @@ class PermissionProvider extends ChangeNotifier {
     UserProvider userProvider = UserProvider();
     var listResp = ListPermissionResponse();
     String fullURL = settings.url + "/jwt/permission/$startAt/$endAt";
-    var response = await http.get(fullURL,
-    headers:{"Authorization" : "bearer ${userProvider.login.sessionToken}"});
+    var response = await http.get(fullURL, headers: {
+      "Authorization": "bearer ${userProvider.login.sessionToken}"
+    });
     if (response.statusCode == 200) {
       var jsonResp = json.decode(response.body);
       listResp = ListPermissionResponse.fromJson(jsonResp);
@@ -123,7 +123,6 @@ class PermissionProvider extends ChangeNotifier {
     return resp;
   }
 
-
   Future<InsertPermissionResponse> updatePermission(Permission perm) async {
     InsertPermissionResponse resp;
     GlobalSettings settings = GlobalSettings();
@@ -147,17 +146,15 @@ class PermissionProvider extends ChangeNotifier {
     }
     notifyListeners();
 
-
     return resp;
   }
 
   bool isCached() {
-
-    if(this._cachedPermissions == null) {
+    if (this._cachedPermissions == null) {
       return false;
     }
 
-    if(this._cachedPermissions.permissions == null) {
+    if (this._cachedPermissions.permissions == null) {
       return false;
     }
 
@@ -167,12 +164,12 @@ class PermissionProvider extends ChangeNotifier {
   List<Permission> getCachedPermissions() {
     List<Permission> permissions = [];
 
-    if(!isCached()) {
+    if (!isCached()) {
       return permissions;
     }
 
     this._cachedPermissions.permissions.forEach((element) {
-      permissions.add(element);  
+      permissions.add(element);
     });
 
     return permissions;
@@ -181,7 +178,6 @@ class PermissionProvider extends ChangeNotifier {
   doNotification() {
     notifyListeners();
   }
- 
 }
 
 class InsertPermissionResponse {
@@ -202,15 +198,15 @@ class ListPermissionResponse {
   List<Permission> permissions;
   int startAt;
   int endAt;
- 
+
   ListPermissionResponse.fromJson(Map<String, dynamic> jsonObj) {
     this.status = jsonObj['status'];
     List<dynamic> jsonEncodedList = jsonObj['permissions'];
-    if(jsonEncodedList == null) {
+    if (jsonEncodedList == null) {
       log('There is currently no permission defined in the response');
       return;
     }
-    this.permissions = List<Permission>();
+    this.permissions = [];
     jsonEncodedList.forEach((element) {
       var perm = Permission.fromJson(element);
       permissions.add(perm);

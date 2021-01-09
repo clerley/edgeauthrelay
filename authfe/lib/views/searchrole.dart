@@ -79,7 +79,7 @@ class _SearchBodyView extends State<_SearchRoleBody> {
       provider.listRoles(0, 1000);
     }
 
-    _rows = new List<DataRow>();
+    _rows = [];
     super.initState();
 
     _getDataRows();
@@ -108,8 +108,9 @@ class _SearchBodyView extends State<_SearchRoleBody> {
                 ),
                 Container(
                   child: TextField(
-                      style: Theme.of(context).primaryTextTheme.bodyText2,
-                      controller: _searchText,),
+                    style: Theme.of(context).primaryTextTheme.bodyText2,
+                    controller: _searchText,
+                  ),
                 ),
                 Center(
                   child: Container(
@@ -147,17 +148,18 @@ class _SearchBodyView extends State<_SearchRoleBody> {
 
   List<DataRow> _rows;
   _getDataRows() async {
-    List<DataRow> tempRows = new List<DataRow>();
+    List<DataRow> tempRows = [];
 
     var provider = RolesProvider();
-    ListRolesResponse listRolesResponse =  await provider.listRoles(0, 1000);
+    ListRolesResponse listRolesResponse = await provider.listRoles(0, 1000);
 
-    if(listRolesResponse.status != "Success") {
+    if (listRolesResponse.status != "Success") {
       print("The response was not successful!");
-      return tempRows; 
+      return tempRows;
     }
 
-    if(listRolesResponse.roles == null || listRolesResponse.roles.length == 0) {
+    if (listRolesResponse.roles == null ||
+        listRolesResponse.roles.length == 0) {
       print("The roles have not been retrieve!");
       return tempRows;
     }
@@ -177,22 +179,21 @@ class _SearchBodyView extends State<_SearchRoleBody> {
     }
 
     setState(() {
-      this._rows = tempRows;  
+      this._rows = tempRows;
     });
     return _rows;
   }
 
   filterRows() async {
-
     var searchText = _searchText.text;
-    if(searchText == null || searchText.isEmpty) {
+    if (searchText == null || searchText.isEmpty) {
       _getDataRows();
       return;
     }
 
     RolesProvider rolesProvider = RolesProvider();
     List<Role> roles = rolesProvider.filterByDescription(searchText);
-    List<DataRow> tempRows = List<DataRow>();
+    List<DataRow> tempRows = [];
 
     for (var i = 0; i < roles.length; i++) {
       var role = roles[i];
@@ -207,14 +208,17 @@ class _SearchBodyView extends State<_SearchRoleBody> {
     }
 
     setState(() {
-      this._rows = tempRows;  
+      this._rows = tempRows;
     });
-
   }
 
   rowSelected(Role role, bool selected) {
-    if(selected) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RolesView.withRole(this._language, role),));
+    if (selected) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RolesView.withRole(this._language, role),
+          ));
     }
   }
 }

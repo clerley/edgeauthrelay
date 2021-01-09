@@ -94,19 +94,16 @@ class RolesProvider extends ChangeNotifier {
       if (!users.login.isLoggedIn()) {
         return resp;
       }
-      var httpHeader = {
-        "Authorization": "bearer ${users.login.sessionToken}"
-      };
+      var httpHeader = {"Authorization": "bearer ${users.login.sessionToken}"};
       Response rawResp;
       var fullUrl = settings.url + "/jwt/role/$startAt/$endAt";
       rawResp = await http.get(fullUrl, headers: httpHeader);
-      if(rawResp.statusCode == 200) {
+      if (rawResp.statusCode == 200) {
         resp = ListRolesResponse.fromJson(json.decode(rawResp.body));
       }
       this._cachedRoles = resp;
 
       notifyListeners();
-
     } catch (e, stacktrace) {
       print(stacktrace.toString());
       print("Error: ${e.toString()}");
@@ -122,7 +119,7 @@ class RolesProvider extends ChangeNotifier {
       return role;
     }
 
-    for(var i=0;i< this._cachedRoles.roles.length;i++) {
+    for (var i = 0; i < this._cachedRoles.roles.length; i++) {
       Role role = this._cachedRoles.roles[i];
       if (role.id == id) {
         return role;
@@ -133,17 +130,19 @@ class RolesProvider extends ChangeNotifier {
   }
 
   bool isCached() {
-    if(this._cachedRoles != null && this._cachedRoles.roles != null && this._cachedRoles.roles.length > 0) {
+    if (this._cachedRoles != null &&
+        this._cachedRoles.roles != null &&
+        this._cachedRoles.roles.length > 0) {
       return true;
     }
     return false;
   }
 
   List<Role> getCached() {
-    if(this.isCached()) {
+    if (this.isCached()) {
       return this._cachedRoles.roles;
     }
-    return List<Role>();
+    return [];
   }
 
   doNotification() {
@@ -151,24 +150,22 @@ class RolesProvider extends ChangeNotifier {
   }
 
   List<Role> filterByDescription(String description) {
+    List<Role> filteredList = [];
 
-    List<Role> filteredList = List<Role>();
-
-    if(!isCached()) {
+    if (!isCached()) {
       return filteredList;
     }
 
-    for(var i=0;i<this._cachedRoles.roles.length;i++) {
+    for (var i = 0; i < this._cachedRoles.roles.length; i++) {
       description = description.toLowerCase();
       Role role = this._cachedRoles.roles[i];
-      if(role.description.toLowerCase().indexOf(description) >= 0) {
+      if (role.description.toLowerCase().indexOf(description) >= 0) {
         filteredList.add(role);
       }
     }
 
     return filteredList;
   }
- 
 }
 
 class RoleResponse {
@@ -229,8 +226,8 @@ class Role {
     Map<String, dynamic> jsonMap = Map<String, dynamic>();
     jsonMap['id'] = id;
     jsonMap['description'] = description;
-    jsonMap['permissions'] = List<dynamic>();
-    for (var i =0; i< this.permissions.length;i++) {
+    jsonMap['permissions'] = [];
+    for (var i = 0; i < this.permissions.length; i++) {
       var perm = this.permissions[i];
       jsonMap['permissions'].add(perm.toJson());
     }
@@ -238,8 +235,7 @@ class Role {
   }
 
   bool hasPermission(Permission perm) {
-
-    for(var i = 0;i< permissions.length; i++ ) {
+    for (var i = 0; i < permissions.length; i++) {
       var tempPerm = permissions[i];
       if (tempPerm.id == perm.id) {
         return true;
@@ -257,7 +253,8 @@ class Role {
 
   void removePermission(Permission perm) {
     if (!this.hasPermission(perm)) {
-      print("The role does not have the permission: ${perm.description}. It cannot be removed!");
+      print(
+          "The role does not have the permission: ${perm.description}. It cannot be removed!");
       return;
     }
 

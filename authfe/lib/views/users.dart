@@ -87,7 +87,7 @@ class _UserBodyState extends State<_UserBody> {
   _UserBodyState(this._language);
 
   Future<List<DropdownMenuItem<String>>> _loadRolesDropDown() async {
-    List<DropdownMenuItem<String>> lst = new List<DropdownMenuItem<String>>();
+    List<DropdownMenuItem<String>> lst = [];
     RolesProvider rolesProvider = RolesProvider();
     if (!rolesProvider.isCached()) {
       await rolesProvider.listRoles(0, 5000);
