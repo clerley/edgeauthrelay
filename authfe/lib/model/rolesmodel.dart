@@ -24,13 +24,14 @@ SOFTWARE.
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:authfe/model/permissionmodel.dart';
 import 'package:authfe/model/settingsmodel.dart';
 import 'package:authfe/model/usermodel.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:http/io_client.dart';
 
 class RolesProvider extends ChangeNotifier {
   static final RolesProvider _theInstance = RolesProvider._internal();
@@ -65,6 +66,12 @@ class RolesProvider extends ChangeNotifier {
         "Content-type": "application/json",
         "Authorization": "bearer ${users.login.sessionToken}"
       };
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var rawResp;
       if (updateType == "insert") {
         var fullUrl = settings.url + "/jwt/role";
@@ -95,6 +102,12 @@ class RolesProvider extends ChangeNotifier {
         return resp;
       }
       var httpHeader = {"Authorization": "bearer ${users.login.sessionToken}"};
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       Response rawResp;
       var fullUrl = settings.url + "/jwt/role/$startAt/$endAt";
       rawResp = await http.get(fullUrl, headers: httpHeader);
