@@ -270,7 +270,7 @@ func FindJWTTokenBySignature(signature string) (*JWTToken, error) {
 
 //FindJWTTokenByUserIDCompanyID -
 func FindJWTTokenByUserIDCompanyID(userID string, companyID string) (*JWTToken, error) {
-	return findJWTToken(bson.M{"$and": []bson.M{bson.M{"userid": userID}, bson.M{"companyid": companyID}}})
+	return findJWTToken(bson.M{"$and": []bson.M{{"userid": userID}, {"companyid": companyID}}})
 }
 
 //RemoveJWTTokenByID ...

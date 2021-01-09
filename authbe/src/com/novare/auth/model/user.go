@@ -263,7 +263,7 @@ func FindUserByUsernameCompanyID(username string, companyID string) (*User, erro
 
 	//Given a username and a company ID, check if it already exists
 	user := NewUser()
-	err := mDBUser.Find(user, bson.M{"$and": []bson.M{bson.M{"username": username}, bson.M{"companyid": companyID}}})
+	err := mDBUser.Find(user, bson.M{"$and": []bson.M{{"username": username}, {"companyid": companyID}}})
 	return user, err
 }
 
