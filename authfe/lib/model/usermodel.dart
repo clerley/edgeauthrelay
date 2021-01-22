@@ -27,10 +27,10 @@ import 'dart:async';
 import 'dart:io';
 import 'package:authfe/model/permissionmodel.dart';
 import 'package:authfe/model/settingsmodel.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:http/io_client.dart';
 
 class UserProvider extends ChangeNotifier {
   static final UserProvider _theInstance = UserProvider._privateConstructor();
@@ -56,6 +56,12 @@ class UserProvider extends ChangeNotifier {
       var loginRequest = LoginRequest(uniqueID, username, password);
       var fullURL = globalSettings.url + "/jwt/company/login";
       String bodyStr = json.encode(loginRequest.toJson());
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response = await http.post(fullURL,
           headers: {'Content-type': 'application/json'}, body: bodyStr);
       if (response.statusCode == 200) {
@@ -97,6 +103,12 @@ class UserProvider extends ChangeNotifier {
       var httpHeader = {"Authorization": "bearer ${login.sessionToken}"};
       Response rawResp;
       var fullUrl = settings.url + "/jwt/users/$startAt/$endAt";
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       rawResp = await http.get(fullUrl, headers: httpHeader);
       if (rawResp.statusCode == 200) {
         debugPrint(
@@ -136,6 +148,12 @@ class UserProvider extends ChangeNotifier {
       Response rawResp;
       var fullUrl = settings.url + "/jwt/user";
       var encoded = json.encode(user.toJson());
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       rawResp = await http.put(fullUrl, headers: httpHeader, body: encoded);
       if (rawResp.statusCode == 200) {
         resp = UserUpdateResponse.fromJson(json.decode(rawResp.body));
@@ -166,6 +184,12 @@ class UserProvider extends ChangeNotifier {
       Response rawResp;
       var fullUrl = settings.url + "/jwt/user/${user.username}";
       var encoded = json.encode(user.toJson());
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       rawResp = await http.post(fullUrl, headers: httpHeader, body: encoded);
       if (rawResp.statusCode == 200) {
         resp = UserUpdateResponse.fromJson(json.decode(rawResp.body));
@@ -190,6 +214,12 @@ class UserProvider extends ChangeNotifier {
       var httpHeader = {"Authorization": "bearer ${login.sessionToken}"};
       Response rawResp;
       var fullUrl = settings.url + "/jwt/company/logout";
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       rawResp = await http.post(fullUrl, headers: httpHeader);
       if (rawResp.statusCode == 200) {
         debugPrint(
@@ -237,6 +267,12 @@ class UserProvider extends ChangeNotifier {
       }
 
       var jsonEncoded = json.encode(req.toJson());
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       rawResp =
           await http.post(fullUrl, headers: httpHeader, body: jsonEncoded);
       if (rawResp.statusCode == 200) {

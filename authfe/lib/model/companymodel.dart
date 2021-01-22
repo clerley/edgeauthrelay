@@ -25,11 +25,12 @@ SOFTWARE.
 import 'dart:convert';
 import 'dart:core';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:authfe/model/settingsmodel.dart';
 import 'package:authfe/model/usermodel.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 
 class AddCompanyResponse {
   String status;
@@ -63,6 +64,12 @@ class CompanyProvider extends ChangeNotifier {
       var encodedJson = json.encode(jsonMap);
       Map<String, String> headers = new Map<String, String>();
       headers["Content-Type"] = "application/json";
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response =
           await http.post(fullURL, headers: headers, body: encodedJson);
       if (response.statusCode == 200) {
@@ -99,6 +106,11 @@ class CompanyProvider extends ChangeNotifier {
       Map<String, String> headers = new Map<String, String>();
       headers["Content-Type"] = "application/json";
       headers["Authorization"] = "bearer ${userProvider.login.sessionToken}";
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response =
           await http.post(fullURL, headers: headers, body: encodedJson);
       if (response.statusCode == 200) {
@@ -135,6 +147,11 @@ class CompanyProvider extends ChangeNotifier {
         "Authorization": "bearer ${userProvider.login.sessionToken}"
       };
 
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response = await http.get(fullPath, headers: httpHeader);
       if (response.statusCode != 200) {
         print("The statusCode was not expected: ${response.statusCode}");
@@ -168,6 +185,11 @@ class CompanyProvider extends ChangeNotifier {
         "Authorization": "bearer ${userProvider.login.sessionToken}"
       };
 
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response = await http.get(fullPath, headers: httpHeader);
       if (response.statusCode != 200) {
         print("The statusCode was not expected: ${response.statusCode}");
@@ -197,6 +219,12 @@ class CompanyProvider extends ChangeNotifier {
       Map<String, String> headers = new Map<String, String>();
       headers["Content-Type"] = "application/json";
       headers["Authorization"] = "bearer ${userProvider.login.sessionToken}";
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response = await http.post(fullURL, headers: headers);
       if (response.statusCode == 200) {
         CompanyRegistrationResponse regResp =

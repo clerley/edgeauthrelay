@@ -26,8 +26,11 @@ package main
 import (
 	"com/novare/auth/controller"
 	"com/novare/auth/sse"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -109,5 +112,46 @@ func main() {
 	//--------------------------------------------------------------------------
 	handler := cors.AllowAll().Handler(mux)
 
-	http.ListenAndServe(":9119", handler)
+	cert := false
+	privKey := false
+	certFs, err := os.Stat("cert.pem")
+	if err == nil {
+		if certFs.Mode().IsRegular() {
+			cert = true
+		}
+	} else {
+		log.Printf("There is no certificate.")
+	}
+
+	keyFs, err := os.Stat("key.pem")
+	if err == nil {
+		if keyFs.Mode().IsRegular() {
+			privKey = true
+		}
+	} else {
+		log.Printf("There is no private key.")
+	}
+
+	port := 9119
+	for i := range os.Args {
+		if os.Args[i] == "-p" {
+			if len(os.Args) > i+1 {
+				tmp, err := strconv.Atoi(os.Args[i+1])
+				if err != nil {
+					log.Printf("The arguments does not contain the port")
+					break
+				}
+				port = tmp
+				break
+			}
+		}
+	}
+
+	pth := fmt.Sprintf(":%d", port)
+	log.Printf("Starting the edgeauth at address: %s", pth)
+	if cert && privKey {
+		http.ListenAndServeTLS(pth, "cert.pem", "key.pem", handler)
+	} else {
+		http.ListenAndServe(pth, handler)
+	}
 }

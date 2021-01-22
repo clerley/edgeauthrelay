@@ -24,11 +24,12 @@ SOFTWARE.
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:authfe/model/settingsmodel.dart';
 import 'package:authfe/model/usermodel.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 
 class PermissionProvider extends ChangeNotifier {
   static final PermissionProvider _theInstance =
@@ -84,6 +85,11 @@ class PermissionProvider extends ChangeNotifier {
     UserProvider userProvider = UserProvider();
     var listResp = ListPermissionResponse();
     String fullURL = settings.url + "/jwt/permission/$startAt/$endAt";
+    final ioc = new HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http = new IOClient(ioc);
+
     var response = await http.get(fullURL, headers: {
       "Authorization": "bearer ${userProvider.login.sessionToken}"
     });
@@ -105,6 +111,12 @@ class PermissionProvider extends ChangeNotifier {
     String fullURL = settings.url + "/jwt/permission";
     try {
       var jsonObj = json.encode(perm.toJson());
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response = await http.put(fullURL,
           headers: {
             "Content-type": "application/json",
@@ -130,6 +142,12 @@ class PermissionProvider extends ChangeNotifier {
     String fullURL = settings.url + "/jwt/permission/${perm.id}";
     try {
       var jsonObj = json.encode(perm.toJson());
+
+      final ioc = new HttpClient();
+      ioc.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      final http = new IOClient(ioc);
+
       var response = await http.post(fullURL,
           headers: {
             "Content-type": "application/json",
