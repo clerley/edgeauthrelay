@@ -259,7 +259,8 @@ class _PermissionBodyState extends State<_PermissionBody> {
     var pd = pdh.createProgressDialog(
         getText("please_wait", this._language), context);
     await pd.show();
-    PermissionProvider permProvider = Provider.of<PermissionProvider>(context);
+    PermissionProvider permProvider =
+        Provider.of<PermissionProvider>(context, listen: false);
     var resp = await permProvider.insertPermission(perm);
     await pd.hide();
     if (resp.status == "Success") {
