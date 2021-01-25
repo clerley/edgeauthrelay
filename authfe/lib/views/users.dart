@@ -206,8 +206,11 @@ class _UserBodyState extends State<_UserBody> {
                       ),
                     ),
                   ),
-                  OutlineButton(
-                    textColor: Colors.white,
+                  OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
                     child: Stack(
                       children: <Widget>[
                         Align(
@@ -218,7 +221,6 @@ class _UserBodyState extends State<_UserBody> {
                     onPressed: () {
                       _changeOtherUserPassword();
                     },
-                    shape: CircleBorder(),
                   ),
                 ],
               ),
@@ -334,58 +336,64 @@ class _UserBodyState extends State<_UserBody> {
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("add", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            _addUser();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: Text(
+                          getText("add", this._language),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                        onPressed: () {
+                          _addUser();
+                        },
+                      ),
                     ),
                     Container(
                       padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("save", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            _saveUser();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: Text(
+                          getText("save", this._language),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                        onPressed: () {
+                          _saveUser();
+                        },
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchUsers(this._language)),
+                          );
+                        },
+                        child: Text(
+                          getText("search", this._language),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                      ),
                     ),
                     Container(
                         padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
-                          textColor: Colors.white,
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      SearchUsers(this._language)),
-                            );
-                          },
-                          child: Text(
-                            getText("search", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
+                        child: OutlinedButton(
+                          style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        )),
-                    Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
-                          textColor: Colors.white,
                           onPressed: () {
                             Navigator.pushReplacement(
                                 context,
@@ -396,9 +404,6 @@ class _UserBodyState extends State<_UserBody> {
                           child: Text(
                             getText("cancel", this._language),
                             style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
                           ),
                         )),
                   ],

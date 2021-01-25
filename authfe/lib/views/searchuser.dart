@@ -108,20 +108,21 @@ class _SearchBodyView extends State<_SearchUserBody> {
                 ),
                 Center(
                   child: Container(
-                      padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                        textColor: Colors.white,
-                        onPressed: () {
-                          _searchUser();
-                        },
-                        child: Text(
-                          getText("search", this._language),
-                          style: Theme.of(context).primaryTextTheme.button,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      )),
+                    padding: EdgeInsets.all(5.0),
+                    child: OutlinedButton(
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      onPressed: () {
+                        _searchUser();
+                      },
+                      child: Text(
+                        getText("search", this._language),
+                        style: Theme.of(context).primaryTextTheme.button,
+                      ),
+                    ),
+                  ),
                 ),
                 Center(
                   child: Container(

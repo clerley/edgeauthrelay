@@ -155,58 +155,64 @@ class _RoleBodyState extends State<_RoleBody> {
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("add", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            addRole();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: Text(
+                          getText("add", this._language),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                        onPressed: () {
+                          addRole();
+                        },
+                      ),
                     ),
                     Container(
                       padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("save", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            updateRole();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: Text(
+                          getText("save", this._language),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                        onPressed: () {
+                          updateRole();
+                        },
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchRoles(this._language)),
+                          );
+                        },
+                        child: Text(
+                          getText("search", this._language),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                      ),
                     ),
                     Container(
                         padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
-                          textColor: Colors.white,
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      SearchRoles(this._language)),
-                            );
-                          },
-                          child: Text(
-                            getText("search", this._language),
-                            style: Theme.of(context).primaryTextTheme.button,
+                        child: OutlinedButton(
+                          style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        )),
-                    Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
-                          textColor: Colors.white,
                           onPressed: () {
                             Navigator.pushReplacement(
                                 context,
@@ -217,9 +223,6 @@ class _RoleBodyState extends State<_RoleBody> {
                           child: Text(
                             getText("cancel", this._language),
                             style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
                           ),
                         )),
                   ],

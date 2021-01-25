@@ -134,18 +134,19 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
                     style: Theme.of(context).primaryTextTheme.button,
                   ),
                 ),
-                OutlineButton(
-                    textColor: Colors.white,
-                    child: Text(
-                      getText("search", this._language),
-                      style: Theme.of(context).primaryTextTheme.button,
-                    ),
-                    onPressed: () {
-                      _doSearch();
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    )),
+                OutlinedButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
+                  child: Text(
+                    getText("search", this._language),
+                    style: Theme.of(context).primaryTextTheme.button,
+                  ),
+                  onPressed: () {
+                    _doSearch();
+                  },
+                ),
               ],
             ),
             TextField(
@@ -177,22 +178,23 @@ class _CompanySubsidiariesBodyState extends State<_CompanySubsidiariesBody> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                OutlineButton(
-                    textColor: Colors.white,
-                    child: Text(
-                      getText("cancel", this._language),
-                      style: Theme.of(context).primaryTextTheme.button,
-                    ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  CompanyViewOnly(this._language)));
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    )),
+                OutlinedButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
+                  child: Text(
+                    getText("cancel", this._language),
+                    style: Theme.of(context).primaryTextTheme.button,
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CompanyViewOnly(this._language)));
+                  },
+                ),
               ],
             )
           ],

@@ -159,38 +159,40 @@ class _UpdatePasswordViewBodyState extends State<_UpdatePasswordViewBody> {
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                          textColor: Colors.white,
-                          child: Text(
-                            getText("save", LANG_ENGLISH),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          onPressed: () {
-                            _updatePassword();
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          )),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: Text(
+                          getText("save", LANG_ENGLISH),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                        onPressed: () {
+                          _updatePassword();
+                        },
+                      ),
                     ),
                     Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: OutlineButton(
-                          textColor: Colors.white,
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        MainMenu(this._language)));
-                          },
-                          child: Text(
-                            getText("cancel", LANG_ENGLISH),
-                            style: Theme.of(context).primaryTextTheme.button,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        )),
+                      padding: EdgeInsets.all(5.0),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      MainMenu(this._language)));
+                        },
+                        child: Text(
+                          getText("cancel", LANG_ENGLISH),
+                          style: Theme.of(context).primaryTextTheme.button,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

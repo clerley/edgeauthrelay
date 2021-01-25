@@ -64,18 +64,18 @@ class DialogHelper {
           title: new Text(getText("warning", language)),
           content: new Text(msg),
           actions: <Widget>[
-            OutlineButton(
-                textColor: Colors.white,
-                child: Text(
-                  getText("close", language),
-                  style: Theme.of(context).primaryTextTheme.button,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                )),
+            OutlinedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              child: Text(
+                getText("close", language),
+                style: Theme.of(context).primaryTextTheme.button,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ],
         );
       },
@@ -171,41 +171,41 @@ class DialogHelper {
             ),
           ),
           actions: <Widget>[
-            OutlineButton(
-                textColor: Colors.white,
-                child: Icon(Icons.lock_open),
-                onPressed: () {
-                  (Company company) async {
-                    var hd = createProgressDialog(
-                        getText('please-wait', language), context);
-                    await hd.show();
-                    CompanyProvider companyProvider = CompanyProvider();
-                    CompanyRegistrationResponse regResp =
-                        await companyProvider.enableRegistration(company);
-                    await hd.hide();
-                    if (regResp.status == "Success") {
-                      company.regisCode = regResp.regisCode;
-                      debugPrint(
-                          'The value of the registration code is:[${company.regisCode}]');
-                      Navigator.of(context).pop();
-                    }
-                  }(company);
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                )),
-            OutlineButton(
-                textColor: Colors.white,
-                child: Text(
-                  getText("close", language),
-                  style: Theme.of(context).primaryTextTheme.button,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                )),
+            OutlinedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              child: Icon(Icons.lock_open),
+              onPressed: () {
+                (Company company) async {
+                  var hd = createProgressDialog(
+                      getText('please-wait', language), context);
+                  await hd.show();
+                  CompanyProvider companyProvider = CompanyProvider();
+                  CompanyRegistrationResponse regResp =
+                      await companyProvider.enableRegistration(company);
+                  await hd.hide();
+                  if (regResp.status == "Success") {
+                    company.regisCode = regResp.regisCode;
+                    debugPrint(
+                        'The value of the registration code is:[${company.regisCode}]');
+                    Navigator.of(context).pop();
+                  }
+                }(company);
+              },
+            ),
+            OutlinedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              child: Text(
+                getText("close", language),
+                style: Theme.of(context).primaryTextTheme.button,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ],
         );
       },

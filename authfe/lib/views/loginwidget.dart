@@ -122,46 +122,50 @@ class _LoginState extends State<LoginWidget> {
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(5.0),
-                  child: OutlineButton(
-                      textColor: Colors.white,
-                      child: Text(
-                        this._loginText,
-                        style: Theme.of(context).primaryTextTheme.button,
-                      ),
-                      onPressed: () async {
-                        await pr.show();
-                        debugPrint("Starting the onPressed request now");
-                        var login = await userProvider.requestLogin(
-                            _uniqueIDController.text,
-                            _usernameController.text,
-                            _passwordController.text);
-                        if (pr.isShowing()) {
-                          await pr.hide();
-                        }
-                        if (login.isLoggedIn()) {
-                          Navigator.pushReplacement(
+                  child: OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      this._loginText,
+                      style: Theme.of(context).primaryTextTheme.button,
+                    ),
+                    onPressed: () async {
+                      await pr.show();
+                      debugPrint("Starting the onPressed request now");
+                      var login = await userProvider.requestLogin(
+                          _uniqueIDController.text,
+                          _usernameController.text,
+                          _passwordController.text);
+                      if (pr.isShowing()) {
+                        await pr.hide();
+                      }
+                      if (login.isLoggedIn()) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MainMenu(this._language)),
+                        );
+                      } else {
+                        debugPrint(
+                            "The user is not logged in now! ${_uniqueIDController.text}");
+                        DialogHelper pdh = DialogHelper();
+                        pdh.showMessageDialog(
+                            getText("user_not_logged", this._language),
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => MainMenu(this._language)),
-                          );
-                        } else {
-                          debugPrint(
-                              "The user is not logged in now! ${_uniqueIDController.text}");
-                          DialogHelper pdh = DialogHelper();
-                          pdh.showMessageDialog(
-                              getText("user_not_logged", this._language),
-                              context,
-                              this._language);
-                        }
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      )),
+                            this._language);
+                      }
+                    },
+                  ),
                 ),
                 Container(
                     padding: EdgeInsets.all(5.0),
-                    child: OutlineButton(
-                      textColor: Colors.white,
+                    child: OutlinedButton(
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
                       onPressed: () {
                         CompanyProvider cp = CompanyProvider();
                         cp.editCompanyResponse = null;
@@ -175,9 +179,6 @@ class _LoginState extends State<LoginWidget> {
                       child: Text(
                         this._newCompany,
                         style: Theme.of(context).primaryTextTheme.button,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
                       ),
                     )),
               ],

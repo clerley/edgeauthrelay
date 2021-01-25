@@ -111,20 +111,21 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
                 ),
                 Center(
                   child: Container(
-                      padding: EdgeInsets.all(5.0),
-                      child: OutlineButton(
-                        textColor: Colors.white,
-                        onPressed: () {
-                          _filterRows();
-                        },
-                        child: Text(
-                          getText("search", this._language),
-                          style: Theme.of(context).primaryTextTheme.button,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      )),
+                    padding: EdgeInsets.all(5.0),
+                    child: OutlinedButton(
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      onPressed: () {
+                        _filterRows();
+                      },
+                      child: Text(
+                        getText("search", this._language),
+                        style: Theme.of(context).primaryTextTheme.button,
+                      ),
+                    ),
+                  ),
                 ),
                 Center(
                   child: Container(
@@ -218,10 +219,12 @@ class _SearchBodyView extends State<_SearchPermissionBody> {
   rowSelected(String selected) {
     PermissionProvider permissions = PermissionProvider();
     Permission perm = permissions.findPermissionById(selected);
-    if(perm != null) {
-      Navigator.pushReplacement(context, 
-        MaterialPageRoute(builder: (context) => PermissionsView.forEditing(_language, perm),));
+    if (perm != null) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PermissionsView.forEditing(_language, perm),
+          ));
     }
   }
-
 }

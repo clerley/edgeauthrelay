@@ -272,8 +272,11 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 12.0, 0.0),
-                  child: OutlineButton(
-                    textColor: Colors.white,
+                  child: OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
                     child: Text(
                       getText("edit", this._language),
                       style: Theme.of(context).primaryTextTheme.button,
@@ -281,15 +284,15 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                     onPressed: () {
                       _editCompany();
                     },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 12.0, 0.0),
-                  child: OutlineButton(
-                    textColor: Colors.white,
+                  child: OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
                     child: Text(
                       getText("cancel", this._language),
                       style: Theme.of(context).primaryTextTheme.button,
@@ -301,23 +304,21 @@ class _CompanyViewBodyState extends State<_CompanyViewBody> {
                           MaterialPageRoute(
                               builder: (context) => MainMenu(this._language)));
                     },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
                   ),
                 ),
-                OutlineButton(
-                    textColor: Colors.white,
-                    child: Text(
-                      getText("list_mgr_company", this._language),
-                      style: Theme.of(context).primaryTextTheme.button,
-                    ),
-                    onPressed: () {
-                      _showSubsidiaries();
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    )),
+                OutlinedButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
+                  child: Text(
+                    getText("list_mgr_company", this._language),
+                    style: Theme.of(context).primaryTextTheme.button,
+                  ),
+                  onPressed: () {
+                    _showSubsidiaries();
+                  },
+                ),
               ],
             ),
           ],

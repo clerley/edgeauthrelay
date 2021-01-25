@@ -407,13 +407,15 @@ class _CompanyState extends State<CompanyBody> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: OutlineButton(
-                    textColor: Colors.white,
+                  child: OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
                     child: Icon(Icons.autorenew),
                     onPressed: () {
                       _generateApiKey();
                     },
-                    shape: CircleBorder(),
                   ),
                 ),
               ],
@@ -585,23 +587,27 @@ class _CompanyState extends State<CompanyBody> {
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(5.0),
-                  child: OutlineButton(
-                      textColor: Colors.white,
-                      child: Text(
-                        getText("save", this._language),
-                        style: Theme.of(context).primaryTextTheme.button,
-                      ),
-                      onPressed: () {
-                        saveCompany();
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      )),
+                  child: OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      getText("save", this._language),
+                      style: Theme.of(context).primaryTextTheme.button,
+                    ),
+                    onPressed: () {
+                      saveCompany();
+                    },
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.all(5.0),
-                  child: OutlineButton(
-                    textColor: Colors.white,
+                  child: OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
                     child: Text(
                       getText("cancel", this._language),
                       style: Theme.of(context).primaryTextTheme.button,
@@ -617,9 +623,6 @@ class _CompanyState extends State<CompanyBody> {
                                     CompanyViewOnly(this._language)));
                       }
                     },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
                   ),
                 ),
               ],
