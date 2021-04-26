@@ -345,6 +345,9 @@ func remoteCompanyInsertBL(apiKey string, groupOwnerID string, req createCompany
 
 	//The registration code must match
 	regisCode, err := strconv.ParseInt(req.RegisCode, 10, 32)
+	if err != nil {
+		log.Printf("The following error occurred:[%s]", err)
+	}
 	if ownedCompany.GetRegistrationCode() != int(regisCode) {
 		log.Printf("The registration code stored and the registration code provided don't match!")
 		return &rsp

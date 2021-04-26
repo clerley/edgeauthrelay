@@ -87,9 +87,14 @@ func TestRoleFunctions(t *testing.T) {
 		return
 	}
 
-	role, err = FindRoleByID(role.ID.Hex())
+	role1, err := FindRoleByID(role.ID.Hex())
 	if err != nil {
 		t.Errorf("The role ID was not found! Error: [%s]", err)
+		return
+	}
+
+	if role1.ID != role.ID {
+		t.Errorf("Unable to find the ROLE. ID:[%s] does not match ID:[%s]", role1.ID.Hex(), role.ID.Hex())
 		return
 	}
 

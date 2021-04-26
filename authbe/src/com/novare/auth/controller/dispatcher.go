@@ -45,7 +45,7 @@ type createCompanyReq struct {
 	State           string                `json:"state,omitempty"`
 	Zip             string                `json:"zip,omitempty"`
 	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
-	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	RemotelyManaged string                `json:"remotelyManaged,omitempty"` //Is this Auth system managed remotely
 	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
 	Password        string                `json:"password"`                  //No empty allowed. This is required. The user is superuser
 	ConfirmPassword string                `json:"confirmPassword"`           //Confirm the password when creating the account
@@ -108,7 +108,7 @@ type updateCompanyReq struct {
 	State           string                `json:"state,omitempty"`
 	Zip             string                `json:"zip,omitempty"`
 	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
-	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	RemotelyManaged string                `json:"remotelyManaged,omitempty"` //Is this Auth system managed remotely
 	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
 	UniqueID        string                `json:"uniqueID"`                  //The Uniquer Identifier. This is how the company will later be found
 	APIKey          string                `json:"apiKey"`                    //APIKey
@@ -174,7 +174,7 @@ type getCompanyResponse struct {
 	State           string                `json:"state"`
 	Zip             string                `json:"zip"`
 	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
-	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	RemotelyManaged string                `json:"remotelyManaged,omitempty"` //Is this Auth system managed remotely
 	AuthRelay       string                `json:"authRelay,omitempty"`       //If it is remotely managed, we need the path to it.
 	APIKey          string                `json:"apiKey"`                    //APIKey
 	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
@@ -214,6 +214,7 @@ type loginResp struct {
 	Fullname     string `json:"fullName"`
 	IsThing      bool   `json:"isThing"`
 	Secret       string `json:"secret"`
+	UserStatus   string `json:"userStatus,omitempty"`
 }
 
 //Login ...
@@ -785,7 +786,7 @@ type companyInfo struct {
 	State           string                `json:"state"`
 	Zip             string                `json:"zip"`
 	IsInLocation    string                `json:"isInLocation,omitempty"`    //Specifies if a company is also a location. Used with the
-	RemotelyManaged string                `json:"remotelyManaged,omitEmpty"` //Is this Auth system managed remotely
+	RemotelyManaged string                `json:"remotelyManaged,omitempty"` //Is this Auth system managed remotely
 	Settings        model.CompanySettings `json:"settings"`                  //We can use the settings directly from the model
 	RegisCode       string                `json:"regisCode"`                 //Registration code
 }

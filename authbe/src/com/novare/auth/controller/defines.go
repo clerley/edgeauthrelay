@@ -36,4 +36,7 @@ const (
 
 	//StatusPasswordMismatch - The confirmation password does not match
 	StatusPasswordMismatch = "PasswordMismatch"
+
+	//StatusPasswordReset - Used to force a password change!
+	StatusPasswordReset = "PasswordReset"
 )

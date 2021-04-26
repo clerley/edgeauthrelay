@@ -77,7 +77,7 @@ func TestCreateCompanyWithoutUniqueID(t *testing.T) {
 	}
 
 	var rsp createCompanyResp
-	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	err = json.Unmarshal(rr.Body.Bytes(), &rsp)
 	if err != nil {
 		t.Errorf("Error unmarshalling the response body: [%s]", err)
 		return
@@ -127,7 +127,7 @@ func TestCreateCompanyWithUniqueID(t *testing.T) {
 	}
 
 	var rsp createCompanyResp
-	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	err = json.Unmarshal(rr.Body.Bytes(), &rsp)
 	if err != nil {
 		t.Errorf("Error Unmarshal the response body: [%s]", err)
 		return
@@ -177,7 +177,7 @@ func TestGetCompany(t *testing.T) {
 	}
 
 	var rsp createCompanyResp
-	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	err = json.Unmarshal(rr.Body.Bytes(), &rsp)
 	if err != nil {
 		t.Errorf("Error unmarshalling the response body: [%s]", err)
 		return
@@ -268,7 +268,7 @@ func TestLogin(t *testing.T) {
 	}
 
 	var rsp createCompanyResp
-	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	err = json.Unmarshal(rr.Body.Bytes(), &rsp)
 	if err != nil {
 		t.Errorf("Error unmarshalling the response body: [%s]", err)
 		return
@@ -306,6 +306,9 @@ func TestLogin(t *testing.T) {
 
 	var lgRsp loginResp
 	err = json.Unmarshal(rr.Body.Bytes(), &lgRsp)
+	if err != nil {
+		t.Errorf("Unable to unmarshall. Error:[%s]", err)
+	}
 	if lgRsp.Status != StatusSuccess {
 		t.Errorf("The response was not successful:[%s]", lgRsp.Status)
 		return
@@ -371,7 +374,7 @@ func TestLogout(t *testing.T) {
 	}
 
 	var rsp createCompanyResp
-	err = json.Unmarshal([]byte(rr.Body.String()), &rsp)
+	err = json.Unmarshal(rr.Body.Bytes(), &rsp)
 	if err != nil {
 		t.Errorf("Error unmarshalling the response body: [%s]", err)
 		return
@@ -409,6 +412,9 @@ func TestLogout(t *testing.T) {
 
 	var lgRsp loginResp
 	err = json.Unmarshal(rr.Body.Bytes(), &lgRsp)
+	if err != nil {
+		t.Errorf("Unabled to unmarshal the object, error:[%s]", err)
+	}
 	if lgRsp.Status != StatusSuccess {
 		t.Errorf("The response was not successful:[%s]", lgRsp.Status)
 		return
@@ -590,6 +596,9 @@ func TestSuggestNewUniqueID(t *testing.T) {
 
 	var cr checkSuggestIDResp
 	err = json.Unmarshal(rec.Body.Bytes(), &cr)
+	if err != nil {
+		t.Errorf("Unable to unmarshal the object. Error:[%s]", err)
+	}
 
 	if cr.Status != StatusSuccess {
 		t.Errorf("The status of the response was: [%s]", cr.Status)

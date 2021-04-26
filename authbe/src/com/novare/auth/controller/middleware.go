@@ -70,7 +70,7 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 			//----------------------------------------------------------
 			//Do we have a token? it should be bearer JWT
 			//----------------------------------------------------------
-			if strings.Index(bearer, "bearer ") < 0 {
+			if !strings.Contains(bearer, "bearer ") {
 				log.Printf("The Authorization object is missing the bearer")
 				w.WriteHeader(http.StatusBadRequest)
 				return
@@ -82,7 +82,7 @@ func CheckAuthorizedMW(next http.Handler, permission string) http.Handler {
 			runes := []rune(bearer)
 			runes = runes[7:]
 			jwtB64 := string(runes)
-			if strings.Index(jwtB64, "bearer ") >= 0 {
+			if !strings.Contains(jwtB64, "bearer ") {
 				log.Printf("The JWT64 token still contains the word bearer:[%s]", jwtB64)
 				w.WriteHeader(http.StatusBadRequest)
 				return

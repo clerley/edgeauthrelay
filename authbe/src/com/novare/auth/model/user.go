@@ -34,6 +34,15 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+const (
+	//LocalUserStateEnable ...
+	UserStateEnable string = "enabled"
+	//LocalUserStateDisabled ...
+	UserStateDisabled string = "disabled"
+	//LocalUserStatePasswordReset ...
+	UserStatePasswordReset string = "passwordReset"
+)
+
 //For now all will point to the same database, in the future
 //that might change
 var mDBUser = dbs.NewMongoDB(AuthRelayDatabaseName, "Users")
@@ -49,6 +58,7 @@ type User struct {
 	Roles          []string      `json:"roles"`         //The Roles this user belongs to. Don't necessarily need a role
 	IsThing        bool          `json:"isThing"`       //This is for the devices/things that need approval
 	Secret         string        `json:"-"`             //This is the secret that should be kept with the user
+	UserStatus     string        `json:"userStatus"`    //Possible status are Enabled/Disabled/PasswordReset
 }
 
 //SetPassword -  Will set the user's password
@@ -166,7 +176,6 @@ func (user *User) AddRole(roleID string) {
 	}
 
 	user.Roles = append(user.Roles, roleID)
-	return
 }
 
 //RemoveRole ...
@@ -201,6 +210,8 @@ func NewUser() *User {
 	user := new(User)
 	user.ID = bson.NewObjectId()
 	user.CompanyID = ""
+	//Default to enabled.
+	user.UserStatus = UserStateEnable
 	return user
 }
 

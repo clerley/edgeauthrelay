@@ -41,7 +41,6 @@ func doesNothing(w http.ResponseWriter, r *http.Request) {
 	log.Printf("User: %s", usr.ID.Hex())
 	log.Printf("JWT: %s", jwt.ID.Hex())
 
-	return
 }
 
 func TestMiddlewareAuthorizationWithPermission(t *testing.T) {

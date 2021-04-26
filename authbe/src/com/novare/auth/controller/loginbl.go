@@ -86,6 +86,7 @@ func loginBL(lreq loginReq) *loginResp {
 	r.Username = user.Username
 	r.IsThing = user.IsThing
 	r.Secret = user.Secret
+	r.UserStatus = user.UserStatus
 	return r
 }
 

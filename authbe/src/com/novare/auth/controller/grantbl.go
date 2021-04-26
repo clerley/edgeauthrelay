@@ -42,6 +42,17 @@ func grantRequestBL(ucid string, jwtBearer *model.JWTToken, user *model.User) *a
 		return &atr
 	}
 
+	if user.UserStatus == model.UserStateDisabled {
+		log.Printf("The user has status of disabled. No requests will be approved for this user!")
+		return &atr
+	}
+
+	if user.UserStatus == model.UserStatePasswordReset {
+		log.Printf("The user requires a password reset. A password reset is required!")
+		atr.Status = StatusPasswordReset
+		return &atr
+	}
+
 	//If the company unique id and the user defined company id do not match, remove the token... It is compromised
 	if company.UniqueID != ucid {
 		log.Printf("The company defined UNIQUEID and the user passed unique ID do not match. Invalidating the token with ID:[%s]", jwtBearer.ID.Hex())
