@@ -32,51 +32,50 @@ import 'views/loginwidget.dart';
 import 'model/usermodel.dart';
 import 'model/permissionmodel.dart';
 
-
-void main() => runApp(MultiProvider(
-                          providers:[
-                            ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider(),),
-                            ChangeNotifierProvider<CompanyProvider>(create: (_) => CompanyProvider(),),
-                            ChangeNotifierProvider<PermissionProvider>(create: (_) => PermissionProvider(),),
-                            ChangeNotifierProvider<RolesProvider>(create: (_) => RolesProvider(),),
-                          ],
-                          child: MyApp()));
+void main() => runApp(MultiProvider(providers: [
+      ChangeNotifierProvider<UserProvider>(
+        create: (_) => UserProvider(),
+      ),
+      ChangeNotifierProvider<CompanyProvider>(
+        create: (_) => CompanyProvider(),
+      ),
+      ChangeNotifierProvider<PermissionProvider>(
+        create: (_) => PermissionProvider(),
+      ),
+      ChangeNotifierProvider<RolesProvider>(
+        create: (_) => RolesProvider(),
+      ),
+    ], child: MyApp()));
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     var titleText = getText('title', LANG_ENGLISH);
-        return MaterialApp(
-          title: titleText,
-          theme: ThemeData(
-            brightness: Brightness.dark,
-            appBarTheme: AppBarTheme(
-              brightness: Brightness.dark,
-              color: Color(0xff07203e),
-            ),
-            
-            primaryColor: Color(0xff7b92ae),
-            accentColor: Color(0xff506d90),
-            backgroundColor: Color(0xff18365a),
-            
-            fontFamily: 'Arial',
-            primaryTextTheme: TextTheme(
-                bodyText1: TextStyle(fontSize: 22.0, color:Colors.white),
-                button: TextStyle(fontSize: 16.0, color:Colors.white),
-                bodyText2: TextStyle(fontSize: 16.0, color: Colors.yellow),
-            ),
-
-            inputDecorationTheme: InputDecorationTheme(
-              //fillColor: Color(0xff7b92ae),
-              fillColor: Color(0xff222831),
-              filled: true,
-            ),
-
-            toggleableActiveColor: Color(0xff506d90),
-
-          ),
-          home: MyHomePage(title: titleText),
+    return MaterialApp(
+      title: titleText,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        appBarTheme: AppBarTheme(
+          brightness: Brightness.dark,
+          color: Color(0xff07203e),
+        ),
+        primaryColor: Color(0xff7b92ae),
+        backgroundColor: Color(0xff18365a),
+        fontFamily: 'Arial',
+        primaryTextTheme: TextTheme(
+          bodyText1: TextStyle(fontSize: 22.0, color: Colors.white),
+          button: TextStyle(fontSize: 16.0, color: Colors.white),
+          bodyText2: TextStyle(fontSize: 16.0, color: Colors.yellow),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          //fillColor: Color(0xff7b92ae),
+          fillColor: Color(0xff222831),
+          filled: true,
+        ),
+        toggleableActiveColor: Color(0xff506d90),
+      ),
+      home: MyHomePage(title: titleText),
     );
   }
 }
@@ -90,23 +89,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [IconButton(
-          icon: Icon(Icons.settings), 
-          onPressed: () {
-            Navigator.pushReplacement(
-                               context,
-                               MaterialPageRoute(
-                                 builder: (context) => SettingsView()));
-          },
-        )],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => SettingsView()));
+            },
+          )
+        ],
       ),
-      body: SingleChildScrollView(child: LoginWidget(),), 
-      );
+      body: SingleChildScrollView(
+        child: LoginWidget(),
+      ),
+    );
   }
 }

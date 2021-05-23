@@ -427,7 +427,7 @@ class _CompanyState extends State<CompanyBody> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).backgroundColor,
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  border: Border.all(color: Theme.of(context).accentColor),
+                  border: Border.all(color: Color(0xff506d90)),
                 ),
                 child: Column(
                   children: <Widget>[
@@ -529,7 +529,9 @@ class _CompanyState extends State<CompanyBody> {
               decoration: BoxDecoration(
                 color: Theme.of(context).backgroundColor,
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                border: Border.all(color: Theme.of(context).accentColor),
+                border: Border.all(
+                  color: Color(0xff506d90),
+                ),
               ),
               child: Column(
                 children: [
